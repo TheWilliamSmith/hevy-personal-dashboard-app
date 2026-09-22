@@ -1,7 +1,20 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router';
 
+declare module 'vue-router' {
+  interface RouteMeta {
+    /** Opts the route out of the shell's max-width container. */
+    fullWidth?: boolean;
+  }
+}
+
 const routes: RouteRecordRaw[] = [
-  { path: '/', redirect: { name: 'workouts' } },
+  { path: '/', redirect: { name: 'dashboard' } },
+  {
+    path: '/dashboard',
+    name: 'dashboard',
+    component: () => import('@/views/DashboardView.vue'),
+    meta: { fullWidth: true },
+  },
   {
     path: '/workouts',
     name: 'workouts',

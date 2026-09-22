@@ -3,7 +3,7 @@ import { RouterLink } from 'vue-router';
 </script>
 
 <template>
-  <div class="mx-auto flex w-full max-w-4xl flex-col items-center gap-3 p-16 text-center">
+  <div class="flex flex-col items-center gap-3 py-16 text-center">
     <h1 class="text-2xl font-semibold text-slate-900">Page not found</h1>
     <RouterLink
       :to="{ name: 'workouts' }"

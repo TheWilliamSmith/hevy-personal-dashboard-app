@@ -15,7 +15,7 @@ function onImported(result: ImportResult): void {
 </script>
 
 <template>
-  <div class="mx-auto flex w-full max-w-4xl flex-col items-center gap-6 p-6">
+  <div class="flex flex-col items-center gap-6">
     <h1 class="self-start text-2xl font-semibold text-slate-900">Import</h1>
     <HevyImportButton @imported="onImported" />
   </div>

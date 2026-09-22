@@ -30,7 +30,7 @@ const orderedExercises = computed(() =>
 </script>
 
 <template>
-  <div class="mx-auto flex w-full max-w-4xl flex-col gap-6 p-6">
+  <div class="flex flex-col gap-6">
     <RouterLink
       :to="{ name: 'workouts', query: backQuery }"
       class="text-sm font-medium text-indigo-700 underline underline-offset-2 hover:text-indigo-900"

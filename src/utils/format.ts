@@ -90,3 +90,62 @@ export function toNumber(value: number | string | null | undefined): number | nu
   const amount = typeof value === 'number' ? value : Number(value);
   return Number.isFinite(amount) ? amount : null;
 }
+
+const INTEGER_FORMATTER = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 });
+
+/** 12500 -> "12 500". Plain spaces, like formatVolume. */
+export function formatInteger(value: number | string | null | undefined): string {
+  const amount = toNumber(value);
+  if (amount === null) {
+    return EMPTY;
+  }
+
+  return INTEGER_FORMATTER.format(amount).replace(/\u202f|\u00a0/g, ' ');
+}
+
+/** Signed percentage change, null when the baseline is 0 or missing. */
+export function percentChange(
+  current: number | null | undefined,
+  previous: number | null | undefined,
+): number | null {
+  const now = toNumber(current);
+  const before = toNumber(previous);
+
+  if (now === null || before === null || before === 0) {
+    return null;
+  }
+
+  return ((now - before) / Math.abs(before)) * 100;
+}
+
+/** 12.3 -> "+12,3 %", -4 -> "-4 %". */
+export function formatPercent(value: number | null | undefined): string {
+  const amount = toNumber(value);
+  if (amount === null) {
+    return EMPTY;
+  }
+
+  const rendered = Math.abs(amount).toLocaleString('fr-FR', { maximumFractionDigits: 1 });
+  return `${amount >= 0 ? '+' : '-'}${rendered} %`;
+}
+
+/** YYYY-MM-DD, the calendar heatmap's key format. */
+export function formatDayKey(value: string | Date): string {
+  const date = value instanceof Date ? value : new Date(value);
+  return Number.isNaN(date.getTime()) ? '' : date.toISOString().slice(0, 10);
+}
+
+/** Short bucket label for time axes: "10 sept." for a day, "sept. 2026" monthly. */
+export function formatBucket(value: string, granularity: 'day' | 'week' | 'month'): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return EMPTY;
+  }
+
+  const options: Intl.DateTimeFormatOptions =
+    granularity === 'month'
+      ? { month: 'short', year: 'numeric', timeZone: 'UTC' }
+      : { day: 'numeric', month: 'short', timeZone: 'UTC' };
+
+  return new Intl.DateTimeFormat('fr-FR', options).format(date).replace(/\u202f/g, ' ');
+}

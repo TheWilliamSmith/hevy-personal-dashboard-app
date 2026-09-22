@@ -51,7 +51,7 @@ const statusMessage = computed(() => {
 </script>
 
 <template>
-  <div class="mx-auto flex w-full max-w-4xl flex-col gap-6 p-6">
+  <div class="flex flex-col gap-6">
     <header>
       <h1 class="text-2xl font-semibold text-slate-900">Workouts</h1>
     </header>
