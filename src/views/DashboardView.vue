@@ -142,7 +142,7 @@ const kpis = computed(() => [
 </script>
 
 <template>
-  <div class="px-6">
+  <div>
     <DashboardToolbar
       :preset="filters.preset.value"
       :granularity="filters.granularity.value"
@@ -155,24 +155,23 @@ const kpis = computed(() => [
 
     <div
       v-if="isEmptyDashboard"
-      class="rounded-xl border border-dashed border-slate-300 bg-white p-16 text-center"
+      class="border-y border-dashed border-slate-300 bg-white p-16 text-center"
     >
       <p class="text-slate-700">No workouts yet.</p>
       <RouterLink
-        :to="{ name: 'import' }"
+        :to="{ name: 'home', query: { tab: 'imports' } }"
         class="mt-3 inline-block text-sm font-medium text-indigo-700 underline underline-offset-2"
       >
         Import your Hevy export
       </RouterLink>
     </div>
 
-    <div v-else class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-12">
+    <div
+      v-else
+      class="grid grid-cols-1 gap-px border-y border-slate-200 bg-slate-200 md:grid-cols-2 xl:grid-cols-12"
+    >
       <div class="md:col-span-2 xl:col-span-12">
-        <div
-          v-if="overview.error.value"
-          class="rounded-xl border border-red-200 bg-red-50 p-4"
-          role="alert"
-        >
+        <div v-if="overview.error.value" class="bg-red-50 p-4" role="alert">
           <p class="text-sm text-red-900">{{ overview.error.value }}</p>
           <button
             type="button"
@@ -182,7 +181,7 @@ const kpis = computed(() => [
             Retry
           </button>
         </div>
-        <div v-else class="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
+        <div class="grid grid-cols-2 gap-px bg-slate-200 sm:grid-cols-3 xl:grid-cols-6" v-else>
           <KpiTile
             v-for="kpi in kpis"
             :key="kpi.label"
@@ -208,8 +207,9 @@ const kpis = computed(() => [
         />
       </div>
 
-      <div class="flex flex-col gap-4 md:col-span-2 xl:col-span-4">
+      <div class="flex flex-col gap-px bg-slate-200 md:col-span-2 xl:col-span-4">
         <DistributionCard
+          class="min-h-0 flex-1"
           title="By weekday"
           subtitle="Volume per day of week"
           variant="bar"
@@ -219,6 +219,7 @@ const kpis = computed(() => [
           @retry="weekday.refresh"
         />
         <DistributionCard
+          class="min-h-0 flex-1"
           title="By rep range"
           subtitle="Share of sets"
           variant="donut"
@@ -241,7 +242,7 @@ const kpis = computed(() => [
         />
       </div>
 
-      <div class="md:col-span-1 xl:col-span-6">
+      <div class="md:col-span-2 xl:col-span-6">
         <TopExercisesCard
           :exercises="exercises.data.value"
           :sort-by="sortBy"
@@ -252,7 +253,7 @@ const kpis = computed(() => [
         />
       </div>
 
-      <div class="md:col-span-1 xl:col-span-6">
+      <div class="md:col-span-2 xl:col-span-6">
         <ExerciseProgressionCard
           :points="progression.data.value"
           :exercises="exerciseNames"

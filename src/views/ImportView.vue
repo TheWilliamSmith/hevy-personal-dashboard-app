@@ -9,7 +9,7 @@ const router = useRouter();
 /** A successful import invalidates the list, so send the user straight to it. */
 function onImported(result: ImportResult): void {
   if (!result.alreadyImported && result.workoutsCreated > 0) {
-    void router.push({ name: 'workouts' });
+    void router.push({ name: 'home', query: { tab: 'workouts' } });
   }
 }
 </script>

@@ -8,7 +8,8 @@ import { formatDate, formatDuration, formatVolume } from '@/utils/format';
 
 const route = useRoute();
 
-const id = computed(() => String(route.params.id ?? ''));
+/** The detail lives at ?tab=workouts&workout=<id> on the single page. */
+const id = computed(() => (typeof route.query.workout === 'string' ? route.query.workout : ''));
 const { workout, isLoading, error, notFound, retry } = useWorkout(id);
 
 /** The list's query travelled here on the link, so Back restores that view. */
@@ -32,7 +33,7 @@ const orderedExercises = computed(() =>
 <template>
   <div class="flex flex-col gap-6">
     <RouterLink
-      :to="{ name: 'workouts', query: backQuery }"
+      :to="{ name: 'home', query: { ...backQuery, tab: 'workouts' } }"
       class="text-sm font-medium text-indigo-700 underline underline-offset-2 hover:text-indigo-900"
     >
       ← Back to workouts

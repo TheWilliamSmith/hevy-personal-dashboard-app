@@ -112,11 +112,12 @@ export function useDashboardFilters(): UseDashboardFilters {
   function push(next: Record<string, string | undefined>): void {
     const query: Record<string, string> = {};
     for (const [key, value] of Object.entries({ ...route.query, ...next })) {
-      if (typeof value === 'string' && value !== '') {
+      if (typeof value === 'string' && value !== '' && key !== 'tab') {
         query[key] = value;
       }
     }
-    void router.push({ name: 'dashboard', query });
+    // Dashboard is the default tab, so it needs no `tab` parameter.
+    void router.push({ name: 'home', query });
   }
 
   return {

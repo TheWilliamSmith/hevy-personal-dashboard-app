@@ -7,9 +7,14 @@ const props = withDefaults(
     error?: string | null;
     isEmpty?: boolean;
     emptyLabel?: string;
-    /** Fixed so every card in a row lines up regardless of its content. */
+    /**
+     * Desktop height of the plotting area. It is a MIN height, not a fixed one:
+     * the card stretches to fill its grid row, which is what keeps neighbouring
+     * cards flush instead of leaving a gap under the shorter one. Capped
+     * against the viewport so a tall card still fits a phone screen.
+     */
     height?: number;
-    /** Screen-reader summary of the series; see the a11y note below. */
+    /** Screen-reader summary of the series. */
     ariaLabel?: string;
   }>(),
   { height: 280, emptyLabel: 'No data for this period.' },
@@ -19,26 +24,26 @@ const emit = defineEmits<{ retry: [] }>();
 </script>
 
 <template>
-  <section class="flex flex-col rounded-xl border border-slate-200 bg-white">
+  <section class="flex h-full min-w-0 flex-col bg-white">
     <header class="flex flex-wrap items-start gap-2 border-b border-slate-100 px-4 py-3">
-      <div class="mr-auto">
-        <h2 class="text-sm font-semibold text-slate-900">{{ props.title }}</h2>
-        <p v-if="props.subtitle" class="text-xs text-slate-500">{{ props.subtitle }}</p>
+      <div class="mr-auto min-w-0">
+        <h2 class="truncate text-sm font-semibold text-slate-900">{{ props.title }}</h2>
+        <p v-if="props.subtitle" class="truncate text-xs text-slate-500">{{ props.subtitle }}</p>
       </div>
-      <!-- Metric switchers, sort toggles, year pickers land here. -->
       <slot name="toolbar" />
     </header>
 
+    <!-- flex-1 makes the body absorb whatever height the grid row hands down. -->
     <div
-      class="relative flex-1 p-3"
-      :style="{ minHeight: `${props.height}px` }"
+      class="relative flex min-h-0 flex-1 flex-col p-3"
+      :style="{ minHeight: `min(${props.height}px, 60vh)` }"
       :aria-busy="props.isLoading"
     >
-      <div v-if="props.isLoading" class="h-full w-full animate-pulse rounded-lg bg-slate-100" />
+      <div v-if="props.isLoading" class="h-full w-full flex-1 animate-pulse rounded-lg bg-slate-100" />
 
       <div
         v-else-if="props.error"
-        class="flex h-full flex-col items-center justify-center gap-3 text-center"
+        class="flex flex-1 flex-col items-center justify-center gap-3 text-center"
         role="alert"
       >
         <p class="text-sm text-red-800">{{ props.error }}</p>
@@ -51,25 +56,24 @@ const emit = defineEmits<{ retry: [] }>();
         </button>
       </div>
 
-      <p
-        v-else-if="props.isEmpty"
-        class="flex h-full items-center justify-center text-sm text-slate-500"
-      >
+      <p v-else-if="props.isEmpty" class="flex flex-1 items-center justify-center text-sm text-slate-500">
         {{ props.emptyLabel }}
       </p>
 
-      <div v-else class="h-full" :style="{ height: `${props.height}px` }">
-        <!--
-          The chart itself is decorative to assistive tech; the accessible
-          content is the aria-label summary plus the table in #fallback.
-        -->
-        <div class="h-full" role="img" :aria-label="props.ariaLabel ?? props.title">
-          <slot />
-        </div>
+      <!--
+        The chart is decorative to assistive tech; the accessible content is the
+        aria-label summary plus the table in #fallback.
+      -->
+      <div
+        v-else
+        class="min-h-0 flex-1"
+        role="img"
+        :aria-label="props.ariaLabel ?? props.title"
+      >
+        <slot />
       </div>
     </div>
 
-    <!-- Visually hidden data table fallback. -->
     <div v-if="!props.isLoading && !props.error && !props.isEmpty" class="sr-only">
       <slot name="fallback" />
     </div>

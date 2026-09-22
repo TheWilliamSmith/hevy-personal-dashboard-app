@@ -106,7 +106,7 @@ const statusMessage = computed(() => {
         <template v-else>
           <p class="text-slate-700">No workouts yet.</p>
           <RouterLink
-            :to="{ name: 'import' }"
+            :to="{ name: 'home', query: { tab: 'imports' } }"
             class="mt-3 inline-block text-sm font-medium text-indigo-700 underline underline-offset-2"
           >
             Import your Hevy export

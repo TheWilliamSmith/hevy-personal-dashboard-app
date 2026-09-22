@@ -25,7 +25,7 @@ const deltaClass = computed(() =>
 </script>
 
 <template>
-  <div class="rounded-xl border border-slate-200 bg-white px-4 py-3">
+  <div class="flex h-full min-w-0 flex-col justify-center bg-white px-4 py-3">
     <p class="truncate text-xs font-medium text-slate-500">{{ props.label }}</p>
 
     <template v-if="props.isLoading">
@@ -36,10 +36,11 @@ const deltaClass = computed(() =>
     <template v-else>
       <p class="mt-1 truncate text-xl font-semibold text-slate-900">{{ props.value }}</p>
 
-      <p v-if="delta !== null" class="mt-1 flex items-center gap-1 text-xs" :class="deltaClass">
-        <span aria-hidden="true">{{ isUp ? '▲' : '▼' }}</span>
-        <span>{{ formatPercent(delta) }}</span>
-        <span class="truncate text-slate-400">{{ props.comparisonLabel }}</span>
+      <!-- The figure never breaks; the label is what gives way when narrow. -->
+      <p v-if="delta !== null" class="mt-1 flex min-w-0 items-baseline gap-1 text-xs" :class="deltaClass">
+        <span class="whitespace-nowrap" aria-hidden="true">{{ isUp ? '▲' : '▼' }}</span>
+        <span class="whitespace-nowrap">{{ formatPercent(delta) }}</span>
+        <span class="hidden truncate text-slate-400 sm:inline">{{ props.comparisonLabel }}</span>
       </p>
       <!-- No previous window (preset "All") means no honest comparison. -->
       <p v-else class="mt-1 text-xs text-slate-400">No comparison</p>

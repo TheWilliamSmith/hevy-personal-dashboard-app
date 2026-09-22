@@ -138,7 +138,7 @@ const cell = 'px-3 py-2 text-sm text-slate-800';
             <td :class="cell">
               <RouterLink
                 v-if="workoutId(record)"
-                :to="{ name: 'workout-detail', params: { id: workoutId(record) } }"
+                :to="{ name: 'home', query: { tab: 'workouts', workout: workoutId(record) } }"
                 class="font-medium text-indigo-700 underline underline-offset-2"
               >
                 View

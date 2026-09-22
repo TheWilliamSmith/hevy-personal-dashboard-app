@@ -1,46 +1,33 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router';
 
-declare module 'vue-router' {
-  interface RouteMeta {
-    /** Opts the route out of the shell's max-width container. */
-    fullWidth?: boolean;
-  }
-}
-
+/**
+ * A single page. The tab and every filter are query parameters, so the URL is
+ * the complete description of what is on screen — see useActiveTab.
+ */
 const routes: RouteRecordRaw[] = [
-  { path: '/', redirect: { name: 'dashboard' } },
   {
-    path: '/dashboard',
-    name: 'dashboard',
-    component: () => import('@/views/DashboardView.vue'),
-    meta: { fullWidth: true },
+    path: '/',
+    name: 'home',
+    component: () => import('@/views/HomeView.vue'),
   },
-  {
-    path: '/workouts',
-    name: 'workouts',
-    component: () => import('@/views/WorkoutsView.vue'),
-  },
-  {
-    path: '/workouts/:id',
-    name: 'workout-detail',
-    component: () => import('@/views/WorkoutDetailView.vue'),
-  },
-  {
-    path: '/import',
-    name: 'import',
-    component: () => import('@/views/ImportView.vue'),
-  },
-  {
-    path: '/:pathMatch(.*)*',
-    name: 'not-found',
-    component: () => import('@/views/NotFoundView.vue'),
-  },
+  // Old deep links (/dashboard, /workouts/:id, …) and typos land on the page.
+  { path: '/:pathMatch(.*)*', redirect: { name: 'home' } },
 ];
 
 export const router = createRouter({
   history: createWebHistory(),
   routes,
-  /** A filter change must not drop the reader back to where they scrolled. */
-  scrollBehavior: (to, from, saved) =>
-    saved ?? (to.path === from.path ? false : { top: 0 }),
+  /**
+   * Every navigation now shares one path, so the old path comparison would
+   * never scroll. Changing tab or opening a workout is a new view and goes to
+   * the top; a filter change keeps the reader where they were.
+   */
+  scrollBehavior: (to, from, saved) => {
+    if (saved) {
+      return saved;
+    }
+    const changedView =
+      to.query.tab !== from.query.tab || to.query.workout !== from.query.workout;
+    return changedView ? { top: 0 } : false;
+  },
 });

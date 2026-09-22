@@ -29,11 +29,11 @@ const dateField =
 
 <template>
   <div
-    class="sticky top-0 z-20 -mx-6 mb-4 flex flex-wrap items-center gap-x-6 gap-y-3 border-b border-slate-200 bg-slate-100/95 px-6 py-3 backdrop-blur"
+    class="sticky top-0 z-20 flex flex-wrap items-center gap-x-6 gap-y-3 border-y border-slate-200 bg-slate-50/95 px-4 py-3 backdrop-blur sm:px-6"
   >
-    <div class="flex items-center gap-2">
+    <div class="flex min-w-0 flex-wrap items-center gap-2">
       <span id="range-label" class="text-xs font-medium text-slate-600">Range</span>
-      <div class="flex overflow-hidden rounded-lg ring-1 ring-slate-300" role="group" aria-labelledby="range-label">
+      <div class="flex flex-wrap overflow-hidden rounded-lg ring-1 ring-slate-300" role="group" aria-labelledby="range-label">
         <button
           v-for="option in RANGE_PRESETS"
           :key="option.value"
@@ -47,7 +47,7 @@ const dateField =
       </div>
     </div>
 
-    <div class="flex items-center gap-2">
+    <div class="flex min-w-0 flex-wrap items-center gap-2">
       <label for="range-from" class="text-xs font-medium text-slate-600">From</label>
       <input
         id="range-from"
@@ -68,7 +68,7 @@ const dateField =
       />
     </div>
 
-    <div class="flex items-center gap-2">
+    <div class="flex min-w-0 flex-wrap items-center gap-2">
       <span id="granularity-label" class="text-xs font-medium text-slate-600">Granularity</span>
       <div
         class="flex overflow-hidden rounded-lg ring-1 ring-slate-300"

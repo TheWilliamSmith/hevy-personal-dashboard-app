@@ -13,7 +13,10 @@ const isOverflowChip = (name: string): boolean => /^\+\d+$/.test(name);
 <template>
   <li>
     <RouterLink
-      :to="{ name: 'workout-detail', params: { id: props.workout.id }, query: props.backQuery }"
+      :to="{
+        name: 'home',
+        query: { ...props.backQuery, tab: 'workouts', workout: props.workout.id },
+      }"
       class="block rounded-xl border border-slate-200 bg-white p-4 transition-colors hover:border-indigo-400 hover:bg-indigo-50/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
     >
       <div class="flex items-baseline justify-between gap-4">

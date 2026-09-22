@@ -67,8 +67,8 @@ const option = computed<EChartsOption>(() => ({
       ].join('<br/>');
     },
   },
-  legend: { show: true, top: 0, right: 0, textStyle: { color: palette.mutedText } },
-  grid: { left: 8, right: 8, top: 32, bottom: 8, containLabel: true },
+  legend: { show: true, top: 0, left: 'center', textStyle: { color: palette.mutedText } },
+  grid: { left: 8, right: 8, top: 44, bottom: 8, containLabel: true },
   xAxis: { ...categoryAxis(palette), data: labels.value },
   yAxis: [
     {
@@ -79,8 +79,12 @@ const option = computed<EChartsOption>(() => ({
       },
     },
     {
-      ...valueAxis(palette, 'Workouts'),
+      // No axis name: it collided with the legend in the top-right corner.
+      ...valueAxis(palette),
       splitLine: { show: false },
+      // A count is a whole number. Without minInterval ECharts splits a max of
+      // 1 into 0.2 steps and every tick rounds to the same label ("1,1,1,0,0").
+      minInterval: 1,
       axisLabel: { color: palette.axisLabel, formatter: (value: number) => formatInteger(value) },
     },
   ],

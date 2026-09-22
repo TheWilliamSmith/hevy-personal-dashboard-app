@@ -98,14 +98,16 @@ export function useWorkouts(): UseWorkouts {
     // Any filter change invalidates the current page.
     const nextPage = next.page ?? 1;
 
-    const query: Record<string, string> = {};
+    // `tab` must survive every filter write, otherwise the page falls back to
+    // the dashboard on the next navigation.
+    const query: Record<string, string> = { tab: 'workouts' };
     if (merged.search) query.search = merged.search;
     if (merged.exercise) query.exercise = merged.exercise;
     if (merged.from) query.from = merged.from;
     if (merged.to) query.to = merged.to;
     if (nextPage > 1) query.page = String(nextPage);
 
-    void router.push({ name: 'workouts', query });
+    void router.push({ name: 'home', query });
   }
 
   async function fetchWorkouts(): Promise<void> {
@@ -160,7 +162,8 @@ export function useWorkouts(): UseWorkouts {
   watch(
     () => route.query,
     () => {
-      if (route.name !== 'workouts') {
+      // Another tab's navigation must not trigger a list refetch.
+      if (route.query.tab !== 'workouts' || route.query.workout) {
         return;
       }
       syncFromRoute();
@@ -193,7 +196,7 @@ export function useWorkouts(): UseWorkouts {
     if (debounceTimer) {
       clearTimeout(debounceTimer);
     }
-    void router.push({ name: 'workouts', query: {} });
+    void router.push({ name: 'home', query: { tab: 'workouts' } });
   }
 
   function goToPage(next: number): void {

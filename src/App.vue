@@ -1,40 +1,31 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import { RouterLink, RouterView, useRoute } from 'vue-router';
+import { RouterView } from 'vue-router';
 
-const route = useRoute();
+import AppTabs from '@/components/AppTabs.vue';
+import { useActiveTab } from '@/composables/useActiveTab';
 
-/**
- * Routes opt into full-bleed via `meta.fullWidth`. The shell owns the
- * container so views carry content only — previously every view repeated
- * `mx-auto w-full max-w-4xl p-6`.
- */
-const isFullWidth = computed(() => route.meta.fullWidth === true);
-const container = computed(() => (isFullWidth.value ? 'w-full' : 'mx-auto w-full max-w-4xl'));
-
-const link =
-  'rounded-lg px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900';
-const activeLink = 'bg-indigo-50 text-indigo-700 hover:bg-indigo-50 hover:text-indigo-700';
+const { tab, isFullWidth } = useActiveTab();
 </script>
 
 <template>
   <div class="min-h-screen bg-slate-100">
-    <header class="border-b border-slate-200 bg-white">
-      <nav :class="[container, 'flex items-center gap-2 px-6 py-4']" aria-label="Main">
-        <span class="mr-auto font-semibold text-slate-900">Hevy Personal Dashboard</span>
-        <RouterLink :to="{ name: 'dashboard' }" :class="link" :active-class="activeLink">
-          Dashboard
-        </RouterLink>
-        <RouterLink :to="{ name: 'workouts' }" :class="link" :active-class="activeLink">
-          Workouts
-        </RouterLink>
-        <RouterLink :to="{ name: 'import' }" :class="link" :active-class="activeLink">
-          Imports
-        </RouterLink>
-      </nav>
+    <header class="bg-white">
+      <!--
+        The header keeps one width whatever the tab, so the tab row does not
+        jump sideways when the full-bleed dashboard is selected.
+      -->
+      <div class="mx-auto w-full max-w-screen-2xl px-6 pt-4">
+        <h1 class="mb-3 font-semibold text-slate-900">Hevy Personal Dashboard</h1>
+        <AppTabs />
+      </div>
     </header>
 
-    <main :class="[container, isFullWidth ? 'py-4' : 'p-6']">
+    <main
+      :id="`panel-${tab}`"
+      role="tabpanel"
+      :aria-labelledby="`tab-${tab}`"
+      :class="isFullWidth ? 'w-full py-4' : 'mx-auto w-full max-w-4xl p-6'"
+    >
       <RouterView />
     </main>
   </div>
