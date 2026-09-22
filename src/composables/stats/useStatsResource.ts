@@ -1,6 +1,7 @@
 import { onScopeDispose, ref, watch, type Ref } from 'vue';
 
 import { ApiError } from '@/lib/api';
+import { dataVersion } from '@/lib/data-version';
 
 export interface StatsResource<T> {
   data: Ref<T | null>;
@@ -60,7 +61,9 @@ export function useStatsResource<T>(
 
   // `immediate` is what makes every resource fire during setup: they are all
   // started in the same tick and resolve concurrently, never waterfalled.
-  watch(deps, () => void run(), { immediate: true, deep: true });
+  // dataVersion is folded into every resource's deps: a rollback invalidates
+  // every stat at once, and apiGet then bypasses the HTTP cache.
+  watch([deps, dataVersion], () => void run(), { immediate: true, deep: true });
 
   onScopeDispose(() => controller?.abort());
 

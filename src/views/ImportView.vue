@@ -1,22 +1,143 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
+import { computed, ref } from 'vue';
 
+import DeleteBatchDialog from '@/components/imports/DeleteBatchDialog.vue';
 import HevyImportButton from '@/components/imports/HevyImportButton.vue';
-import type { ImportResult } from '@/types/imports';
+import ImportHistoryTable from '@/components/imports/ImportHistoryTable.vue';
+import ImportPreviewModal from '@/components/imports/ImportPreviewModal.vue';
+import { useHevyImport } from '@/composables/useHevyImport';
+import { useImportBatches } from '@/composables/useImportBatches';
+import { useToasts } from '@/composables/useToasts';
+import type { ImportBatchSummary } from '@/types/imports';
+import { formatInteger } from '@/utils/format';
 
-const router = useRouter();
+const {
+  status,
+  file,
+  preview,
+  error,
+  progress,
+  selectFile,
+  cancel,
+  confirm,
+  reset,
+} = useHevyImport();
 
-/** A successful import invalidates the list, so send the user straight to it. */
-function onImported(result: ImportResult): void {
-  if (!result.alreadyImported && result.workoutsCreated > 0) {
-    void router.push({ name: 'home', query: { tab: 'workouts' } });
+const batches = useImportBatches();
+const { push } = useToasts();
+
+const importButton = ref<InstanceType<typeof HevyImportButton> | null>(null);
+const pendingDelete = ref<ImportBatchSummary | null>(null);
+
+const isBusy = computed(() => status.value === 'uploading');
+const isConfirming = computed(() => status.value === 'confirming');
+
+/** The preview dialog owns its own error line while it is open. */
+const dialogError = computed(() => (status.value === 'error' && preview.value ? error.value?.message ?? null : null));
+const inlineError = computed(() => (preview.value ? null : error.value?.message ?? null));
+
+async function onConfirm(): Promise<void> {
+  const result = await confirm();
+  if (!result) {
+    return;
   }
+
+  batches.refresh();
+
+  if (result.divergedFromPreview) {
+    push({
+      tone: 'warning',
+      title: 'Imported, but the preview was out of date',
+      description:
+        `Your data changed between the preview and the import, so the final numbers differ: ` +
+        `${formatInteger(result.workoutsCreated)} workouts and ${formatInteger(result.setsCreated)} sets created.`,
+    });
+    return;
+  }
+
+  push({
+    tone: 'success',
+    title: `Imported ${formatInteger(result.workoutsCreated)} workouts`,
+    description: `${formatInteger(result.setsCreated)} sets created, ${formatInteger(result.workoutsSkipped)} already present.`,
+  });
+}
+
+/** Expiry path: drop the staged import and reopen the picker. */
+function onReupload(): void {
+  reset();
+  importButton.value?.focus();
+}
+
+async function onDeleteConfirmed(deleteWorkouts: boolean): Promise<void> {
+  const batch = pendingDelete.value;
+  if (!batch) {
+    return;
+  }
+
+  const rolled = await batches.rollback(batch.id, deleteWorkouts);
+  if (!rolled) {
+    // The dialog stays open showing batches.deleteError (a 409 explains why).
+    return;
+  }
+
+  pendingDelete.value = null;
+
+  push({
+    tone: 'success',
+    title: deleteWorkouts ? 'Import and workouts deleted' : 'Import record deleted',
+    description: deleteWorkouts
+      ? `${formatInteger(rolled.workoutsDeleted)} workouts and ${formatInteger(rolled.setsDeleted)} sets removed.`
+      : `${formatInteger(rolled.workoutsKept)} workouts kept.`,
+  });
 }
 </script>
 
 <template>
-  <div class="flex flex-col items-center gap-6">
-    <h1 class="self-start text-2xl font-semibold text-slate-900">Import</h1>
-    <HevyImportButton @imported="onImported" />
+  <div class="flex flex-col gap-6">
+    <div>
+      <h1 class="mb-3 text-2xl font-semibold text-slate-900">Imports</h1>
+      <HevyImportButton
+        ref="importButton"
+        :is-busy="isBusy"
+        :progress="progress"
+        :error="inlineError"
+        :file-name="file?.name ?? null"
+        @file="selectFile"
+        @dismiss-error="reset"
+      />
+    </div>
+
+    <ImportHistoryTable
+      :batches="batches.batches.value"
+      :meta="batches.meta.value"
+      :is-loading="batches.isLoading.value"
+      :error="batches.error.value"
+      :expanded-id="batches.expandedId.value"
+      :detail="batches.detail.value"
+      :is-detail-loading="batches.isDetailLoading.value"
+      :detail-error="batches.detailError.value"
+      :deleting-id="batches.deletingId.value"
+      @retry="batches.refresh"
+      @toggle="batches.toggleRow"
+      @request-delete="pendingDelete = $event"
+      @page="batches.goToPage"
+    />
+
+    <ImportPreviewModal
+      :preview="preview"
+      :is-confirming="isConfirming"
+      :error="dialogError"
+      @cancel="cancel"
+      @confirm="onConfirm"
+      @reupload="onReupload"
+    />
+
+    <DeleteBatchDialog
+      :batch="pendingDelete"
+      :is-deleting="batches.deletingId.value !== null"
+      :error="batches.deleteError.value"
+      @cancel="pendingDelete = null"
+      @confirm="onDeleteConfirmed"
+    />
   </div>
 </template>

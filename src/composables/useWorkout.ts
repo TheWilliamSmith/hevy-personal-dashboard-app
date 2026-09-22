@@ -1,6 +1,7 @@
 import { onScopeDispose, ref, toValue, watch, type MaybeRefOrGetter, type Ref } from 'vue';
 
 import { ApiError, apiGet } from '@/lib/api';
+import { dataVersion } from '@/lib/data-version';
 import type { WorkoutDetail } from '@/types/workouts';
 
 export interface UseWorkout {
@@ -57,7 +58,7 @@ export function useWorkout(id: MaybeRefOrGetter<string>): UseWorkout {
     }
   }
 
-  watch(() => toValue(id), fetchWorkout, { immediate: true });
+  watch([() => toValue(id), dataVersion], fetchWorkout, { immediate: true });
 
   onScopeDispose(() => controller?.abort());
 

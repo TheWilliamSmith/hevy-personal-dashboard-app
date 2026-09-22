@@ -1,3 +1,5 @@
+import { shouldBypassHttpCache } from './data-version';
+
 /** Single source of truth for the API origin; every caller builds URLs from here. */
 export const API_URL: string = import.meta.env.VITE_API_URL;
 
@@ -70,8 +72,12 @@ export async function apiGet<T>(
 ): Promise<T> {
   let response: Response;
 
+  // Some stats endpoints send `Cache-Control: max-age=60`. After a rollback the
+  // cached copy still counts deleted workouts, so reads force a revalidation.
+  const cache: RequestCache | undefined = shouldBypassHttpCache() ? 'reload' : undefined;
+
   try {
-    response = await fetch(apiUrl(path) + buildQuery(params), { signal });
+    response = await fetch(apiUrl(path) + buildQuery(params), { signal, cache });
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') {
       throw error;
@@ -92,10 +98,70 @@ function messageForStatus(status: number, apiMessage: string | null): string {
     return apiMessage ?? 'Not found.';
   }
 
+  // 409 explains why a batch cannot be rolled back; 410 explains that a staged
+  // import expired. Both are actionable, so the server's wording is kept.
+  if (status === 409 || status === 410) {
+    return apiMessage ?? 'This action is no longer possible.';
+  }
+
   // Server messages above 500 can carry stack traces; keep them out of the UI.
   if (status >= 500) {
     return 'The server failed to answer. Try again in a moment.';
   }
 
   return apiMessage ?? `Request failed (HTTP ${status}).`;
+}
+
+async function readError(response: Response): Promise<ApiError> {
+  const body = await response.text();
+  return new ApiError(messageForStatus(response.status, extractApiMessage(body)), response.status);
+}
+
+/** POST with a JSON body. Used by the import confirm step. */
+export async function apiPost<T>(path: string, body: unknown, signal?: AbortSignal): Promise<T> {
+  let response: Response;
+
+  try {
+    response = await fetch(apiUrl(path), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      signal,
+    });
+  } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      throw error;
+    }
+    throw new ApiError('Could not reach the server. Check your connection.', null);
+  }
+
+  if (!response.ok) {
+    throw await readError(response);
+  }
+
+  return (await response.json()) as T;
+}
+
+/** DELETE with query parameters. Used by the batch rollback. */
+export async function apiDelete<T>(
+  path: string,
+  params: QueryParams = {},
+  signal?: AbortSignal,
+): Promise<T> {
+  let response: Response;
+
+  try {
+    response = await fetch(apiUrl(path) + buildQuery(params), { method: 'DELETE', signal });
+  } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      throw error;
+    }
+    throw new ApiError('Could not reach the server. Check your connection.', null);
+  }
+
+  if (!response.ok) {
+    throw await readError(response);
+  }
+
+  return (await response.json()) as T;
 }

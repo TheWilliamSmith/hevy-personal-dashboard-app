@@ -2,6 +2,7 @@ import { computed, onScopeDispose, ref, watch, type Ref } from 'vue';
 import { useRoute, useRouter, type LocationQuery } from 'vue-router';
 
 import { ApiError, apiGet } from '@/lib/api';
+import { dataVersion } from '@/lib/data-version';
 import type {
   ExerciseOption,
   Paginated,
@@ -158,6 +159,10 @@ export function useWorkouts(): UseWorkouts {
       exercises.value = [];
     }
   }
+
+  // dataVersion changes when an import rollback deletes workouts, so the list
+  // cannot keep showing rows that no longer exist.
+  watch(dataVersion, () => void fetchWorkouts());
 
   watch(
     () => route.query,

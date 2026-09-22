@@ -2,6 +2,7 @@
 import { RouterView } from 'vue-router';
 
 import AppTabs from '@/components/AppTabs.vue';
+import ToastStack from '@/components/ui/ToastStack.vue';
 import { useActiveTab } from '@/composables/useActiveTab';
 
 const { tab, isFullWidth } = useActiveTab();
@@ -28,5 +29,7 @@ const { tab, isFullWidth } = useActiveTab();
     >
       <RouterView />
     </main>
+
+    <ToastStack />
   </div>
 </template>
