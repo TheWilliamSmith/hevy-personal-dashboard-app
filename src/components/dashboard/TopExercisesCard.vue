@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { RouterLink, useRouter } from 'vue-router';
 import type { EChartsOption } from 'echarts';
 
 import BaseChart from './BaseChart.vue';
@@ -25,6 +26,21 @@ const SORTS: ReadonlyArray<{ value: ExerciseSortBy; label: string }> = [
 ];
 
 const palette = resolveTheme();
+const router = useRouter();
+
+/**
+ * The dashboard ranks; the Exercises tab is where a movement is actually
+ * analysed. Clicking a bar hands off there rather than growing a second,
+ * shallower detail view here. The stats endpoint returns names, not slugs, so
+ * the handoff pre-fills the catalog search instead of guessing a slug.
+ */
+function openExercise(dataIndex: number): void {
+  const stat = ordered.value[dataIndex];
+  if (!stat) {
+    return;
+  }
+  void router.push({ name: 'home', query: { tab: 'exercises', q: stat.name } });
+}
 
 /** Sort key doubles as the metric, so the bar keeps that metric's hue. */
 const metricColor = computed(() =>
@@ -110,9 +126,15 @@ const option = computed<EChartsOption>(() => ({
         label="Rank exercises by"
         @update:model-value="emit('sortBy', $event as ExerciseSortBy)"
       />
+      <RouterLink
+        :to="{ name: 'home', query: { tab: 'exercises' } }"
+        class="text-xs font-medium text-indigo-700 underline underline-offset-2"
+      >
+        All exercises
+      </RouterLink>
     </template>
 
-    <BaseChart :option="option" />
+    <BaseChart :option="option" @select="openExercise" />
 
     <template #fallback>
       <table>
@@ -125,7 +147,11 @@ const option = computed<EChartsOption>(() => ({
         </thead>
         <tbody>
           <tr v-for="stat in rows" :key="stat.name">
-            <th scope="row">{{ stat.name }}</th>
+            <th scope="row">
+              <RouterLink :to="{ name: 'home', query: { tab: 'exercises', q: stat.name } }">
+                {{ stat.name }}
+              </RouterLink>
+            </th>
             <td>{{ renderValue(stat) }}</td>
           </tr>
         </tbody>

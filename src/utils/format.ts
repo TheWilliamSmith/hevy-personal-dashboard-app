@@ -149,3 +149,52 @@ export function formatBucket(value: string, granularity: 'day' | 'week' | 'month
 
   return new Intl.DateTimeFormat('fr-FR', options).format(date).replace(/\u202f/g, ' ');
 }
+
+/** 11 -> "11 km", 5.5 -> "5,5 km". */
+export function formatDistanceKm(value: number | string | null | undefined): string {
+  const amount = toNumber(value);
+  if (amount === null) {
+    return EMPTY;
+  }
+
+  return `${amount.toLocaleString('fr-FR', { maximumFractionDigits: 2 })} km`;
+}
+
+/** 5.83 -> "5:50 /km". Pace is minutes per kilometre, so the decimal is seconds. */
+export function formatPace(minutesPerKm: number | null | undefined): string {
+  const amount = toNumber(minutesPerKm);
+  if (amount === null) {
+    return EMPTY;
+  }
+
+  const minutes = Math.floor(amount);
+  const seconds = Math.round((amount - minutes) * 60);
+  // 59.7 seconds rounds to 60 and would render as "5:60".
+  const carry = seconds === 60;
+  return `${minutes + (carry ? 1 : 0)}:${String(carry ? 0 : seconds).padStart(2, '0')} /km`;
+}
+
+/**
+ * Date without a time, for the API's date-only fields (progression buckets,
+ * calendar days). Rendering those with formatDate appends a meaningless
+ * "00:00".
+ */
+const DAY_FORMATTER = new Intl.DateTimeFormat('fr-FR', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+
+export function formatDay(value: string | Date | null | undefined): string {
+  if (value === null || value === undefined || value === '') {
+    return EMPTY;
+  }
+
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return EMPTY;
+  }
+
+  return DAY_FORMATTER.format(date);
+}

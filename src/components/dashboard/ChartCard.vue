@@ -64,9 +64,16 @@ const emit = defineEmits<{ retry: [] }>();
         The chart is decorative to assistive tech; the accessible content is the
         aria-label summary plus the table in #fallback.
       -->
+      <!--
+        The min-height is repeated here on purpose. flex-1 alone only resolves
+        when an ancestor has a definite height, which a dashboard grid cell
+        provides but a plain auto-height parent does not — there the chart
+        collapsed to 0px and ECharts rendered an empty canvas.
+      -->
       <div
         v-else
-        class="min-h-0 flex-1"
+        class="relative min-h-0 flex-1"
+        :style="{ minHeight: `min(${props.height}px, 60vh)` }"
         role="img"
         :aria-label="props.ariaLabel ?? props.title"
       >

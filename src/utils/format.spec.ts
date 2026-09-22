@@ -1,6 +1,16 @@
 import { describe, expect, it } from 'vitest';
 
-import { EMPTY, formatDate, formatDuration, formatNumber, formatVolume, formatWeight } from './format';
+import {
+  EMPTY,
+  formatDate,
+  formatDay,
+  formatDistanceKm,
+  formatDuration,
+  formatNumber,
+  formatPace,
+  formatVolume,
+  formatWeight,
+} from './format';
 
 describe('formatDate', () => {
   it('formats an ISO string in fr-FR', () => {
@@ -81,5 +91,45 @@ describe('formatNumber', () => {
 
   it('renders null as an em dash', () => {
     expect(formatNumber(null)).toBe(EMPTY);
+  });
+});
+
+describe('formatDistanceKm', () => {
+  it('formats whole and fractional kilometres', () => {
+    expect(formatDistanceKm(11)).toBe('11 km');
+    expect(formatDistanceKm(5.5)).toBe('5,5 km');
+  });
+
+  it('renders null as an em dash', () => {
+    expect(formatDistanceKm(null)).toBe(EMPTY);
+  });
+});
+
+describe('formatPace', () => {
+  it('turns decimal minutes into minutes and seconds', () => {
+    expect(formatPace(5.83)).toBe('5:50 /km');
+    expect(formatPace(6)).toBe('6:00 /km');
+  });
+
+  it('carries instead of rendering :60', () => {
+    expect(formatPace(5.999)).toBe('6:00 /km');
+  });
+
+  it('renders null as an em dash', () => {
+    expect(formatPace(null)).toBe(EMPTY);
+  });
+});
+
+describe('formatDay', () => {
+  it('renders a date-only value without a time', () => {
+    expect(formatDay('2026-09-01')).toBe('1 sept. 2026');
+  });
+
+  it('stays in UTC like formatDate', () => {
+    expect(formatDay('2026-09-01T23:30:00.000Z')).toBe('1 sept. 2026');
+  });
+
+  it('renders null as an em dash', () => {
+    expect(formatDay(null)).toBe(EMPTY);
   });
 });

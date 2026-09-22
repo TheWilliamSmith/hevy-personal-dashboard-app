@@ -27,7 +27,9 @@ export const router = createRouter({
       return saved;
     }
     const changedView =
-      to.query.tab !== from.query.tab || to.query.workout !== from.query.workout;
+      to.query.tab !== from.query.tab ||
+      to.query.workout !== from.query.workout ||
+      to.query.exercise !== from.query.exercise;
     return changedView ? { top: 0 } : false;
   },
 });

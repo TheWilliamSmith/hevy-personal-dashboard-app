@@ -165,3 +165,28 @@ export async function apiDelete<T>(
 
   return (await response.json()) as T;
 }
+
+/** PATCH with a JSON body. Used to correct an exercise classification. */
+export async function apiPatch<T>(path: string, body: unknown, signal?: AbortSignal): Promise<T> {
+  let response: Response;
+
+  try {
+    response = await fetch(apiUrl(path), {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      signal,
+    });
+  } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      throw error;
+    }
+    throw new ApiError('Could not reach the server. Check your connection.', null);
+  }
+
+  if (!response.ok) {
+    throw await readError(response);
+  }
+
+  return (await response.json()) as T;
+}

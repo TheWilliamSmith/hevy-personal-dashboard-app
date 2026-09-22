@@ -12,6 +12,8 @@ const DashboardPanel = defineAsyncComponent(() => import('@/views/DashboardView.
 const WorkoutsPanel = defineAsyncComponent(() => import('@/views/WorkoutsView.vue'));
 const WorkoutDetailPanel = defineAsyncComponent(() => import('@/views/WorkoutDetailView.vue'));
 const ImportPanel = defineAsyncComponent(() => import('@/views/ImportView.vue'));
+const ExercisesPanel = defineAsyncComponent(() => import('@/views/ExercisesView.vue'));
+const ExerciseDetailPanel = defineAsyncComponent(() => import('@/views/ExerciseDetailView.vue'));
 
 const route = useRoute();
 const { tab } = useActiveTab();
@@ -21,6 +23,11 @@ const workoutId = computed(() =>
   typeof route.query.workout === 'string' ? route.query.workout : '',
 );
 
+/** `?exercise=<slug>` does the same inside the exercises tab. */
+const exerciseSlug = computed(() =>
+  typeof route.query.exercise === 'string' ? route.query.exercise : '',
+);
+
 const panel = computed(() => {
   if (tab.value === 'imports') {
     return ImportPanel;
@@ -28,11 +35,14 @@ const panel = computed(() => {
   if (tab.value === 'workouts') {
     return workoutId.value ? WorkoutDetailPanel : WorkoutsPanel;
   }
+  if (tab.value === 'exercises') {
+    return exerciseSlug.value ? ExerciseDetailPanel : ExercisesPanel;
+  }
   return DashboardPanel;
 });
 </script>
 
 <template>
   <!-- Keyed so switching tabs remounts rather than reusing a panel's state. -->
-  <component :is="panel" :key="`${tab}-${workoutId}`" />
+  <component :is="panel" :key="`${tab}-${workoutId}-${exerciseSlug}`" />
 </template>
