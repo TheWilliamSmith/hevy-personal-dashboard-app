@@ -8,43 +8,49 @@ export const RARITY_ORDER: readonly Rarity[] = ['COMMON', 'RARE', 'EPIC', 'LEGEN
 
 export interface RarityStyle {
   label: string;
-  /** Solid colour, for the completion ring and the confetti. */
+  /** Solid colour, for the completion ring, dots and confetti. */
   hex: string;
-  /** Icon badge on an unlocked card. */
+  /** Icon medallion on an earned card: solid colour, white glyph. */
   badge: string;
-  /** The subtle tinted border and wash of an unlocked card. */
+  /** Earned card: tinted background and coloured border. */
   card: string;
   text: string;
 }
 
+/**
+ * Four bright, clearly separated colours: green, blue, violet, and a
+ * yellow-to-orange gradient for Legendary. Earned cards wear them fully;
+ * locked cards keep the colour only in their rarity label, so the page stays
+ * colourful without a locked trophy ever looking earned.
+ */
 export const RARITY_STYLES: Readonly<Record<Rarity, RarityStyle>> = {
   COMMON: {
     label: 'Common',
-    hex: '#64748b',
-    badge: 'bg-slate-100 text-slate-700',
-    card: 'border-slate-300 bg-white',
-    text: 'text-slate-600',
+    hex: '#10b981',
+    badge: 'bg-emerald-500 text-white',
+    card: 'border-emerald-300 bg-emerald-50',
+    text: 'text-emerald-700',
   },
   RARE: {
     label: 'Rare',
-    hex: '#2563eb',
-    badge: 'bg-blue-100 text-blue-700',
-    card: 'border-blue-300 bg-blue-50/40',
+    hex: '#3b82f6',
+    badge: 'bg-blue-500 text-white',
+    card: 'border-blue-300 bg-blue-50',
     text: 'text-blue-700',
   },
   EPIC: {
     label: 'Epic',
-    hex: '#7c3aed',
-    badge: 'bg-violet-100 text-violet-700',
-    card: 'border-violet-300 bg-violet-50/40',
-    text: 'text-violet-700',
+    hex: '#a855f7',
+    badge: 'bg-purple-500 text-white',
+    card: 'border-purple-300 bg-purple-50',
+    text: 'text-purple-700',
   },
   LEGENDARY: {
     label: 'Legendary',
-    hex: '#d97706',
-    badge: 'bg-amber-100 text-amber-700',
-    card: 'border-amber-400 bg-amber-50/50',
-    text: 'text-amber-700',
+    hex: '#f59e0b',
+    badge: 'bg-gradient-to-br from-yellow-400 to-orange-500 text-white',
+    card: 'border-orange-300 bg-gradient-to-br from-yellow-50 to-orange-100',
+    text: 'text-orange-700',
   },
 };
 

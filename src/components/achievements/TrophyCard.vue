@@ -98,7 +98,7 @@ const target = computed(() =>
         >
           {{ props.item.name }}
         </p>
-        <p class="mt-0.5 text-[11px] font-medium" :class="negative ? NEGATIVE_STYLE.text : unlocked ? rarity.text : 'text-slate-400'">
+        <p class="mt-0.5 text-[11px] font-medium" :class="negative ? NEGATIVE_STYLE.text : unlocked ? rarity.text : [rarity.text, 'opacity-60']">
           <template v-if="negative">{{ unlocked ? 'Heads-up' : 'Warning' }}</template>
           <template v-else>{{ rarity.label }} · {{ props.item.xp }} XP</template>
         </p>
