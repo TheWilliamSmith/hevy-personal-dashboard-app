@@ -1,11 +1,25 @@
 <script setup lang="ts">
+import { defineAsyncComponent, onMounted } from 'vue';
 import { RouterView } from 'vue-router';
 
 import AppTabs from '@/components/AppTabs.vue';
 import ToastStack from '@/components/ui/ToastStack.vue';
 import { useActiveTab } from '@/composables/useActiveTab';
+import { useCelebrations } from '@/composables/useCelebrations';
+
+/**
+ * Lazy and mounted only while the queue holds something, so the icon set and
+ * the confetti never ship in the entry chunk.
+ */
+const CelebrationModal = defineAsyncComponent(
+  () => import('@/components/achievements/CelebrationModal.vue'),
+);
 
 const { tab, isFullWidth } = useActiveTab();
+const celebrations = useCelebrations();
+
+// Unseen unlocks are shown wherever the app is opened, not only on Trophies.
+onMounted(() => void celebrations.loadUnseen());
 </script>
 
 <template>
@@ -32,5 +46,6 @@ const { tab, isFullWidth } = useActiveTab();
     </main>
 
     <ToastStack />
+    <CelebrationModal v-if="celebrations.remaining.value > 0" />
   </div>
 </template>

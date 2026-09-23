@@ -5,7 +5,6 @@ import type {
   CalendarDay,
   DistributionBucket,
   DistributionDimension,
-  ExerciseRecords,
   Granularity,
   Overview,
   StatsRange,
@@ -49,11 +48,6 @@ export function useStatsTimeseries(
       ),
     () => [toValue(range), toValue(metric), toValue(granularity)],
   );
-}
-
-/** Records are all-time: the endpoint takes no range. */
-export function useStatsRecords(): StatsResource<ExerciseRecords[]> {
-  return useStatsResource((signal) => apiGet<ExerciseRecords[]>('/stats/records', {}, signal), () => null);
 }
 
 /** One dimension per call, so weekday and rep range are two resources. */

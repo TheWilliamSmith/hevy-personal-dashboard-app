@@ -4,6 +4,8 @@
  * UTC strings, matching the wall-clock-as-UTC convention of the importer.
  */
 
+import type { AchievementItem } from './achievements';
+
 /* -------------------------------------------------------------------- result */
 
 export interface ImportResult {
@@ -19,6 +21,11 @@ export interface ImportResult {
    * confirm time no longer matches what the preview reported.
    */
   divergedFromPreview?: boolean;
+  /**
+   * Achievements this import unlocked. Specified, NOT sent by the API yet:
+   * the confirm endpoint runs the achievement sync but discards its result.
+   */
+  newAchievements?: AchievementItem[];
 }
 
 /* ------------------------------------------------------------------- preview */

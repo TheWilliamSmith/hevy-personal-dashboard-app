@@ -7,18 +7,20 @@ import DashboardToolbar from '@/components/dashboard/DashboardToolbar.vue';
 import DistributionCard from '@/components/dashboard/DistributionCard.vue';
 import KpiTile from '@/components/dashboard/KpiTile.vue';
 import NeedsAttentionCard from '@/components/dashboard/NeedsAttentionCard.vue';
-import RecordsTableCard from '@/components/dashboard/RecordsTableCard.vue';
+import TrophiesCard from '@/components/dashboard/TrophiesCard.vue';
 import VolumeTimeseriesCard from '@/components/dashboard/VolumeTimeseriesCard.vue';
 import {
   useDashboardFilters,
   useStatsCalendar,
   useStatsDistribution,
   useStatsOverview,
-  useStatsRecords,
   useStatsTimeseries,
 } from '@/composables/stats';
 import type { TimeseriesMetric } from '@/types/stats';
 import { useProgressSummary } from '@/composables/useProgressSummary';
+import { useStatsResource } from '@/composables/stats/useStatsResource';
+import { apiGet } from '@/lib/api';
+import type { AchievementsSummary } from '@/types/achievements';
 import { formatDuration, formatInteger, formatVolume } from '@/utils/format';
 
 const filters = useDashboardFilters();
@@ -46,9 +48,12 @@ const repRange = useStatsDistribution(
   () => 'repRange',
 );
 const calendar = useStatsCalendar(() => filters.year.value);
-const records = useStatsRecords();
 // Server-classified; the Dashboard never re-derives a progress status.
 const attention = useProgressSummary();
+const trophies = useStatsResource(
+  (signal) => apiGet<AchievementsSummary>('/achievements/summary', {}, signal),
+  () => null,
+);
 
 const stats = computed(() => overview.data.value);
 const previous = computed(() => overview.data.value?.previous ?? null);
@@ -221,7 +226,7 @@ const kpis = computed(() => [
         />
       </div>
 
-      <div class="md:col-span-2 xl:col-span-4">
+      <div class="md:col-span-1 xl:col-span-6">
         <NeedsAttentionCard
           :summary="attention.data.value"
           :is-loading="attention.isLoading.value"
@@ -230,14 +235,15 @@ const kpis = computed(() => [
         />
       </div>
 
-      <div class="md:col-span-2 xl:col-span-8">
-        <RecordsTableCard
-          :records="records.data.value"
-          :is-loading="records.isLoading.value"
-          :error="records.error.value"
-          @retry="records.refresh"
+      <div class="md:col-span-1 xl:col-span-6">
+        <TrophiesCard
+          :summary="trophies.data.value"
+          :is-loading="trophies.isLoading.value"
+          :error="trophies.error.value"
+          @retry="trophies.refresh"
         />
       </div>
+
     </div>
   </div>
 </template>

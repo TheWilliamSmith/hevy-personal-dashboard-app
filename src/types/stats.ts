@@ -87,30 +87,6 @@ export interface ProgressionPoint {
   reps: number | null;
 }
 
-/* ------------------------------------------------------------------- records */
-
-export interface RecordEntry {
-  value: number;
-  date: string;
-  workoutId: string;
-}
-
-export interface WeightRecord extends RecordEntry {
-  reps: number | null;
-}
-
-export interface OneRepMaxRecord extends RecordEntry {
-  weightKg: number | null;
-  reps: number | null;
-}
-
-export interface ExerciseRecords {
-  exercise: string;
-  maxWeightKg: WeightRecord | null;
-  best1RM: OneRepMaxRecord | null;
-  maxVolumeSession: RecordEntry | null;
-}
-
 /* -------------------------------------------------------------- distribution */
 
 export interface DistributionBucket {

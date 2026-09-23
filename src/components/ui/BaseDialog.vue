@@ -72,7 +72,10 @@ watch(
       previouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
       lockScroll(true);
       await nextTick();
-      (focusable()[0] ?? panel.value)?.focus();
+      // A dialog can mark its primary action with data-autofocus; otherwise the
+      // first focusable element gets focus.
+      const preferred = panel.value?.querySelector<HTMLElement>('[data-autofocus]');
+      (preferred ?? focusable()[0] ?? panel.value)?.focus();
       return;
     }
 

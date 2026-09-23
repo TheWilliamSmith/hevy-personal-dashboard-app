@@ -7,6 +7,7 @@ import ImportHistoryTable from '@/components/imports/ImportHistoryTable.vue';
 import ImportPreviewModal from '@/components/imports/ImportPreviewModal.vue';
 import { useHevyImport } from '@/composables/useHevyImport';
 import { useImportBatches } from '@/composables/useImportBatches';
+import { useCelebrations } from '@/composables/useCelebrations';
 import { useToasts } from '@/composables/useToasts';
 import type { ImportBatchSummary } from '@/types/imports';
 import { formatInteger } from '@/utils/format';
@@ -25,6 +26,7 @@ const {
 
 const batches = useImportBatches();
 const { push } = useToasts();
+const celebrations = useCelebrations();
 
 const importButton = ref<InstanceType<typeof HevyImportButton> | null>(null);
 const pendingDelete = ref<ImportBatchSummary | null>(null);
@@ -43,6 +45,11 @@ async function onConfirm(): Promise<void> {
   }
 
   batches.refresh();
+
+  // Queued behind the result toast; the modal opens from the app shell.
+  if (result.newAchievements && result.newAchievements.length > 0) {
+    celebrations.enqueue(result.newAchievements);
+  }
 
   if (result.divergedFromPreview) {
     push({

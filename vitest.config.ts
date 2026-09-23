@@ -9,5 +9,8 @@ export default defineConfig({
   test: {
     include: ['src/**/*.spec.ts'],
     environment: 'node',
+    // .env.development is not loaded in test mode; without this, apiUrl()
+    // has no base and every request helper throws before fetch is reached.
+    env: { VITE_API_URL: '/api' },
   },
 });
