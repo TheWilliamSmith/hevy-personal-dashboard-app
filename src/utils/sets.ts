@@ -14,13 +14,6 @@ export const SET_TYPE_CLASSES: Readonly<Record<SetType, string>> = {
   DROP: 'bg-violet-100 text-violet-800 ring-violet-200',
 };
 
-/**
- * The API picks the best set but returns only its values, not its index, so
- * the row has to be matched back by value. Volumes on both sides come from the
- * same rounding helper, so an exact compare is safe.
- *
- * Returns the first match: identical sets would otherwise all light up.
- */
 export function bestSetIndex(sets: readonly ExerciseSet[], bestSet: BestSet | null): number | null {
   if (bestSet === null) {
     return null;

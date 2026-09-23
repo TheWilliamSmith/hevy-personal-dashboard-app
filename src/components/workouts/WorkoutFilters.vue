@@ -16,10 +16,8 @@ const emit = defineEmits<{
   clear: [];
 }>();
 
-/** Local mirror so typing stays responsive while the parent debounces. */
 const searchTerm = ref(props.filters.search);
 
-// Keep the box in sync when the query changes from elsewhere (back button, clear).
 watch(
   () => props.filters.search,
   (value) => {

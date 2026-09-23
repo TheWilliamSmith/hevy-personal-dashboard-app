@@ -1,18 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
-/**
- * Shared inline-SVG sparkline — one <path>, no chart runtime.
- *
- * Used by the Exercises cards and the Progress rows, where a page can hold
- * dozens: an ECharts instance per row would allocate a canvas and a resize
- * observer each to draw a 12-point line.
- */
 const props = withDefaults(
   defineProps<{
     points: readonly number[];
     color: string;
-    /** Indices to mark as personal records. */
     markers?: readonly number[];
     width?: number;
     height?: number;
@@ -23,7 +15,6 @@ const props = withDefaults(
 
 const PADDING = 3;
 
-/** Under two points there is no honest line, so a muted dash is shown instead. */
 const hasLine = computed(() => props.points.length >= 2);
 
 const coords = computed(() => {
@@ -35,7 +26,6 @@ const coords = computed(() => {
 
   return values.map((value, index) => ({
     x: PADDING + index * step,
-    // A flat series would divide by zero; park it on the vertical centre.
     y: span === 0 ? props.height / 2 : PADDING + usable - ((value - min) / span) * usable,
   }));
 });

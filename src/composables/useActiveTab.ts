@@ -20,7 +20,6 @@ export const TABS: ReadonlyArray<{ name: TabName; label: string }> = [
   { name: 'imports', label: 'Imports' },
 ];
 
-/** The dashboard grid wants the whole viewport; the other tabs do not. */
 export const FULL_WIDTH_TABS: ReadonlySet<TabName> = new Set<TabName>([
   'dashboard',
   'body',
@@ -48,15 +47,6 @@ export interface UseActiveTab {
   setTab: (tab: TabName) => void;
 }
 
-/**
- * There is one route. The visible tab and every filter live in the query
- * string, so the URL always describes the whole view.
- *
- * Switching tabs drops the previous tab's parameters instead of merging them:
- * `from`/`to` mean a date window on both the dashboard and the workouts list,
- * and carrying one tab's window into the other silently re-filters a view the
- * user never touched.
- */
 export function useActiveTab(): UseActiveTab {
   const route = useRoute();
   const router = useRouter();

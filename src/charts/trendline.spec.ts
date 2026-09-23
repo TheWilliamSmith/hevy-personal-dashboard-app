@@ -33,7 +33,6 @@ describe('linearTrend', () => {
   });
 
   it('returns null when every sample shares one index position', () => {
-    // A flat series still has distinct x values, so it fits with slope 0.
     expect(linearTrend([5, 5, 5])?.slope).toBeCloseTo(0);
   });
 });

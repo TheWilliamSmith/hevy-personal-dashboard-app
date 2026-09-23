@@ -24,11 +24,6 @@ interface Tile {
   workoutId: string;
 }
 
-/**
- * Tiles are chosen by `kind`, not by null-checking every record: the API sends
- * a maxVolumeSession of 0 for CARDIO, which is non-null but meaningless there.
- * Records that are genuinely absent are dropped, so no empty tile renders.
- */
 const tiles = computed<Tile[]>(() => {
   const records = props.records;
   const result: Tile[] = [];

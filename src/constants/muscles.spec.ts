@@ -21,7 +21,6 @@ describe('muscle constants', () => {
   });
 
   it('ranks in anatomical, not alphabetical, order', () => {
-    // The API returns groups alphabetically, where ABS would precede CHEST.
     expect(muscleRank('CHEST')).toBeLessThan(muscleRank('ABS'));
     expect(muscleRank('BACK')).toBeLessThan(muscleRank('QUADS'));
   });

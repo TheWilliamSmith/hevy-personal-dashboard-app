@@ -36,7 +36,6 @@ function isGranularity(value: string): value is Granularity {
   return value === 'day' || value === 'week' || value === 'month';
 }
 
-/** Start of the UTC day, n days back. The API filters on UTC instants. */
 function daysAgo(days: number): string {
   const date = new Date();
   date.setUTCDate(date.getUTCDate() - days);
@@ -50,9 +49,7 @@ export interface UseDashboardFilters {
   customFrom: ComputedRef<string>;
   customTo: ComputedRef<string>;
   year: ComputedRef<number>;
-  /** Derived client-side: the API sends `previous` without a label. */
   comparisonLabel: ComputedRef<string>;
-  /** What the /stats endpoints receive. Empty object for the "all" preset. */
   range: ComputedRef<StatsRange>;
   setPreset: (preset: RangePreset) => void;
   setCustomRange: (from: string, to: string) => void;
@@ -60,10 +57,6 @@ export interface UseDashboardFilters {
   setYear: (year: number) => void;
 }
 
-/**
- * Owns from/to/granularity and keeps them in the URL, so a refresh or a shared
- * link restores the same dashboard. The query is the only source of truth.
- */
 export function useDashboardFilters(): UseDashboardFilters {
   const route = useRoute();
   const router = useRouter();
@@ -78,7 +71,6 @@ export function useDashboardFilters(): UseDashboardFilters {
     if (isGranularity(value)) {
       return value;
     }
-    // A year of daily bars is unreadable; default to a sensible bucket size.
     return preset.value === '1y' || preset.value === 'all' ? 'month' : 'day';
   });
 
@@ -98,8 +90,6 @@ export function useDashboardFilters(): UseDashboardFilters {
   const range = computed<StatsRange>(() => {
     if (preset.value === 'custom') {
       const result: StatsRange = {};
-      // Widen `to` to the end of the day, otherwise a bare date resolves to
-      // midnight and drops everything logged later that day.
       if (customFrom.value) result.from = `${customFrom.value}T00:00:00.000Z`;
       if (customTo.value) result.to = `${customTo.value}T23:59:59.999Z`;
       return result;
@@ -117,9 +107,6 @@ export function useDashboardFilters(): UseDashboardFilters {
       }
     }
 
-    // These filters are shared by the Dashboard and the Body tab, so the
-    // current tab has to survive a range change. Dashboard is the default and
-    // needs no parameter; any other tab must be written back explicitly.
     const currentTab = route.query.tab;
     if (typeof currentTab === 'string' && currentTab !== '' && currentTab !== 'dashboard') {
       query.tab = currentTab;

@@ -11,7 +11,6 @@ const props = defineProps<{ exercise: ExerciseCard }>();
 
 const neverPerformed = computed(() => props.exercise.sessions === 0);
 
-/** "4 days ago", or a dash when it has never been done. */
 const lastPerformed = computed(() => {
   const iso = props.exercise.lastPerformedAt;
   if (!iso) {
@@ -28,7 +27,6 @@ const lastPerformed = computed(() => {
   return `${days} days ago`;
 });
 
-/** The "best" stat depends on the kind; no null tile is ever rendered. */
 const best = computed(() => {
   const exercise = props.exercise;
 

@@ -29,13 +29,6 @@ function queryPage(query: LocationQuery): number {
   return Number.isFinite(page) && page >= 1 ? page : 1;
 }
 
-/**
- * The URL keeps plain YYYY-MM-DD dates, but the API filters on
- * `startedAt >= from` / `startedAt <= to`. A bare date would resolve to
- * midnight and silently drop everything logged later that day, so `to` is
- * widened to the end of the day. Both are UTC, matching how the importer
- * stores Hevy's wall-clock times.
- */
 function startOfDay(date: string): string | undefined {
   return date ? `${date}T00:00:00.000Z` : undefined;
 }
@@ -60,11 +53,6 @@ export interface UseWorkouts {
   retry: () => void;
 }
 
-/**
- * The route query is the single source of truth: filters and page are read from
- * it and written back to it, so a refresh or a shared link restores the view.
- * Nothing is kept in a parallel store.
- */
 export function useWorkouts(): UseWorkouts {
   const route = useRoute();
   const router = useRouter();
@@ -93,14 +81,10 @@ export function useWorkouts(): UseWorkouts {
 
   syncFromRoute();
 
-  /** Writes the query; the route watcher is what actually triggers the fetch. */
   function pushQuery(next: Partial<WorkoutFilters> & { page?: number }): void {
     const merged = { ...filters.value, ...next };
-    // Any filter change invalidates the current page.
     const nextPage = next.page ?? 1;
 
-    // `tab` must survive every filter write, otherwise the page falls back to
-    // the dashboard on the next navigation.
     const query: Record<string, string> = { tab: 'workouts' };
     if (merged.search) query.search = merged.search;
     if (merged.exercise) query.exercise = merged.exercise;
@@ -112,7 +96,6 @@ export function useWorkouts(): UseWorkouts {
   }
 
   async function fetchWorkouts(): Promise<void> {
-    // A newer request always wins: cancel whatever is still in flight.
     controller?.abort();
     controller = new AbortController();
     const signal = controller.signal;
@@ -137,7 +120,6 @@ export function useWorkouts(): UseWorkouts {
       workouts.value = result.data;
       meta.value = result.meta;
     } catch (caught) {
-      // The abort belongs to a superseded request; its replacement owns the UI.
       if (signal.aborted) {
         return;
       }
@@ -155,19 +137,15 @@ export function useWorkouts(): UseWorkouts {
     try {
       exercises.value = await apiGet<ExerciseOption[]>('/workouts/exercises');
     } catch {
-      // A missing filter list must not take the whole page down.
       exercises.value = [];
     }
   }
 
-  // dataVersion changes when an import rollback deletes workouts, so the list
-  // cannot keep showing rows that no longer exist.
   watch(dataVersion, () => void fetchWorkouts());
 
   watch(
     () => route.query,
     () => {
-      // Another tab's navigation must not trigger a list refetch.
       if (route.query.tab !== 'workouts' || route.query.workout) {
         return;
       }

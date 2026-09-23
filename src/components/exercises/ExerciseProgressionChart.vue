@@ -60,13 +60,11 @@ const range = ref('all');
 const showTrend = ref(false);
 const palette = resolveTheme();
 
-// Switching kind can leave a metric that does not exist for it selected.
 const activeMetric = computed<Metric>(() => {
   const allowed = metrics.value.map((item) => item.value);
   return allowed.includes(metric.value) ? metric.value : (allowed[0] ?? 'est1RM');
 });
 
-/** Every metric is already in the payload, so switching never refetches. */
 function valueOf(point: ProgressionPoint): number | null {
   switch (activeMetric.value) {
     case 'maxWeight':
@@ -82,7 +80,6 @@ function valueOf(point: ProgressionPoint): number | null {
     case 'duration':
       return point.durationSeconds;
     case 'pace':
-      // Pace is derived: minutes per kilometre, so it needs both operands.
       return point.distanceKm && point.durationSeconds
         ? point.durationSeconds / 60 / point.distanceKm
         : null;
@@ -119,7 +116,6 @@ const filtered = computed(() => {
 });
 
 const values = computed(() => filtered.value.map(valueOf));
-// progression.date is a date-only value; formatDate would append "00:00".
 const labels = computed(() => filtered.value.map((point) => formatDay(point.date)));
 const trend = computed(() => (showTrend.value ? linearTrend(values.value) : null));
 
@@ -158,7 +154,6 @@ const option = computed<EChartsOption>(() => ({
       connectNulls: true,
       lineStyle: { color: color.value, width: 2 },
       itemStyle: { color: color.value },
-      // PR sessions get a larger diamond so they read at a glance.
       symbol: (_value: unknown, params: { dataIndex: number }) =>
         filtered.value[params.dataIndex]?.isPR ? 'diamond' : 'circle',
       symbolSize: (_value: unknown, params: { dataIndex: number }) =>

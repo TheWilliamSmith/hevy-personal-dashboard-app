@@ -15,7 +15,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{ loadMore: [] }>();
 
-/** Collapsed by default; the header carries enough to scan without opening. */
 const expanded = ref<Set<string>>(new Set());
 
 function toggle(workoutId: string): void {

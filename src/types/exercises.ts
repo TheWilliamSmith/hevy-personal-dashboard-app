@@ -1,8 +1,3 @@
-/**
- * Mirrors api/src/exercises/dto/* — verified field-for-field against the
- * running API. The three unions match the Prisma enums the DTOs re-export.
- */
-
 export type MuscleGroup =
   | 'CHEST'
   | 'BACK'
@@ -35,8 +30,6 @@ export type ExerciseTrend = 'up' | 'down' | 'flat' | 'insufficient_data';
 
 export type ExerciseSortBy = 'name' | 'sessions' | 'volume' | 'lastPerformed';
 
-/* ---------------------------------------------------------------- catalogue */
-
 export interface ExerciseCard {
   id: string;
   name: string;
@@ -50,18 +43,13 @@ export interface ExerciseCard {
   totalSets: number;
   totalReps: number;
   totalVolumeKg: number;
-  /** Null for CARDIO and BODYWEIGHT_HOLD. */
   maxWeightKg: number | null;
   best1RM: number | null;
-  /** Null unless kind is CARDIO. */
   totalDistanceKm: number | null;
-  /** Null for STRENGTH; set for CARDIO and BODYWEIGHT_HOLD. */
   totalDurationSec: number | null;
   lastPerformedAt: string | null;
   firstPerformedAt: string | null;
-  /** Last 3 sessions vs the previous 3 — needs 6 sessions to be conclusive. */
   trend: ExerciseTrend;
-  /** Up to 12 sessions, oldest first, same metric as `trend`. */
   sparkline: number[];
 }
 
@@ -82,8 +70,6 @@ export interface ExerciseCatalog {
   groups: ExerciseGroup[];
   totals: ExerciseListTotals;
 }
-
-/* ------------------------------------------------------------------ detail */
 
 export interface ExerciseInfo {
   id: string;
@@ -146,12 +132,10 @@ export interface ExerciseRecords {
   maxReps: RepsRecord | null;
   longestDistanceKm: ValueRecord | null;
   longestDurationSec: ValueRecord | null;
-  /** Minutes per kilometre; lower is faster. */
   bestPaceMinPerKm: ValueRecord | null;
 }
 
 export interface ProgressionPoint {
-  /** ISO date, not an instant. */
   date: string;
   workoutId: string;
   maxWeightKg: number | null;
@@ -161,7 +145,6 @@ export interface ProgressionPoint {
   setCount: number;
   distanceKm: number | null;
   durationSeconds: number | null;
-  /** Against preceding sessions only. */
   isPR: boolean;
 }
 
@@ -176,7 +159,6 @@ export interface HistorySet {
   durationSeconds: number | null;
   rpe: number | null;
   volumeKg: number | null;
-  /** Null for warmups and unranked sets. */
   est1RM: number | null;
   isPR: boolean;
 }
@@ -201,7 +183,6 @@ export interface HistoryEntry {
 export interface HistoryMeta {
   page: number;
   limit: number;
-  /** Sessions, not sets. */
   total: number;
   totalPages: number;
 }
@@ -219,8 +200,6 @@ export interface ExerciseDetail {
   history: PaginatedHistory;
 }
 
-/* --------------------------------------------------------------- mutations */
-
 export interface UpdateExercisePayload {
   muscleGroup?: MuscleGroup;
   secondaryMuscles?: MuscleGroup[];
@@ -236,10 +215,8 @@ export interface MergeExerciseResult {
   aliasesAdded: string[];
 }
 
-/** Filter state held in the route query. */
 export interface ExerciseFilters {
   search: string;
-  /** Multi-select client-side: the API accepts only one value. */
   muscleGroups: MuscleGroup[];
   equipment: Equipment | '';
   kind: ExerciseKind | '';

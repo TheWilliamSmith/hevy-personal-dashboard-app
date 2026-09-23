@@ -12,7 +12,6 @@ const props = defineProps<{
   title: string;
   subtitle: string;
   buckets: DistributionBucket[] | null;
-  /** 'bar' for weekday, 'donut' for rep range — the only donut in the app. */
   variant: 'bar' | 'donut';
   isLoading: boolean;
   error: string | null;
@@ -47,7 +46,6 @@ const barOption = computed<EChartsOption>(() => ({
     },
   },
   grid: { left: 8, right: 16, top: 8, bottom: 8, containLabel: true },
-  // Horizontal bars: value on x, category on y.
   xAxis: {
     ...valueAxis(palette),
     axisLabel: {

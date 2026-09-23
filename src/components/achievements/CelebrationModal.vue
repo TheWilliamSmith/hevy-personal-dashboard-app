@@ -9,16 +9,11 @@ import { isNegative } from '@/utils/achievements';
 import ConfettiBurst from './ConfettiBurst.vue';
 import TrophyCard from './TrophyCard.vue';
 
-/**
- * Rendered once, by the app shell. Shows the head of the unseen queue; "Nice"
- * marks it seen and advances, Escape or "Skip all" clears the rest.
- */
 const { current, remaining, acknowledge, acknowledgeAll } = useCelebrations();
 
 const open = computed(() => current.value !== null);
 const negative = computed(() => (current.value ? isNegative(current.value) : false));
 
-/** Not negotiable: no confetti and no scale animation when motion is reduced. */
 const media = window.matchMedia('(prefers-reduced-motion: reduce)');
 const reducedMotion = ref(media.matches);
 const onMotionChange = (event: MediaQueryListEvent): void => {
@@ -27,7 +22,6 @@ const onMotionChange = (event: MediaQueryListEvent): void => {
 media.addEventListener('change', onMotionChange);
 onBeforeUnmount(() => media.removeEventListener('change', onMotionChange));
 
-/** The trophy's rarity leads the palette, with neutral accents. */
 const confettiColors = computed(() =>
   current.value
     ? [RARITY_STYLES[current.value.rarity].hex, '#f59e0b', '#10b981', '#6366f1', '#ec4899']
@@ -38,7 +32,6 @@ const confettiColors = computed(() =>
 <template>
   <BaseDialog :open="open" labelled-by="celebration-title" @close="acknowledgeAll">
     <div v-if="current" class="relative overflow-hidden px-6 py-8 text-center">
-      <!-- A negative achievement is a nudge: never confetti. -->
       <ConfettiBurst
         v-if="!reducedMotion && !negative"
         :key="current.code"

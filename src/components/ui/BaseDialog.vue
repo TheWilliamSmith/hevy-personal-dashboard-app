@@ -4,14 +4,12 @@ import { nextTick, onBeforeUnmount, ref, watch } from 'vue';
 const props = defineProps<{
   open: boolean;
   labelledBy: string;
-  /** Escape and backdrop clicks are ignored while a write is in flight. */
   locked?: boolean;
 }>();
 
 const emit = defineEmits<{ close: [] }>();
 
 const panel = ref<HTMLElement | null>(null);
-/** Focus goes back where it came from — usually the button that opened this. */
 let previouslyFocused: HTMLElement | null = null;
 
 const FOCUSABLE =
@@ -27,7 +25,6 @@ function requestClose(): void {
   }
 }
 
-/** Keeps Tab inside the dialog, which is what makes it modal in practice. */
 function onKeydown(event: KeyboardEvent): void {
   if (event.key === 'Escape') {
     event.preventDefault();
@@ -72,8 +69,6 @@ watch(
       previouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
       lockScroll(true);
       await nextTick();
-      // A dialog can mark its primary action with data-autofocus; otherwise the
-      // first focusable element gets focus.
       const preferred = panel.value?.querySelector<HTMLElement>('[data-autofocus]');
       (preferred ?? focusable()[0] ?? panel.value)?.focus();
       return;
@@ -86,7 +81,6 @@ watch(
   { immediate: true },
 );
 
-// A dialog unmounted while open would otherwise leave the body unscrollable.
 onBeforeUnmount(() => lockScroll(false));
 </script>
 

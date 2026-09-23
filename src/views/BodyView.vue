@@ -36,7 +36,6 @@ const VIEWS: ReadonlyArray<{ value: string; label: string }> = [
   { value: 'back', label: 'Back' },
 ];
 
-/** Presets only: a custom date picker does not earn its space on this tab. */
 const RANGES = RANGE_PRESETS.map((preset) => ({ value: preset.value, label: preset.label }));
 
 const data = computed(() => heatmap.data.value);
@@ -45,7 +44,6 @@ const max = computed(() => data.value?.max ?? 0);
 const unit = computed(() => (metric.value === 'volume' ? 'kg' : metric.value));
 const isEmpty = computed(() => data.value !== null && max.value <= 0);
 
-/** Untrained groups are left out of the ranking: they are noise there. */
 const entries = computed(() => {
   const payload = data.value;
   if (!payload) {
@@ -76,7 +74,6 @@ function exerciseQuery(group: MuscleGroup) {
 
 <template>
   <div class="flex flex-col gap-3 px-4 sm:px-6">
-    <!-- One compact row: everything that drives the figure. -->
     <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
       <MetricSwitcher
         :options="RANGES"
@@ -117,10 +114,6 @@ function exerciseQuery(group: MuscleGroup) {
       </button>
     </div>
 
-    <!--
-      Sized to the viewport: the figure scales down to fit instead of pushing
-      the page into a scroll. The ranking scrolls inside its own column.
-    -->
     <div
       v-else
       class="grid min-h-[380px] gap-3 lg:grid-cols-[minmax(0,1fr)_18rem]"

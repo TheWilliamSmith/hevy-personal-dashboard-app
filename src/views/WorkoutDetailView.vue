@@ -8,11 +8,9 @@ import { formatDate, formatDuration, formatVolume } from '@/utils/format';
 
 const route = useRoute();
 
-/** The detail lives at ?tab=workouts&workout=<id> on the single page. */
 const id = computed(() => (typeof route.query.workout === 'string' ? route.query.workout : ''));
 const { workout, isLoading, error, notFound, retry } = useWorkout(id);
 
-/** The list's query travelled here on the link, so Back restores that view. */
 const backQuery = computed<Record<string, string>>(() => {
   const query: Record<string, string> = {};
   for (const key of ['search', 'exercise', 'from', 'to', 'page'] as const) {
@@ -24,7 +22,6 @@ const backQuery = computed<Record<string, string>>(() => {
   return query;
 });
 
-/** Exercises arrive ordered, but the view must not depend on the API's sort. */
 const orderedExercises = computed(() =>
   [...(workout.value?.exercises ?? [])].sort((a, b) => a.order - b.order),
 );
@@ -96,7 +93,6 @@ const orderedExercises = computed(() =>
           </div>
         </dl>
 
-        <!-- Two exercise tables side by side once the screen is wide enough. -->
         <div class="grid items-start gap-4 xl:grid-cols-2">
           <ExerciseSection
             v-for="exercise in orderedExercises"

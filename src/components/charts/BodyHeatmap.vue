@@ -1,17 +1,4 @@
 <script setup lang="ts">
-/**
- * BodyHeatmap — front/back anatomical diagram coloured by training load.
- *
- * Self-contained: no chart library, no external assets.
- *
- * The geometry is generated rather than hand-drawn: every outline and region
- * is a list of points smoothed into cubic Béziers (Catmull-Rom). The silhouette
- * and most regions are drawn for the left half and mirrored, so the figure is
- * symmetric by construction and each muscle group stays one interactive region.
- *
- * CARDIO and FULL_BODY have no anatomical region, so they render as chips under
- * the figure instead of being silently dropped.
- */
 import { computed, ref } from 'vue'
 
 type MuscleGroup =
@@ -22,20 +9,11 @@ type MuscleGroup =
 type Side = 'front' | 'back'
 
 const props = withDefaults(defineProps<{
-  /** Metric value per muscle group (sets, volume in kg, reps). */
   values: Partial<Record<MuscleGroup, number>>
-  /** Shown in the tooltip after the value, e.g. "sets" or "kg". */
   unit?: string
-  /** Which figure(s) to render. */
   view?: 'both' | 'front' | 'back'
-  /** Number of colour steps, 1-6. */
   levels?: number
-  /** Optional custom value formatter (defaults to fr-FR grouping). */
   format?: (value: number) => string
-  /**
-   * Externally driven highlight, e.g. the row hovered in a list beside the
-   * figure. Pointer hover on the figure takes precedence.
-   */
   highlight?: MuscleGroup | null
 }>(), {
   unit: 'sets',
@@ -56,14 +34,8 @@ const UNMAPPED: MuscleGroup[] = ['CARDIO', 'FULL_BODY']
 
 type Region = { group: MuscleGroup; d: string; mirror?: boolean }
 
-/* One figure is 200 x 450 with its centre line at x=100. */
 const MIRROR = 'translate(200,0) scale(-1,1)'
 
-/*
- * Left half of the silhouette, crown to crotch. Left open on purpose: an open
- * path still fills as if closed, but only its drawn edge is stroked, so the
- * centre line where the two mirrored halves meet is never outlined.
- */
 const HALF = 'M100.0 10.0 C98.7 10.2 94.2 10.0 92.0 11.0 C89.8 12.0 88.2 13.7 87.0 16.0 C85.8 18.3 85.3 21.8 85.0 25.0 C84.7 28.2 84.7 31.8 85.0 35.0 C85.3 38.2 86.3 41.5 87.0 44.0 C87.7 46.5 88.2 48.2 89.0 50.0 C89.8 51.8 91.7 53.2 92.0 55.0 C92.3 56.8 91.3 59.2 91.0 61.0 C90.7 62.8 90.5 64.2 90.0 66.0 C89.5 67.8 89.7 70.3 88.0 72.0 C86.3 73.7 83.0 74.7 80.0 76.0 C77.0 77.3 73.3 78.7 70.0 80.0 C66.7 81.3 63.2 82.7 60.0 84.0 C56.8 85.3 53.8 86.2 51.0 88.0 C48.2 89.8 45.2 92.2 43.0 95.0 C40.8 97.8 39.0 101.3 38.0 105.0 C37.0 108.7 37.3 113.0 37.0 117.0 C36.7 121.0 36.3 124.8 36.0 129.0 C35.7 133.2 35.5 137.7 35.0 142.0 C34.5 146.3 33.7 151.0 33.0 155.0 C32.3 159.0 31.7 162.5 31.0 166.0 C30.3 169.5 29.7 172.7 29.0 176.0 C28.3 179.3 27.7 182.3 27.0 186.0 C26.3 189.7 25.7 194.0 25.0 198.0 C24.3 202.0 23.7 206.0 23.0 210.0 C22.3 214.0 21.5 218.5 21.0 222.0 C20.5 225.5 20.8 228.3 20.0 231.0 C19.2 233.7 17.3 235.5 16.0 238.0 C14.7 240.5 12.8 243.5 12.0 246.0 C11.2 248.5 10.7 251.3 11.0 253.0 C11.3 254.7 13.0 256.3 14.0 256.0 C15.0 255.7 16.3 250.3 17.0 251.0 C17.7 251.7 17.8 256.7 18.0 260.0 C18.2 263.3 17.8 267.8 18.0 271.0 C18.2 274.2 18.5 277.5 19.0 279.0 C19.5 280.5 20.5 281.2 21.0 280.0 C21.5 278.8 21.7 271.7 22.0 272.0 C22.3 272.3 22.5 279.8 23.0 282.0 C23.5 284.2 24.3 284.8 25.0 285.0 C25.7 285.2 26.7 285.0 27.0 283.0 C27.3 281.0 26.8 273.3 27.0 273.0 C27.2 272.7 27.5 279.5 28.0 281.0 C28.5 282.5 29.5 282.5 30.0 282.0 C30.5 281.5 30.8 280.0 31.0 278.0 C31.2 276.0 30.8 270.3 31.0 270.0 C31.2 269.7 31.5 275.2 32.0 276.0 C32.5 276.8 33.7 276.2 34.0 275.0 C34.3 273.8 34.0 271.3 34.0 269.0 C34.0 266.7 34.0 264.0 34.0 261.0 C34.0 258.0 34.2 254.2 34.0 251.0 C33.8 247.8 33.0 245.2 33.0 242.0 C33.0 238.8 33.3 235.7 34.0 232.0 C34.7 228.3 35.8 224.2 37.0 220.0 C38.2 215.8 39.7 211.2 41.0 207.0 C42.3 202.8 43.8 198.8 45.0 195.0 C46.2 191.2 47.2 187.2 48.0 184.0 C48.8 180.8 49.3 179.2 50.0 176.0 C50.7 172.8 51.2 169.2 52.0 165.0 C52.8 160.8 54.0 155.5 55.0 151.0 C56.0 146.5 57.0 142.2 58.0 138.0 C59.0 133.8 60.2 129.3 61.0 126.0 C61.8 122.7 62.5 119.7 63.0 118.0 C63.5 116.3 63.8 114.3 64.0 116.0 C64.2 117.7 63.8 123.7 64.0 128.0 C64.2 132.3 64.5 137.3 65.0 142.0 C65.5 146.7 66.2 151.3 67.0 156.0 C67.8 160.7 69.0 165.3 70.0 170.0 C71.0 174.7 72.3 179.7 73.0 184.0 C73.7 188.3 74.2 192.0 74.0 196.0 C73.8 200.0 72.8 204.0 72.0 208.0 C71.2 212.0 70.0 215.7 69.0 220.0 C68.0 224.3 66.8 229.0 66.0 234.0 C65.2 239.0 64.3 244.7 64.0 250.0 C63.7 255.3 63.7 260.7 64.0 266.0 C64.3 271.3 65.2 276.7 66.0 282.0 C66.8 287.3 67.8 293.3 69.0 298.0 C70.2 302.7 72.0 306.3 73.0 310.0 C74.0 313.7 74.8 316.5 75.0 320.0 C75.2 323.5 74.5 327.0 74.0 331.0 C73.5 335.0 72.2 339.5 72.0 344.0 C71.8 348.5 72.3 353.3 73.0 358.0 C73.7 362.7 75.0 367.3 76.0 372.0 C77.0 376.7 78.2 381.7 79.0 386.0 C79.8 390.3 81.0 394.3 81.0 398.0 C81.0 401.7 79.7 405.0 79.0 408.0 C78.3 411.0 77.0 413.7 77.0 416.0 C77.0 418.3 77.0 420.7 79.0 422.0 C81.0 423.3 86.2 423.8 89.0 424.0 C91.8 424.2 95.0 424.7 96.0 423.0 C97.0 421.3 95.3 417.5 95.0 414.0 C94.7 410.5 94.3 406.3 94.0 402.0 C93.7 397.7 93.3 392.7 93.0 388.0 C92.7 383.3 92.0 379.0 92.0 374.0 C92.0 369.0 92.7 363.0 93.0 358.0 C93.3 353.0 93.8 348.5 94.0 344.0 C94.2 339.5 94.2 335.2 94.0 331.0 C93.8 326.8 93.0 323.3 93.0 319.0 C93.0 314.7 93.5 310.0 94.0 305.0 C94.5 300.0 95.5 294.7 96.0 289.0 C96.5 283.3 96.7 276.7 97.0 271.0 C97.3 265.3 97.7 259.2 98.0 255.0 C98.3 250.8 98.7 248.0 99.0 246.0 C99.3 244.0 99.8 243.5 100.0 243.0'
 
 const FRONT: Region[] = [
@@ -89,7 +61,6 @@ const BACK: Region[] = [
   { group: 'CALVES', mirror: true, d: 'M77.0 338.0 C75.5 341.7 74.0 348.3 74.0 354.0 C74.0 359.7 75.2 368.0 77.0 372.0 C78.8 376.0 82.5 378.7 85.0 378.0 C87.5 377.3 90.7 372.7 92.0 368.0 C93.3 363.3 93.3 355.3 93.0 350.0 C92.7 344.7 91.7 339.0 90.0 336.0 C88.3 333.0 85.2 331.7 83.0 332.0 C80.8 332.3 78.5 334.3 77.0 338.0 Z' },
 ]
 
-/* Anatomy lines: drawn over the figure, non-interactive, purely descriptive. */
 const LINES: Record<Side, { half: string[]; centre: string[] }> = {
   front: {
     half: [
@@ -131,7 +102,6 @@ const max = computed(() => {
   return Math.max(0, ...mapped)
 })
 
-/** 0 = untrained, 1..levels = intensity bucket. */
 function levelOf(group: MuscleGroup): number {
   const value = props.values[group] ?? 0
   if (value <= 0 || max.value <= 0) return 0
@@ -144,7 +114,6 @@ const fmt = (value: number) =>
 const hovered = ref<MuscleGroup | null>(null)
 const pointer = ref({ x: 0, y: 0 })
 
-/** What is outlined: the pointer wins, the external highlight is the fallback. */
 const active = computed(() => hovered.value ?? props.highlight ?? null)
 
 function onEnter(group: MuscleGroup, event: PointerEvent) {
@@ -175,7 +144,6 @@ const visibleSides = computed(() =>
 )
 const isEmpty = computed(() => max.value <= 0)
 
-/** The back figure sits to the right of the front one when both are shown. */
 function offsetOf(side: Side): string | undefined {
   return side === 'back' && visibleSides.value.length === 2 ? 'translate(240,0)' : undefined
 }
@@ -278,16 +246,11 @@ function describe(group: MuscleGroup): string {
 </template>
 
 <style scoped>
-/*
- * White diagram, light theme only. The app has no dark mode, and the former
- * prefers-color-scheme block made this one figure invert on dark-OS machines.
- */
 .body-heatmap {
   --bh-base: #ffffff;
   --bh-outline: #1e293b;
   --bh-line: #94a3b8;
   --bh-l0: #ffffff;
-  /* Very light to very dark blue. */
   --bh-l1: #dbe9fe;
   --bh-l2: #a9caf9;
   --bh-l3: #6da5f0;

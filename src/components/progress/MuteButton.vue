@@ -2,7 +2,6 @@
 import { nextTick, onBeforeUnmount, ref } from 'vue';
 
 const props = defineProps<{
-  /** Used for the input id: names contain spaces and parentheses. */
   exerciseId: string;
   exerciseName: string;
   muted: boolean;
@@ -16,10 +15,6 @@ const reason = ref('');
 const root = ref<HTMLElement | null>(null);
 const input = ref<HTMLInputElement | null>(null);
 
-/**
- * Muting asks for an optional reason in a small popover ("injury", "not a
- * priority"); unmuting is a single click — nothing to explain there.
- */
 async function onClick(): Promise<void> {
   if (props.muted) {
     emit('unmute');

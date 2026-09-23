@@ -25,7 +25,6 @@ const SORTS: ReadonlyArray<{ value: ProgressSort; label: string }> = [
   { value: 'name', label: 'Name' },
 ];
 
-/** Nothing tracked at all — not the same as "this filter matches nothing". */
 const isGloballyEmpty = computed(
   () =>
     progress.hasLoaded.value && progress.total.value === 0 && progress.muted.value.length === 0,
@@ -116,7 +115,6 @@ async function unmute(entry: MutedExercise): Promise<void> {
           </button>
         </div>
 
-        <!-- Skeleton rows only on the first load; later refetches keep the list. -->
         <ul v-else-if="!progress.hasLoaded.value" aria-busy="true">
           <li v-for="row in 8" :key="row" class="flex items-center gap-4 border-b border-slate-100 px-4 py-3">
             <div class="h-5 w-20 animate-pulse rounded-full bg-slate-100" />
@@ -154,7 +152,6 @@ async function unmute(entry: MutedExercise): Promise<void> {
             Muted ({{ progress.muted.value.length }})
           </button>
         </h2>
-        <!-- The API returns muted exercises in a short shape: no status, no series. -->
         <ul v-if="showMuted" id="progress-muted" class="divide-y divide-slate-100 border-t border-slate-100">
           <li
             v-for="entry in progress.muted.value"

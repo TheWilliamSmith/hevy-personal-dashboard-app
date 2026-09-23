@@ -2,7 +2,6 @@
 import Sparkline from '@/components/charts/Sparkline.vue';
 import type { ExerciseTrend } from '@/types/exercises';
 
-/** Exercises-card wrapper: the shared sparkline plus the card's trend arrow. */
 const props = withDefaults(
   defineProps<{
     points: readonly number[];

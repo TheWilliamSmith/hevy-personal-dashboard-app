@@ -19,7 +19,6 @@ const xpPercent = computed(() =>
   props.level && props.level.needed > 0 ? Math.min(100, (props.level.into / props.level.needed) * 100) : 0,
 );
 
-/** Completion ring geometry: one SVG circle, stroke-dasharray for the arc. */
 const RADIUS = 34;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 const completion = computed(() => (props.totalCount > 0 ? props.unlockedCount / props.totalCount : 0));
@@ -27,7 +26,6 @@ const completion = computed(() => (props.totalCount > 0 ? props.unlockedCount / 
 
 <template>
   <section class="grid gap-3 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1fr)]">
-    <!-- Level and XP -->
     <div class="flex items-center gap-4 rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-700 p-5 text-white">
       <div class="flex h-20 w-20 shrink-0 flex-col items-center justify-center rounded-2xl bg-white/15 ring-1 ring-white/25">
         <span class="text-[10px] font-semibold tracking-wider uppercase opacity-80">Level</span>
@@ -51,7 +49,6 @@ const completion = computed(() => (props.totalCount > 0 ? props.unlockedCount / 
       </div>
     </div>
 
-    <!-- Completion ring and rarity breakdown -->
     <div class="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-5">
       <svg viewBox="0 0 80 80" class="h-20 w-20 shrink-0 -rotate-90" role="img"
         :aria-label="`${props.unlockedCount} of ${props.totalCount} achievements unlocked`">
@@ -67,7 +64,6 @@ const completion = computed(() => (props.totalCount > 0 ? props.unlockedCount / 
         </p>
         <dl class="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-xs sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
           <div v-for="rarity in RARITY_ORDER" :key="rarity" class="flex items-center gap-1.5">
-            <!-- shrink-0: a long label squeezed the dot down to a hairline. -->
             <span class="h-2.5 w-2.5 shrink-0 rounded-full" :style="{ backgroundColor: RARITY_STYLES[rarity].hex }" aria-hidden="true" />
             <dt class="text-slate-500">{{ RARITY_STYLES[rarity].label }}</dt>
             <dd class="font-semibold text-slate-900 tabular-nums">{{ props.rarityCounts[rarity] }}</dd>
@@ -76,11 +72,6 @@ const completion = computed(() => (props.totalCount > 0 ? props.unlockedCount / 
       </div>
     </div>
 
-    <!-- Rarest trophy earned -->
-    <!--
-      Label row + card row. The card is h-full; as a plain child it took 100 %
-      of the column on top of the label and spilled past the bottom edge.
-    -->
     <div class="grid grid-rows-[auto_1fr] rounded-2xl border border-slate-200 bg-white p-3">
       <p class="px-1 pb-2 text-xs font-semibold tracking-wider text-slate-500 uppercase">Rarest trophy</p>
       <TrophyCard v-if="props.highlight" :item="props.highlight" :ladder-size="0" />

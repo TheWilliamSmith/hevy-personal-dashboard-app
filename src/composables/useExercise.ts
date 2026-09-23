@@ -26,14 +26,6 @@ export interface UseExercise {
   mergeInto: (sourceExerciseId: string) => Promise<MergeExerciseResult | null>;
 }
 
-/**
- * GET /exercises/:slug returns summary, records, progression and history in one
- * response, so there is nothing to parallelise — a single request already
- * carries every section.
- *
- * History paginates on that same endpoint, so "load more" refetches the whole
- * detail. Pages are appended locally rather than replacing the list.
- */
 export function useExercise(slug: MaybeRefOrGetter<string>): UseExercise {
   const detail = ref<ExerciseDetail | null>(null);
   const isLoading = ref(false);
@@ -115,7 +107,6 @@ export function useExercise(slug: MaybeRefOrGetter<string>): UseExercise {
     await fetchDetail(historyPage.value + 1, true);
   }
 
-  /** PATCH takes the exercise id, not the slug. */
   async function updateClassification(payload: UpdateExercisePayload): Promise<boolean> {
     const id = detail.value?.exercise.id;
     if (!id) {
@@ -127,8 +118,6 @@ export function useExercise(slug: MaybeRefOrGetter<string>): UseExercise {
 
     try {
       await apiPatch(`/exercises/${encodeURIComponent(id)}`, payload);
-      // A reclassification moves the exercise between muscle groups, which the
-      // dashboard's breakdown and the catalog both depend on.
       invalidateWorkoutData();
       await fetchDetail(1);
       return true;
@@ -140,7 +129,6 @@ export function useExercise(slug: MaybeRefOrGetter<string>): UseExercise {
     }
   }
 
-  /** Merges `sourceExerciseId` INTO this exercise, then deletes the source. */
   async function mergeInto(sourceExerciseId: string): Promise<MergeExerciseResult | null> {
     const id = detail.value?.exercise.id;
     if (!id) {

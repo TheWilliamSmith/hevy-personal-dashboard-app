@@ -7,10 +7,6 @@ import {
   Ship, Shuffle, Sparkles, Sunrise, Swords, Target, TrendingUp, Truck, Waves, Weight, Zap,
 } from 'lucide-vue-next';
 
-/**
- * The API names icons with Lucide identifiers. Each one is imported by name —
- * never the whole icon set — so only these ship, inside the Trophies chunk.
- */
 const ICONS: Readonly<Record<string, Component>> = {
   activity: Activity, 'alert-triangle': AlertTriangle, calendar: Calendar,
   'calendar-check': CalendarCheck, 'calendar-days': CalendarDays, 'check-circle': CheckCircle,
@@ -25,7 +21,6 @@ const ICONS: Readonly<Record<string, Component>> = {
 
 const props = withDefaults(defineProps<{ name: string; size?: number }>(), { size: 24 });
 
-/** A name the catalog adds later still renders, as a generic award. */
 const icon = computed<Component>(() => ICONS[props.name] ?? Award);
 </script>
 

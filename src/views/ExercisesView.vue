@@ -25,7 +25,6 @@ const {
   refresh,
 } = useExercises();
 
-/** Anchors are ids on the section, so the rail is plain in-page navigation. */
 function anchorId(group: string): string {
   return `muscle-${group.toLowerCase()}`;
 }
@@ -50,7 +49,6 @@ function anchorId(group: string): string {
     />
 
     <div class="flex gap-6 px-4 py-4 sm:px-6">
-      <!-- Jump-to-group rail, desktop only. -->
       <nav
         v-if="groups.length > 1"
         class="sticky top-32 hidden h-fit w-40 shrink-0 flex-col gap-0.5 lg:flex"
@@ -99,7 +97,6 @@ function anchorId(group: string): string {
           </button>
         </div>
 
-        <!-- No exercises at all: the catalog is built from imports. -->
         <div
           v-else-if="isEmptyCatalog"
           class="rounded-xl border border-dashed border-slate-300 bg-white p-16 text-center"
@@ -113,7 +110,6 @@ function anchorId(group: string): string {
           </RouterLink>
         </div>
 
-        <!-- Exercises exist, but this filter combination matches none. -->
         <div
           v-else-if="groups.length === 0"
           class="rounded-xl border border-dashed border-slate-300 bg-white p-16 text-center"

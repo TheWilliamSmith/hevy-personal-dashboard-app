@@ -13,11 +13,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{ select: [status: ProgressStatus | null] }>();
 
-/**
- * A radio group needs an option that means "no filter": once a radio is
- * chosen it cannot be unchosen, so without "All" the list could never be
- * shown unfiltered again. It sits first and stays neutral.
- */
 const options = computed(() => [
   { value: null, label: 'All', count: props.total },
   ...STATUS_ORDER.map((status) => ({
@@ -27,7 +22,6 @@ const options = computed(() => [
   })),
 ]);
 
-/** Arrow keys move the selection, as the radio-group pattern requires. */
 function onKeydown(event: KeyboardEvent, index: number): void {
   const offset =
     event.key === 'ArrowRight' || event.key === 'ArrowDown'
@@ -50,8 +44,6 @@ function onKeydown(event: KeyboardEvent, index: number): void {
 }
 
 function classesFor(value: ProgressStatus | null): string {
-  // bg-white only on the idle state: set on the base too, it would compete
-  // with the selected background and the stylesheet order would pick the winner.
   const selected = props.active === value;
   if (value === null) {
     return selected

@@ -11,7 +11,6 @@ import { formatDuration, formatVolume } from '@/utils/format';
 const props = defineProps<{
   days: CalendarDay[] | null;
   year: number;
-  /** Derived from the overview's first/last workout — the API sends no list. */
   availableYears: number[];
   isLoading: boolean;
   error: string | null;
@@ -21,7 +20,6 @@ const emit = defineEmits<{ retry: []; year: [value: number] }>();
 
 const palette = resolveTheme();
 
-// The API omits days without activity, so every returned day counts.
 const days = computed(() => props.days ?? []);
 const year = computed(() => props.year);
 const years = computed(() => props.availableYears);
@@ -31,7 +29,6 @@ const maxVolume = computed(() =>
   days.value.reduce((highest, day) => Math.max(highest, day.volumeKg), 0),
 );
 
-/** ECharts' calendar coordinate system keys on YYYY-MM-DD, as the API sends. */
 const cells = computed<Array<[string, number]>>(() =>
   days.value.map((day) => [day.date, day.volumeKg]),
 );

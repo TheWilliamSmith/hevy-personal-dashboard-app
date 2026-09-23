@@ -45,9 +45,7 @@ export interface UseAchievements {
   level: ComputedRef<Level | null>;
   unlockedCount: ComputedRef<number>;
   totalCount: ComputedRef<number>;
-  /** Unlocked, non-negative trophies per rarity. */
   rarityCounts: ComputedRef<Record<Rarity, number>>;
-  /** The rarest trophy earned; ties go to the most recent. */
   highlight: ComputedRef<AchievementItem | null>;
   family: ComputedRef<AchievementFamily | null>;
   show: ComputedRef<TrophyShow>;
@@ -59,10 +57,6 @@ export interface UseAchievements {
   refresh: () => void;
 }
 
-/**
- * The trophy room: catalog, URL-synced filters, and the hero's derived stats.
- * The unseen queue is shared with the app shell via useCelebrations.
- */
 export function useAchievements(): UseAchievements {
   const route = useRoute();
   const router = useRouter();
@@ -93,8 +87,6 @@ export function useAchievements(): UseAchievements {
   watch(dataVersion, () => void fetchCatalog(), { immediate: true });
   onScopeDispose(() => controller?.abort());
 
-  // Checked here too, not only in the shell, so opening this tab directly
-  // after an import still surfaces anything the import unlocked.
   void useCelebrations().loadUnseen();
 
   const family = computed<AchievementFamily | null>(() => {
@@ -135,10 +127,6 @@ export function useAchievements(): UseAchievements {
     }, null);
   });
 
-  /**
-   * A masked secret is neither "unlocked" nor "in progress", and it has no
-   * progress to show, so it only appears under All and Locked.
-   */
   function matches(item: AchievementItem): boolean {
     switch (show.value) {
       case 'unlocked':
@@ -176,7 +164,6 @@ export function useAchievements(): UseAchievements {
     family,
     show,
     sections,
-    // Pip counts come from the full catalog, so a filter never shortens a ladder.
     ladders: computed(() => ladderSizes(allItems.value)),
     visibleCount: computed(() => sections.value.reduce((sum, section) => sum + section.items.length, 0)),
     setFamily: (next) => push({ family: next ?? undefined }),

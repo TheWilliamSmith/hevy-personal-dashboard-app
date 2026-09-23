@@ -37,7 +37,6 @@ const SORTS: ReadonlyArray<{ value: ExerciseSortBy; label: string }> = [
   { value: 'lastPerformed', label: 'Last performed' },
 ];
 
-/** Local mirror so typing stays responsive while the parent debounces. */
 const searchTerm = ref(props.filters.search);
 
 watch(
@@ -58,7 +57,6 @@ const field =
     class="sticky top-0 z-20 flex flex-col gap-3 border-y border-slate-200 bg-slate-50/95 px-4 py-3 backdrop-blur sm:px-6"
   >
     <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
-      <!-- Full width on a phone: sharing the row squeezed it to a few characters. -->
       <div class="flex w-full min-w-0 items-center gap-2 sm:w-auto sm:flex-1">
         <label for="exercise-search" class="sr-only">Search exercises</label>
         <input
@@ -134,7 +132,6 @@ const field =
       </button>
     </div>
 
-    <!-- Muscle groups are multi-select; the API takes one, so this filters client-side. -->
     <div class="flex flex-wrap gap-1.5" role="group" aria-label="Filter by muscle group">
       <button
         v-for="group in MUSCLE_ORDER"

@@ -1,14 +1,6 @@
-/**
- * Ordinary least-squares fit over (index, value) pairs.
- *
- * Indices are used rather than timestamps on purpose: the progression chart's
- * x axis is the ordered list of sessions, so the trend follows session order
- * and is not distorted by long gaps between them.
- */
 export interface Trend {
   slope: number;
   intercept: number;
-  /** Fitted value at each input index, same length as the input. */
   points: number[];
 }
 
@@ -21,7 +13,6 @@ export function linearTrend(values: ReadonlyArray<number | null>): Trend | null 
     }
   });
 
-  // Two distinct points are the minimum for a meaningful line.
   if (samples.length < 2) {
     return null;
   }

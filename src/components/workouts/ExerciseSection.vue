@@ -11,7 +11,6 @@ const props = defineProps<{ exercise: WorkoutExerciseDetail }>();
 
 const bestIndex = computed(() => bestSetIndex(props.exercise.sets, props.exercise.bestSet));
 
-/** "60 × 10", or an em dash when neither operand is recorded. */
 function weightByReps(weightKg: number | null, reps: number | null): string {
   if (weightKg === null && reps === null) {
     return EMPTY;

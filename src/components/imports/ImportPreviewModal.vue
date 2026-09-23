@@ -6,7 +6,6 @@ import type { ExistingWorkoutRef, ImportPreview, StagedWorkoutPreview } from '@/
 import { formatDate, formatDuration, formatInteger, formatVolume } from '@/utils/format';
 
 const props = defineProps<{
-  /** Readonly because the composable hands out a frozen view of its state. */
   preview: DeepReadonly<ImportPreview> | null;
   isConfirming: boolean;
   error: string | null;
@@ -14,7 +13,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{ cancel: []; confirm: []; reupload: [] }>();
 
-/** Beyond this, the list pages instead of rendering every row. */
 const PAGE_SIZE = 50;
 
 const showNew = ref(true);
@@ -45,8 +43,6 @@ const pagedNew = computed(() => paged(newWorkouts.value, newPage.value));
 const pagedExisting = computed(() => paged(existing.value, existingPage.value));
 const newPages = computed(() => Math.max(1, Math.ceil(newWorkouts.value.length / PAGE_SIZE)));
 const existingPages = computed(() => Math.max(1, Math.ceil(existing.value.length / PAGE_SIZE)));
-
-/* ----------------------------------------------------------------- countdown */
 
 const now = ref(Date.now());
 let ticker: ReturnType<typeof setInterval> | null = null;
@@ -171,7 +167,6 @@ const tile = 'flex flex-col gap-0.5 px-4 py-3';
         Nothing to import — every workout in this file is already in your data.
       </p>
 
-      <!-- New workouts, expanded by default. -->
       <section v-if="newWorkouts.length > 0" class="border-b border-slate-100">
         <h3>
           <button
@@ -242,7 +237,6 @@ const tile = 'flex flex-col gap-0.5 px-4 py-3';
         </div>
       </section>
 
-      <!-- Already present, collapsed by default. -->
       <section v-if="existing.length > 0">
         <h3>
           <button

@@ -50,14 +50,6 @@ export interface UseExercises {
   refresh: () => void;
 }
 
-/**
- * The route query is the source of truth for every filter.
- *
- * Only `search`, `equipment`, `kind` and `sortBy` reach the API — its query DTO
- * takes a single enum per field. Muscle-group multi-select and "hide never
- * performed" are applied client-side over the full catalog the endpoint returns
- * anyway, which keeps the URL expressive without a second round trip.
- */
 export function useExercises(): UseExercises {
   const route = useRoute();
   const router = useRouter();
@@ -127,11 +119,6 @@ export function useExercises(): UseExercises {
     }
   }
 
-  /**
-   * Groups arrive alphabetically; the anatomical order lives in the frontend.
-   * The client-side filters are applied here so the section counts always match
-   * what is actually rendered.
-   */
   const groups = computed<ExerciseGroup[]>(() => {
     const selected = new Set(filters.value.muscleGroups);
     const hideUnperformed = filters.value.hideNeverPerformed;
@@ -163,7 +150,6 @@ export function useExercises(): UseExercises {
       filters.value.hideNeverPerformed,
   );
 
-  /** True only when the account has no exercises at all, filters aside. */
   const isEmptyCatalog = computed(
     () => catalog.value !== null && catalog.value.totals.exercises === 0,
   );

@@ -1,11 +1,3 @@
-<script setup lang="ts">
-/**
- * A masked secret. It deliberately takes NO props: the API still sends the
- * masked item's rarity and XP, and a component that is never handed them
- * cannot leak them — not through a later edit, not through a tooltip.
- */
-</script>
-
 <template>
   <article
     class="trophy-tile flex h-full flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4 text-center"

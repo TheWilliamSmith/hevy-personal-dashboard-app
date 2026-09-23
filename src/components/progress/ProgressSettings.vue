@@ -16,11 +16,9 @@ const props = defineProps<{
 
 const emit = defineEmits<{ change: [patch: Partial<ProgressParams>]; reset: [] }>();
 
-/** Collapsed by default: the defaults are right most of the time. */
 const open = ref(false);
 
 const label = 'text-xs font-medium text-slate-600';
-/** The live effect of each control, taken from the latest response. */
 const effect = 'text-xs tabular-nums text-slate-500';
 </script>
 
@@ -38,7 +36,6 @@ const effect = 'text-xs tabular-nums text-slate-500';
         Settings
       </button>
 
-      <!-- The current configuration stays readable while collapsed. -->
       <p class="text-xs text-slate-500">
         {{ WINDOWS.find((item) => item.value === props.draft.window)?.label }}
         · {{ props.draft.sessions }} sessions · stale after {{ props.draft.staleWeeks }} weeks ·

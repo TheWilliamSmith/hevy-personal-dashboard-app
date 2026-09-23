@@ -3,13 +3,6 @@ import type { EChartsOption } from 'echarts';
 import { formatDuration, formatInteger, formatVolume } from '@/utils/format';
 import type { TimeseriesMetric } from '@/types/stats';
 
-/**
- * The only place chart colours are defined. Charts read from here; none of them
- * hardcodes a hex value.
- *
- * Both palettes are exported even though the app is light-only today, so
- * turning on dark mode is a matter of flipping `resolveTheme`.
- */
 export interface ChartPalette {
   axis: string;
   axisLabel: string;
@@ -19,9 +12,7 @@ export interface ChartPalette {
   tooltipBackground: string;
   tooltipBorder: string;
   tooltipText: string;
-  /** Low -> high ramp for the calendar heatmap. */
   heatmap: [string, string, string, string, string];
-  /** Categorical series that are not a metric (weekday, rep ranges). */
   categorical: string[];
 }
 
@@ -51,10 +42,6 @@ export const DARK_PALETTE: ChartPalette = {
   categorical: ['#818cf8', '#38bdf8', '#2dd4bf', '#fbbf24', '#f472b6', '#a78bfa'],
 };
 
-/**
- * A metric keeps its hue everywhere it appears: volume is indigo in the main
- * chart, in the top-exercises ranking and in the progression chart.
- */
 export const METRIC_COLORS: Readonly<Record<TimeseriesMetric, string>> = {
   volume: '#4f46e5',
   sets: '#0ea5e9',
@@ -63,7 +50,6 @@ export const METRIC_COLORS: Readonly<Record<TimeseriesMetric, string>> = {
   workouts: '#ec4899',
 };
 
-/** Workout count rides the secondary axis of the main chart. */
 export const WORKOUT_COUNT_COLOR = '#ec4899';
 
 export const METRIC_LABELS: Readonly<Record<TimeseriesMetric, string>> = {
@@ -82,7 +68,6 @@ export const METRIC_UNITS: Readonly<Record<TimeseriesMetric, string>> = {
   workouts: 'workouts',
 };
 
-/** Axis and tooltip rendering per metric, so no chart formats numbers inline. */
 export function formatMetric(metric: TimeseriesMetric, value: number): string {
   switch (metric) {
     case 'volume':
@@ -94,7 +79,6 @@ export function formatMetric(metric: TimeseriesMetric, value: number): string {
   }
 }
 
-/** Compact axis labels: thousands collapse so ticks stay readable. */
 export function formatAxisValue(metric: TimeseriesMetric, value: number): string {
   if (metric === 'duration') {
     return formatDuration(value);
@@ -111,10 +95,6 @@ export function resolveTheme(dark = false): ChartPalette {
   return dark ? DARK_PALETTE : LIGHT_PALETTE;
 }
 
-/**
- * Shared skeleton every chart option spreads. Holds grid, tooltip and text
- * styling so cards line up and tooltips behave identically.
- */
 export function baseOption(palette: ChartPalette): EChartsOption {
   return {
     textStyle: {
@@ -135,7 +115,6 @@ export function baseOption(palette: ChartPalette): EChartsOption {
   };
 }
 
-/** Category or time axis shared by every cartesian chart. */
 export function categoryAxis(palette: ChartPalette) {
   return {
     type: 'category' as const,

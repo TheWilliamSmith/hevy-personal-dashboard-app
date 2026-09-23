@@ -38,15 +38,9 @@ const slopeClass = computed(() => {
   return slope > 0 ? 'text-emerald-600' : 'text-red-600';
 });
 
-/**
- * A stall at under two sets a week says more about the programme than about
- * the lifter, so it gets a different hint rather than the plain average.
- */
 const lowVolume = computed(
   () =>
     props.alert.weeklySetsAvg < LOW_WEEKLY_SETS &&
-    // Only where "stalled" is the claim. A STALE exercise was simply dropped;
-    // telling it "not a plateau" answers a question nobody asked.
     (props.alert.status === 'PLATEAU' || props.alert.status === 'REGRESSING'),
 );
 
@@ -64,7 +58,6 @@ const cell = 'px-3 py-1.5 text-xs';
 <template>
   <li class="border-b border-slate-100 last:border-b-0" :class="isNoData ? 'bg-slate-50/60' : 'bg-white'">
     <div class="grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-1 px-4 py-2.5 lg:grid-cols-[minmax(14rem,2fr)_7rem_minmax(9rem,1fr)_7rem_minmax(9rem,1fr)_auto]">
-      <!-- Identity -->
       <div class="flex min-w-0 items-center gap-2">
         <button
           type="button"
@@ -90,7 +83,6 @@ const cell = 'px-3 py-1.5 text-xs';
         </span>
       </div>
 
-      <!-- Sparkline of the analysed sessions, PRs marked -->
       <Sparkline
         class="hidden lg:block"
         :points="values"
@@ -101,7 +93,6 @@ const cell = 'px-3 py-1.5 text-xs';
         :label="`${METRIC_LABELS[props.alert.metricUsed]} over ${values.length} sessions, ${prIndices.length} personal records`"
       />
 
-      <!-- Current vs best -->
       <div class="hidden text-xs lg:block">
         <p class="tabular-nums text-slate-900">
           {{ formatMetricValue(props.alert.metricUsed, props.alert.current?.value) }}
@@ -110,19 +101,16 @@ const cell = 'px-3 py-1.5 text-xs';
         <p class="text-slate-500">{{ formatGapToBest(gap) }}</p>
       </div>
 
-      <!-- Slope -->
       <p class="hidden text-xs font-medium tabular-nums lg:block" :class="slopeClass">
         <template v-if="isNoData">needs more sessions</template>
         <template v-else>{{ formatSlope(props.alert.slopePctPerWeek) }}</template>
       </p>
 
-      <!-- Recency -->
       <div class="hidden text-xs text-slate-600 lg:block">
         <p>Last PR: {{ props.alert.weeksSincePR === null ? 'none yet' : formatWeeksAgo(props.alert.weeksSincePR) }}</p>
         <p>Last done: {{ formatDaysAgo(props.alert.daysSinceLast) }}</p>
       </div>
 
-      <!-- Actions -->
       <div class="flex items-center justify-end gap-2">
         <RouterLink
           :to="{ name: 'home', query: { tab: 'exercises', exercise: props.alert.slug } }"
@@ -141,7 +129,6 @@ const cell = 'px-3 py-1.5 text-xs';
         />
       </div>
 
-      <!-- Context line, muted -->
       <p class="col-span-full pl-7 text-[11px]" :class="lowVolume ? 'text-amber-700' : 'text-slate-400'">
         <template v-if="isNoData">
           Needs more sessions — {{ props.alert.sessionsAnalyzed }} in this window, 4 needed to assess.
@@ -150,7 +137,6 @@ const cell = 'px-3 py-1.5 text-xs';
           {{ weeklySets }} sets/week — low volume: this may be a programming issue, not a plateau.
         </template>
         <template v-else>{{ weeklySets }} sets/week on average</template>
-        <!-- The four desktop-only columns, condensed for narrow screens. -->
         <span class="lg:hidden">
           · {{ formatMetricValue(props.alert.metricUsed, props.alert.current?.value) }}
           ({{ formatGapToBest(gap) }})

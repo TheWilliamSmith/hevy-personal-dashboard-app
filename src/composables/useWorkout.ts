@@ -12,7 +12,6 @@ export interface UseWorkout {
   retry: () => void;
 }
 
-/** Refetches whenever the id changes, so the route param can drive it directly. */
 export function useWorkout(id: MaybeRefOrGetter<string>): UseWorkout {
   const workout = ref<WorkoutDetail | null>(null);
   const isLoading = ref(false);
@@ -46,8 +45,6 @@ export function useWorkout(id: MaybeRefOrGetter<string>): UseWorkout {
         return;
       }
       workout.value = null;
-      // ParseUUIDPipe answers 400 for a malformed id; to the reader that is
-      // the same thing as a workout that does not exist.
       notFound.value =
         caught instanceof ApiError && (caught.status === 404 || caught.status === 400);
       error.value = caught instanceof ApiError ? caught.message : 'Something went wrong.';

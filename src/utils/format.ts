@@ -1,13 +1,5 @@
-/** Display helpers. Every one of them renders a missing value as an em dash. */
-
 export const EMPTY = '—';
 
-/**
- * Rendered in UTC on purpose. The API maps Hevy's offset-less wall-clock
- * strings straight onto UTC components (see the API's french-date.ts), so
- * "15:03" in the export is stored as 15:03Z. Formatting in the viewer's local
- * zone would shift every workout by their offset.
- */
 const DATE_FORMATTER = new Intl.DateTimeFormat('fr-FR', {
   weekday: 'short',
   day: 'numeric',
@@ -18,7 +10,6 @@ const DATE_FORMATTER = new Intl.DateTimeFormat('fr-FR', {
   timeZone: 'UTC',
 });
 
-/** "jeu. 10 sept. 2026, 15:03" — fr-FR, regardless of the browser locale. */
 export function formatDate(value: string | Date | null | undefined): string {
   if (value === null || value === undefined || value === '') {
     return EMPTY;
@@ -29,11 +20,9 @@ export function formatDate(value: string | Date | null | undefined): string {
     return EMPTY;
   }
 
-  // Intl uses a narrow no-break space before the time; normalise to a plain one.
   return DATE_FORMATTER.format(date).replace(/ /g, ' ');
 }
 
-/** 3720 -> "1h02", 600 -> "10 min", 45 -> "45 s". */
 export function formatDuration(seconds: number | null | undefined): string {
   if (seconds === null || seconds === undefined || !Number.isFinite(seconds) || seconds < 0) {
     return EMPTY;
@@ -50,13 +39,8 @@ export function formatDuration(seconds: number | null | undefined): string {
   return minutes > 0 ? `${minutes} min` : `${total} s`;
 }
 
-/** Volumes arrive rounded to one decimal from the API; keep that decimal. */
 const NUMBER_FORMATTER = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 1 });
 
-/**
- * 12500 -> "12 500 kg". Accepts the strings the API sends for Decimal columns.
- * The separator is a plain space, not the narrow no-break space Intl emits.
- */
 export function formatVolume(value: number | string | null | undefined): string {
   const amount = toNumber(value);
   if (amount === null) {
@@ -66,7 +50,6 @@ export function formatVolume(value: number | string | null | undefined): string 
   return `${NUMBER_FORMATTER.format(amount).replace(/ | /g, ' ')} kg`;
 }
 
-/** 60 -> "60", 62.5 -> "62,5". Also accepts the strings older callers pass. */
 export function formatWeight(value: number | string | null | undefined): string {
   const amount = toNumber(value);
   if (amount === null) {
@@ -81,7 +64,6 @@ export function formatNumber(value: number | string | null | undefined): string 
   return amount === null ? EMPTY : amount.toLocaleString('fr-FR', { maximumFractionDigits: 2 });
 }
 
-/** Null, empty and unparseable all collapse to null so callers render EMPTY. */
 export function toNumber(value: number | string | null | undefined): number | null {
   if (value === null || value === undefined || value === '') {
     return null;
@@ -93,7 +75,6 @@ export function toNumber(value: number | string | null | undefined): number | nu
 
 const INTEGER_FORMATTER = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 });
 
-/** 12500 -> "12 500". Plain spaces, like formatVolume. */
 export function formatInteger(value: number | string | null | undefined): string {
   const amount = toNumber(value);
   if (amount === null) {
@@ -103,7 +84,6 @@ export function formatInteger(value: number | string | null | undefined): string
   return INTEGER_FORMATTER.format(amount).replace(/\u202f|\u00a0/g, ' ');
 }
 
-/** Signed percentage change, null when the baseline is 0 or missing. */
 export function percentChange(
   current: number | null | undefined,
   previous: number | null | undefined,
@@ -118,7 +98,6 @@ export function percentChange(
   return ((now - before) / Math.abs(before)) * 100;
 }
 
-/** 12.3 -> "+12,3 %", -4 -> "-4 %". */
 export function formatPercent(value: number | null | undefined): string {
   const amount = toNumber(value);
   if (amount === null) {
@@ -129,13 +108,11 @@ export function formatPercent(value: number | null | undefined): string {
   return `${amount >= 0 ? '+' : '-'}${rendered} %`;
 }
 
-/** YYYY-MM-DD, the calendar heatmap's key format. */
 export function formatDayKey(value: string | Date): string {
   const date = value instanceof Date ? value : new Date(value);
   return Number.isNaN(date.getTime()) ? '' : date.toISOString().slice(0, 10);
 }
 
-/** Short bucket label for time axes: "10 sept." for a day, "sept. 2026" monthly. */
 export function formatBucket(value: string, granularity: 'day' | 'week' | 'month'): string {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) {
@@ -150,7 +127,6 @@ export function formatBucket(value: string, granularity: 'day' | 'week' | 'month
   return new Intl.DateTimeFormat('fr-FR', options).format(date).replace(/\u202f/g, ' ');
 }
 
-/** 11 -> "11 km", 5.5 -> "5,5 km". */
 export function formatDistanceKm(value: number | string | null | undefined): string {
   const amount = toNumber(value);
   if (amount === null) {
@@ -160,7 +136,6 @@ export function formatDistanceKm(value: number | string | null | undefined): str
   return `${amount.toLocaleString('fr-FR', { maximumFractionDigits: 2 })} km`;
 }
 
-/** 5.83 -> "5:50 /km". Pace is minutes per kilometre, so the decimal is seconds. */
 export function formatPace(minutesPerKm: number | null | undefined): string {
   const amount = toNumber(minutesPerKm);
   if (amount === null) {
@@ -169,16 +144,10 @@ export function formatPace(minutesPerKm: number | null | undefined): string {
 
   const minutes = Math.floor(amount);
   const seconds = Math.round((amount - minutes) * 60);
-  // 59.7 seconds rounds to 60 and would render as "5:60".
   const carry = seconds === 60;
   return `${minutes + (carry ? 1 : 0)}:${String(carry ? 0 : seconds).padStart(2, '0')} /km`;
 }
 
-/**
- * Date without a time, for the API's date-only fields (progression buckets,
- * calendar days). Rendering those with formatDate appends a meaningless
- * "00:00".
- */
 const DAY_FORMATTER = new Intl.DateTimeFormat('fr-FR', {
   day: 'numeric',
   month: 'short',

@@ -2,7 +2,6 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import type { AchievementItem } from '@/types/achievements';
 
-/** The queue is module-level, so each test gets a fresh copy of the module. */
 async function freshQueue() {
   vi.resetModules();
   const { useCelebrations } = await import('./useCelebrations');
@@ -41,7 +40,7 @@ describe('celebration queue', () => {
     const q = await freshQueue();
     q.enqueue([trophy('A'), trophy('B')]);
     const pending = q.acknowledge();
-    expect(q.current.value?.code).toBe('B'); // optimistic
+    expect(q.current.value?.code).toBe('B');
     await pending;
     expect(calls.some((url) => url.endsWith('/achievements/A/seen'))).toBe(true);
   });
@@ -52,8 +51,8 @@ describe('celebration queue', () => {
     q.enqueue([trophy('A'), trophy('B')]);
     await q.acknowledge();
     expect(q.queue.value.map((item) => item.code)).toEqual(['B', 'A']);
-    await q.acknowledge(); // B fails, re-queued
-    await q.acknowledge(); // A fails again: already retried, dropped
+    await q.acknowledge();
+    await q.acknowledge();
     expect(q.queue.value.map((item) => item.code)).toEqual(['B']);
   });
 

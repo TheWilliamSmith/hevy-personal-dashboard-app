@@ -1,11 +1,6 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 
-/**
- * A one-shot canvas confetti burst, about 1.5 kB — no library. It runs for
- * DURATION_MS then stops its animation frame loop entirely. The parent does
- * not mount it at all under prefers-reduced-motion.
- */
 const props = withDefaults(defineProps<{ colors: readonly string[]; count?: number }>(), {
   count: 110,
 });
@@ -75,6 +70,5 @@ onBeforeUnmount(() => cancelAnimationFrame(frame));
 </script>
 
 <template>
-  <!-- Decorative only. -->
   <canvas ref="canvas" class="pointer-events-none absolute inset-0 h-full w-full" aria-hidden="true" />
 </template>

@@ -8,7 +8,6 @@ import { formatDay, formatInteger } from '@/utils/format';
 
 import ChartCard from './ChartCard.vue';
 
-/** Icons load with the card's chunk, not the Dashboard's first paint. */
 const AchievementIcon = defineAsyncComponent(
   () => import('@/components/achievements/AchievementIcon.vue'),
 );

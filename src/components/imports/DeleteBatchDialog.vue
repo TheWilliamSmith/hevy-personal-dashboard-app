@@ -25,14 +25,6 @@ watch(open, (isOpen) => {
   }
 });
 
-/**
- * Typing the file name is required only for the destructive branch.
- *
- * There is no undo: the rollback deletes workouts and cascades to their
- * exercises and sets, and nothing server-side can restore them — an "undo"
- * toast would promise something the API cannot deliver. Keeping only the batch
- * record is reversible in practice (the workouts stay), so it needs no ritual.
- */
 const needsTypedName = computed(() => deleteWorkouts.value && (props.batch?.workoutsStillPresent ?? 0) > 0);
 
 const nameMatches = computed(() => typedName.value.trim() === props.batch?.fileName);

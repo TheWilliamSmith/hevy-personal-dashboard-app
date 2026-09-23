@@ -6,7 +6,6 @@ import { formatDate, formatDuration, formatVolume } from '@/utils/format';
 
 const props = defineProps<{ workout: WorkoutSummary; backQuery: Record<string, string> }>();
 
-/** The API already truncates to five names and appends a "+n" entry. */
 const isOverflowChip = (name: string): boolean => /^\+\d+$/.test(name);
 </script>
 
@@ -19,7 +18,6 @@ const isOverflowChip = (name: string): boolean => /^\+\d+$/.test(name);
       }"
       class="block h-full rounded-xl border border-slate-200 bg-white p-4 transition-colors hover:border-indigo-400 hover:bg-indigo-50/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
     >
-      <!-- Stacked: in a grid column, title and date side by side truncated the title. -->
       <div class="flex flex-col gap-0.5">
         <h3 class="truncate font-semibold text-slate-900" :title="props.workout.title">
           {{ props.workout.title }}

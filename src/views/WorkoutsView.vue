@@ -25,7 +25,6 @@ const {
 
 const hasActiveFilters = useHasActiveFilters(filters);
 
-/** Carried into the detail route so the back link can restore this exact view. */
 const backQuery = computed<Record<string, string>>(() => {
   const query: Record<string, string> = {};
   if (filters.value.search) query.search = filters.value.search;
@@ -66,7 +65,6 @@ const statusMessage = computed(() => {
       @clear="clearFilters"
     />
 
-    <!-- Page and filter changes are announced here for screen readers. -->
     <p class="sr-only" role="status" aria-live="polite">{{ statusMessage }}</p>
 
     <div :aria-busy="isLoading">

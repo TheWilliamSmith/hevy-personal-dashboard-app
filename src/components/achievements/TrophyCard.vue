@@ -15,17 +15,9 @@ import { formatDay } from '@/utils/format';
 
 import AchievementIcon from './AchievementIcon.vue';
 
-/**
- * Every trophy state that has data: unlocked, locked with progress, locked
- * without. Negative (xp 0) and Legendary are modifiers on top of those, not
- * states of their own. Masked secrets never reach this component — they
- * render as SecretTrophyTile, which is given no data at all.
- */
 const props = defineProps<{
   item: AchievementItem;
-  /** Tiers in this card's ladder, for the pips; 0 when not tiered. */
   ladderSize: number;
-  /** Larger variant for the celebration modal and the hero highlight. */
   featured?: boolean;
 }>();
 
@@ -40,7 +32,6 @@ const rarity = computed(() => RARITY_STYLES[props.item.rarity]);
 const frame = computed(() => {
   if (negative.value) return NEGATIVE_STYLE.card;
   if (unlocked.value) return rarity.value.card;
-  // The motivating state gets a solid border and white, not the grey of "nothing yet".
   return started.value ? 'border-slate-300 bg-white' : 'border-slate-200 bg-slate-50';
 });
 
@@ -51,11 +42,6 @@ const badge = computed(() => {
 
 const label = computed(() => describeAchievement(props.item));
 
-/**
- * An unlocked card links to the workout that earned it. Not when featured: in
- * the celebration modal a link would be the first focus stop, and Enter would
- * navigate away mid-celebration instead of acknowledging it.
- */
 const target = computed(() =>
   !props.featured && unlocked.value && props.item.workoutId
     ? { name: 'home' as const, query: { tab: 'workouts', workout: props.item.workoutId } }
@@ -76,11 +62,6 @@ const target = computed(() =>
       props.featured ? 'p-6' : '',
     ]"
   >
-    <!--
-      The full description as real text, not aria-label: screen readers often
-      ignore aria-label on a non-interactive <article>, which would leave a
-      locked card silent. Everything visual below is aria-hidden.
-    -->
     <span class="sr-only">{{ label }}</span>
 
     <div class="flex items-start gap-3" aria-hidden="true">
@@ -105,7 +86,6 @@ const target = computed(() =>
       </div>
     </div>
 
-    <!-- Tier pips: the ladder, with this card's rung marked. -->
     <div v-if="props.ladderSize > 1 && props.item.tier" class="flex gap-1" aria-hidden="true">
       <span
         v-for="rung in props.ladderSize"
@@ -122,13 +102,11 @@ const target = computed(() =>
     </div>
 
     <div aria-hidden="true" class="flex flex-1 flex-col gap-2">
-      <!-- Unlocked: the flavour line is the reward text. -->
       <p v-if="unlocked && props.item.flavor" class="text-xs italic text-slate-600">
         “{{ props.item.flavor }}”
       </p>
       <p v-else class="text-xs text-slate-600">{{ props.item.description }}</p>
 
-      <!-- Locked with progress: the real numbers, not just a bar. -->
       <div v-if="!unlocked && props.item.progress" class="mt-auto">
         <div class="flex items-baseline justify-between gap-2 text-[11px]">
           <span class="font-medium tabular-nums" :class="started ? 'text-slate-800' : 'text-slate-400'">
@@ -154,17 +132,11 @@ const target = computed(() =>
 </template>
 
 <style scoped>
-/*
- * Native lazy rendering: the browser skips layout and paint for cards outside
- * the viewport. 70 cards is cheap anyway, but this costs nothing — no
- * observer, no timer, no JS.
- */
 .trophy-tile {
   content-visibility: auto;
   contain-intrinsic-size: auto 190px;
 }
 
-/* Legendary only: one sheen sweep, CSS only. */
 .trophy-legendary::after {
   content: '';
   position: absolute;

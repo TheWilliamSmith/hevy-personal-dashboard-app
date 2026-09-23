@@ -9,7 +9,6 @@ const props = defineProps<{
   current: number | null;
   previous: number | null;
   comparisonLabel: string | null;
-  /** Lower is better for nothing here today, but duration could flip it. */
   invert?: boolean;
   isLoading?: boolean;
 }>();
@@ -36,13 +35,11 @@ const deltaClass = computed(() =>
     <template v-else>
       <p class="mt-1 truncate text-xl font-semibold text-slate-900">{{ props.value }}</p>
 
-      <!-- The figure never breaks; the label is what gives way when narrow. -->
       <p v-if="delta !== null" class="mt-1 flex min-w-0 items-baseline gap-1 text-xs" :class="deltaClass">
         <span class="whitespace-nowrap" aria-hidden="true">{{ isUp ? '▲' : '▼' }}</span>
         <span class="whitespace-nowrap">{{ formatPercent(delta) }}</span>
         <span class="hidden truncate text-slate-400 sm:inline">{{ props.comparisonLabel }}</span>
       </p>
-      <!-- No previous window (preset "All") means no honest comparison. -->
       <p v-else class="mt-1 text-xs text-slate-400">No comparison</p>
     </template>
   </div>

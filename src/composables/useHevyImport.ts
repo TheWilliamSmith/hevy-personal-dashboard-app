@@ -20,17 +20,6 @@ export interface UseHevyImport {
   reset: () => void;
 }
 
-/**
- * Two-step import: `selectFile` validates and uploads to /imports/hevy/preview,
- * which writes nothing and stages the parsed payload. Nothing reaches the
- * database until `confirm` posts the staged id.
- *
- * State machine:
- *   idle -> uploading -> previewing -> confirming -> success
- *                     \-> error            \-> error
- *
- * No DOM access: the component owns the file input and the dialog.
- */
 export function useHevyImport(): UseHevyImport {
   const status = ref<ImportStatus>('idle');
   const file = ref<File | null>(null);
@@ -60,7 +49,6 @@ export function useHevyImport(): UseHevyImport {
     return `Unexpected response from the server (HTTP ${httpStatus}).`;
   }
 
-  /** Client-side gate: nothing leaves the browser until extension and size pass. */
   function selectFile(candidate: File | null | undefined): void {
     if (status.value === 'uploading' || status.value === 'confirming') {
       return;
@@ -99,10 +87,6 @@ export function useHevyImport(): UseHevyImport {
     void upload(candidate);
   }
 
-  /**
-   * XMLHttpRequest rather than fetch: only XHR reports upload progress, and a
-   * multi-megabyte export on a slow link needs a real bar.
-   */
   function upload(candidate: File): Promise<void> {
     const payload = new FormData();
     payload.append('file', candidate, candidate.name);
@@ -153,7 +137,6 @@ export function useHevyImport(): UseHevyImport {
         settle();
       });
 
-      // An abort comes from cancel()/reset(), which already set the next status.
       xhr.addEventListener('abort', settle);
 
       xhr.open('POST', apiUrl('/imports/hevy/preview'));
@@ -162,10 +145,6 @@ export function useHevyImport(): UseHevyImport {
     });
   }
 
-  /**
-   * Writes the staged import. Resolves with the result, or null on failure —
-   * it never rejects, so callers branch on the value.
-   */
   async function confirm(): Promise<ImportResult | null> {
     const staged = preview.value;
     if (status.value !== 'previewing' || !staged) {
@@ -194,8 +173,6 @@ export function useHevyImport(): UseHevyImport {
       if (signal.aborted) {
         return null;
       }
-      // A 410 means the staged payload expired or was already confirmed; the
-      // server's wording tells the user to upload again, so it is kept.
       fail(
         caught instanceof ApiError ? caught.message : 'Something went wrong.',
         caught instanceof ApiError ? caught.status : null,
@@ -206,7 +183,6 @@ export function useHevyImport(): UseHevyImport {
     }
   }
 
-  /** Drops the staged import without writing anything. */
   function cancel(): void {
     request?.abort();
     controller?.abort();

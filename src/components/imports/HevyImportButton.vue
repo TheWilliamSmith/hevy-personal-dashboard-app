@@ -18,7 +18,6 @@ const label = computed(() =>
   props.isBusy ? `Analysing… ${props.progress}%` : 'Import Hevy export',
 );
 
-/** Clearing the value makes re-picking the same file fire @change again. */
 function clearInput(): void {
   if (input.value) {
     input.value.value = '';
@@ -46,7 +45,6 @@ function onDrop(event: DragEvent): void {
   emit('file', event.dataTransfer?.files?.[0]);
 }
 
-/** The parent refocuses this after the preview dialog closes on expiry. */
 defineExpose({ focus: () => openPickerButton.value?.focus() });
 </script>
 

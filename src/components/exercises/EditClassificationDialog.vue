@@ -28,7 +28,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{ cancel: []; save: [payload: UpdateExercisePayload] }>();
 
-/** The API caps secondaries at 14. */
 const MAX_SECONDARIES = 14;
 
 const muscleGroup = ref<MuscleGroup>('CHEST');
@@ -65,7 +64,6 @@ function toggleSecondary(group: MuscleGroup): void {
 function save(): void {
   emit('save', {
     muscleGroup: muscleGroup.value,
-    // The primary group must not also appear as a secondary.
     secondaryMuscles: secondaries.value.filter((group) => group !== muscleGroup.value),
     equipment: equipment.value,
     kind: kind.value,

@@ -99,7 +99,6 @@ const cell = 'px-3 py-2 text-sm text-slate-800 whitespace-nowrap';
                 {{ formatInteger(batch.workoutsStillPresent) }} / {{ formatInteger(batch.workoutsCreated) }}
               </td>
               <td :class="cell">
-                <!-- title= is the tooltip explaining why the action is unavailable. -->
                 <span
                   :title="
                     batch.rollbackable

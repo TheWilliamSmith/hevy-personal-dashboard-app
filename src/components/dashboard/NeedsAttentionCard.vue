@@ -16,10 +16,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{ retry: [] }>();
 
-/**
- * Every number here comes from /progress/summary. The card only renders: the
- * rules that decide what "regressing" means live on the server, in one place.
- */
 const top = computed(() => props.summary?.topConcerns ?? []);
 const attentionCount = computed(() =>
   ATTENTION_STATUSES.reduce((sum, status) => sum + (props.summary?.counts[status] ?? 0), 0),

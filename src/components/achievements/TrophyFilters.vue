@@ -21,7 +21,6 @@ const SHOWS: ReadonlyArray<{ value: TrophyShow; label: string }> = [
 
 <template>
   <div class="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
-    <!-- Scrolls sideways on a phone rather than wrapping into a wall of chips. -->
     <div class="-mx-1 flex gap-1 overflow-x-auto px-1 pb-1 [scrollbar-width:none]" role="group" aria-label="Family">
       <button
         v-for="option in FAMILIES"

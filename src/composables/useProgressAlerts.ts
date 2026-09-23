@@ -26,7 +26,6 @@ import type {
   StatusCounts,
 } from '@/types/progress';
 
-/** Sliders fire on every tick; this is how long the URL waits for them to settle. */
 export const SETTINGS_DEBOUNCE_MS = 250;
 
 export type ProgressSort = 'priority' | 'name' | 'slope' | 'gap' | 'lastPR' | 'lastDone';
@@ -51,7 +50,6 @@ function clampFloat(raw: string, min: number, max: number, fallback: number): nu
   return Number.isFinite(parsed) ? Math.min(max, Math.max(min, parsed)) : fallback;
 }
 
-/** Reads every setting from the URL, clamped to what the API accepts. */
 function paramsFromQuery(query: LocationQuery): ProgressParams {
   const window = queryString(query, 'window');
   const muscle = queryString(query, 'muscleGroup');
@@ -92,13 +90,11 @@ const EMPTY_COUNTS: StatusCounts = {
 };
 
 export interface UseProgressAlerts {
-  /** Live values for the controls; the URL catches up after the debounce. */
   draft: ProgressParams;
   status: ComputedRef<ProgressStatus | null>;
   sort: ComputedRef<ProgressSort>;
   counts: ComputedRef<StatusCounts>;
   total: ComputedRef<number>;
-  /** Items after the status filter and sort. */
   visible: ComputedRef<ProgressItem[]>;
   muted: ComputedRef<MutedExercise[]>;
   isLoading: Ref<boolean>;
@@ -116,14 +112,6 @@ export interface UseProgressAlerts {
   refresh: () => void;
 }
 
-/**
- * Owns /progress/alerts: parameters, URL sync, fetching and muting.
- *
- * Everything lives in the query string — settings, the status filter and the
- * sort — so a stricter configuration can be shared as a link. Only the settings
- * reach the API; the status filter and sort are applied client-side, because
- * the counts on the strip must keep describing every status at once.
- */
 export function useProgressAlerts(): UseProgressAlerts {
   const route = useRoute();
   const router = useRouter();
@@ -136,7 +124,6 @@ export function useProgressAlerts(): UseProgressAlerts {
 
   const params = computed(() => paramsFromQuery(route.query));
 
-  /** Control state, updated instantly so sliders stay responsive. */
   const draft = reactive<ProgressParams>({ ...params.value });
 
   const status = computed<ProgressStatus | null>(() => {
@@ -162,7 +149,6 @@ export function useProgressAlerts(): UseProgressAlerts {
     void router.replace({ name: 'home', query });
   }
 
-  /** Writes only the settings that differ from the defaults, so links stay short. */
   function pushParams(next: ProgressParams): void {
     push({
       window: next.window === PROGRESS_DEFAULTS.window ? undefined : next.window,
@@ -214,8 +200,6 @@ export function useProgressAlerts(): UseProgressAlerts {
     }
   }
 
-  // Refetch only when a setting changes — not on status or sort, which are
-  // client-side. A URL change from elsewhere (back button) re-syncs the draft.
   watch(
     [() => JSON.stringify(params.value), dataVersion],
     () => {
@@ -249,7 +233,6 @@ export function useProgressAlerts(): UseProgressAlerts {
     const filtered = status.value ? items.filter((item) => item.status === status.value) : items;
 
     if (sort.value === 'priority') {
-      // The server already ranks by STATUS_SORT_RANK; keep its order.
       return filtered;
     }
 
@@ -259,7 +242,6 @@ export function useProgressAlerts(): UseProgressAlerts {
       case 'name':
         return sorted.sort((a, b) => a.name.localeCompare(b.name, 'en'));
       case 'slope':
-        // Worst first; no slope (not enough data) sinks to the bottom.
         return sorted.sort(
           (a, b) => byNull(a.slopePctPerWeek, Infinity) - byNull(b.slopePctPerWeek, Infinity),
         );
@@ -292,12 +274,6 @@ export function useProgressAlerts(): UseProgressAlerts {
     await apiPatch<MuteResult>(`/progress/exercises/${encodeURIComponent(exerciseId)}/mute`, payload);
   }
 
-  /**
-   * Optimistic: the row leaves the list, joins the muted section and its
-   * status count drops, before the server answers. On failure the snapshot is
-   * restored exactly. On success a quiet refetch reconciles with the server,
-   * which is the authority on what muting excludes.
-   */
   async function mute(item: ProgressItem, reason: string | null): Promise<boolean> {
     const current = response.value;
     if (!current) {
@@ -320,7 +296,6 @@ export function useProgressAlerts(): UseProgressAlerts {
     mutingId.value = item.exerciseId;
     muteError.value = null;
     try {
-      // `reason` is optional in MuteExerciseDto: omit it rather than send null.
       await patchMute(item.exerciseId, reason ? { muted: true, reason } : { muted: true });
       void fetchAlerts();
       return true;
@@ -333,11 +308,6 @@ export function useProgressAlerts(): UseProgressAlerts {
     }
   }
 
-  /**
-   * The muted list carries no status or series, so the row cannot be rebuilt
-   * locally: it leaves the muted section at once, and the refetch puts it back
-   * in the list with its real status and counts.
-   */
   async function unmute(entry: MutedExercise): Promise<boolean> {
     const current = response.value;
     if (!current) {

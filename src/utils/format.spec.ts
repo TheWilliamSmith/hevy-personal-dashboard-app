@@ -21,10 +21,6 @@ describe('formatDate', () => {
     expect(formatDate(new Date('2026-09-10T15:03:00.000Z'))).toBe('jeu. 10 sept. 2026, 15:03');
   });
 
-  // The API stores Hevy's wall-clock time as UTC (see its french-date.ts), so
-  // the rendered hour must be the UTC one. Both assertions above fail on any
-  // machine outside UTC if timeZone: 'UTC' is dropped from the formatter.
-
   it.each([null, undefined, '', 'not-a-date'])('renders %s as an em dash', (value) => {
     expect(formatDate(value)).toBe(EMPTY);
   });
@@ -53,7 +49,6 @@ describe('formatVolume', () => {
     ['12500.000', '12 500 kg'],
     [0, '0 kg'],
     [999, '999 kg'],
-    // The API rounds volumes to one decimal; that decimal must survive.
     [14530.5, '14 530,5 kg'],
   ])('formats %s as %s', (value, expected) => {
     expect(formatVolume(value)).toBe(expected);

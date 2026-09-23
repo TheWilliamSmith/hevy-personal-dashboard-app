@@ -18,7 +18,6 @@ function rangeParams(range: StatsRange): QueryParams {
   return { from: range.from, to: range.to };
 }
 
-/** KPI row. */
 export function useStatsOverview(range: MaybeRefOrGetter<StatsRange>): StatsResource<Overview> {
   return useStatsResource(
     (signal) => apiGet<Overview>('/stats/overview', rangeParams(toValue(range)), signal),
@@ -26,10 +25,6 @@ export function useStatsOverview(range: MaybeRefOrGetter<StatsRange>): StatsReso
   );
 }
 
-/**
- * The API returns one metric per call, so changing the metric switcher is a
- * refetch rather than a client-side recompute.
- */
 export function useStatsTimeseries(
   range: MaybeRefOrGetter<StatsRange>,
   metric: MaybeRefOrGetter<TimeseriesMetric>,
@@ -50,7 +45,6 @@ export function useStatsTimeseries(
   );
 }
 
-/** One dimension per call, so weekday and rep range are two resources. */
 export function useStatsDistribution(
   range: MaybeRefOrGetter<StatsRange>,
   dimension: MaybeRefOrGetter<DistributionDimension>,
@@ -66,7 +60,6 @@ export function useStatsDistribution(
   );
 }
 
-/** Depends on the year only: the toolbar range must not blank the year grid. */
 export function useStatsCalendar(year: MaybeRefOrGetter<number>): StatsResource<CalendarDay[]> {
   return useStatsResource(
     (signal) => apiGet<CalendarDay[]>('/stats/calendar', { year: toValue(year) }, signal),

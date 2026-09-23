@@ -27,12 +27,6 @@ const filters = useDashboardFilters();
 
 const timeseriesMetric = ref<TimeseriesMetric>('volume');
 
-/**
- * Every resource starts fetching during setup, in the same tick: they run
- * concurrently, never waterfalled. Each watches only the inputs it needs, so
- * changing granularity refetches the timeseries alone and changing the year
- * refetches only the calendar.
- */
 const overview = useStatsOverview(() => filters.range.value);
 const timeseries = useStatsTimeseries(
   () => filters.range.value,
@@ -48,7 +42,6 @@ const repRange = useStatsDistribution(
   () => 'repRange',
 );
 const calendar = useStatsCalendar(() => filters.year.value);
-// Server-classified; the Dashboard never re-derives a progress status.
 const attention = useProgressSummary();
 const trophies = useStatsResource(
   (signal) => apiGet<AchievementsSummary>('/achievements/summary', {}, signal),
@@ -58,10 +51,6 @@ const trophies = useStatsResource(
 const stats = computed(() => overview.data.value);
 const previous = computed(() => overview.data.value?.previous ?? null);
 
-/**
- * The API sends no list of years, so the selector is derived from the first and
- * last workout the overview reports.
- */
 const availableYears = computed(() => {
   const first = stats.value?.firstWorkoutAt;
   const last = stats.value?.lastWorkoutAt;
@@ -76,15 +65,10 @@ const availableYears = computed(() => {
   return Array.from({ length: end - start + 1 }, (_, index) => start + index);
 });
 
-/** Only a loaded, genuinely empty overview shows the global empty state. */
 const isEmptyDashboard = computed(
   () => stats.value !== null && stats.value !== undefined && stats.value.totalWorkouts === 0,
 );
 
-/**
- * `previous` carries only four metrics, so total reps and total time have no
- * honest comparison — those tiles pass null and render "No comparison".
- */
 const kpis = computed(() => [
   {
     label: 'Workouts',

@@ -34,7 +34,6 @@ const pendingDelete = ref<ImportBatchSummary | null>(null);
 const isBusy = computed(() => status.value === 'uploading');
 const isConfirming = computed(() => status.value === 'confirming');
 
-/** The preview dialog owns its own error line while it is open. */
 const dialogError = computed(() => (status.value === 'error' && preview.value ? error.value?.message ?? null : null));
 const inlineError = computed(() => (preview.value ? null : error.value?.message ?? null));
 
@@ -46,7 +45,6 @@ async function onConfirm(): Promise<void> {
 
   batches.refresh();
 
-  // Queued behind the result toast; the modal opens from the app shell.
   if (result.newAchievements && result.newAchievements.length > 0) {
     celebrations.enqueue(result.newAchievements);
   }
@@ -69,7 +67,6 @@ async function onConfirm(): Promise<void> {
   });
 }
 
-/** Expiry path: drop the staged import and reopen the picker. */
 function onReupload(): void {
   reset();
   importButton.value?.focus();
@@ -83,7 +80,6 @@ async function onDeleteConfirmed(deleteWorkouts: boolean): Promise<void> {
 
   const rolled = await batches.rollback(batch.id, deleteWorkouts);
   if (!rolled) {
-    // The dialog stays open showing batches.deleteError (a 409 explains why).
     return;
   }
 

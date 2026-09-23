@@ -34,7 +34,6 @@ const {
   mergeInto,
 } = useExercise(slug);
 
-/** The merge picker needs the catalog; it is already cached by the list tab. */
 const catalog = useExercises();
 const mergeCandidates = computed(() => catalog.groups.value.flatMap((group) => group.exercises));
 

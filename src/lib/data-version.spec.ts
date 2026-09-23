@@ -4,7 +4,6 @@ import { dataVersion, invalidateWorkoutData, shouldBypassHttpCache } from './dat
 
 describe('data invalidation', () => {
   it('does not bypass the HTTP cache until something is invalidated', () => {
-    // This assertion depends on module state, so it runs before any bump.
     expect(dataVersion.value).toBe(0);
     expect(shouldBypassHttpCache()).toBe(false);
   });

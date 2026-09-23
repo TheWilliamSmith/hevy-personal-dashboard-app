@@ -1,24 +1,14 @@
 import type { MetricUsed, ProgressParams, ProgressStatus } from '@/types/progress';
 
-/**
- * The single source of truth for how a status looks and reads on this page.
- * The strip, the pills and the sparklines all read from here, so a status
- * never changes colour between two places.
- */
 export interface StatusStyle {
   label: string;
-  /** Canvas/SVG colour, for the sparkline stroke. */
   hex: string;
-  /** Pill. */
   pill: string;
-  /** Strip counter, idle and selected. */
   strip: string;
   stripActive: string;
-  /** Empty-list copy when this status is the active filter. */
   empty: string;
 }
 
-/** Same order as STATUS_SORT_RANK in the API: most urgent first. */
 export const STATUS_ORDER: readonly ProgressStatus[] = [
   'REGRESSING',
   'PLATEAU',
@@ -60,13 +50,9 @@ export const STATUS_STYLES: Readonly<Record<ProgressStatus, StatusStyle>> = {
     stripActive: 'border-emerald-600 bg-emerald-600 text-white',
     empty: 'Nothing is climbing past the threshold yet.',
   },
-  // Deliberately not a problem colour, and never "no progress": the API
-  // simply has fewer than 4 sessions to judge from.
   NOT_ENOUGH_DATA: {
     label: 'Needs more sessions',
     hex: '#cbd5e1',
-    // A real dashed border: a ring cannot be dashed, and the dash is what
-    // separates "not judged yet" from the four statuses that are judgements.
     pill: 'border border-dashed border-slate-300 bg-white text-slate-500',
     strip: 'border-dashed border-slate-300 text-slate-500 hover:bg-slate-50',
     stripActive: 'border-dashed border-slate-400 bg-slate-100 text-slate-700',
@@ -74,7 +60,6 @@ export const STATUS_STYLES: Readonly<Record<ProgressStatus, StatusStyle>> = {
   },
 };
 
-/** Statuses that describe a problem. NOT_ENOUGH_DATA is intentionally absent. */
 export const ATTENTION_STATUSES: readonly ProgressStatus[] = ['REGRESSING', 'PLATEAU', 'STALE'];
 
 export const PROGRESS_DEFAULTS: Readonly<Omit<ProgressParams, 'muscleGroup'>> = {
@@ -91,12 +76,10 @@ export const WINDOWS: ReadonlyArray<{ value: ProgressParams['window']; label: st
   { value: '52w', label: '52 weeks' },
 ];
 
-/** Bounds the API validates; the controls never offer anything outside them. */
 export const SESSIONS_RANGE = { min: 4, max: 10 } as const;
 export const STALE_RANGE = { min: 2, max: 8 } as const;
 export const THRESHOLD_RANGE = { min: 0.1, max: 3, step: 0.1 } as const;
 
-/** Muted weekly volume below which a stall is more likely programming than a plateau. */
 export const LOW_WEEKLY_SETS = 2;
 
 export const METRIC_LABELS: Readonly<Record<MetricUsed, string>> = {

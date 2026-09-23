@@ -29,7 +29,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{ retry: []; metric: [value: TimeseriesMetric] }>();
 
-/** "workouts" is left out: the count already rides the secondary axis. */
 const METRICS: ReadonlyArray<{ value: TimeseriesMetric; label: string }> = [
   { value: 'volume', label: 'Volume' },
   { value: 'sets', label: 'Sets' },
@@ -46,7 +45,6 @@ const labels = computed(() =>
   rows.value.map((point) => formatBucket(point.bucket, props.granularity)),
 );
 
-/** The one deliberate dual-axis chart: metric as bars, workout count as line. */
 const option = computed<EChartsOption>(() => ({
   ...baseOption(palette),
   tooltip: {
@@ -79,11 +77,8 @@ const option = computed<EChartsOption>(() => ({
       },
     },
     {
-      // No axis name: it collided with the legend in the top-right corner.
       ...valueAxis(palette),
       splitLine: { show: false },
-      // A count is a whole number. Without minInterval ECharts splits a max of
-      // 1 into 0.2 steps and every tick rounds to the same label ("1,1,1,0,0").
       minInterval: 1,
       axisLabel: { color: palette.axisLabel, formatter: (value: number) => formatInteger(value) },
     },

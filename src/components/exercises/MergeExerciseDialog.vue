@@ -29,7 +29,6 @@ watch(
   },
 );
 
-/** The target cannot merge into itself — the API answers 409 for that. */
 const options = computed(() => {
   const term = search.value.trim().toLowerCase();
   return props.candidates

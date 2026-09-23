@@ -1,10 +1,5 @@
 import type { Equipment, ExerciseKind, MuscleGroup } from '@/types/exercises';
 
-/**
- * Anatomical order, top-down then front-to-back. The API returns groups
- * alphabetically, so the list view sorts with this — it is the single source of
- * truth for order, labels and colour.
- */
 export const MUSCLE_ORDER: readonly MuscleGroup[] = [
   'CHEST',
   'BACK',
@@ -41,11 +36,6 @@ export const MUSCLE_LABELS: Readonly<Record<MuscleGroup, string>> = {
   FULL_BODY: 'Full body',
 };
 
-/**
- * One hue per muscle group, usable by chips today and by charts later.
- * `text`/`bg`/`ring` are Tailwind classes; `hex` is for canvas-rendered charts,
- * which cannot read a class.
- */
 export interface MuscleStyle {
   hex: string;
   chip: string;
@@ -97,7 +87,6 @@ export const KIND_LABELS: Readonly<Record<ExerciseKind, string>> = {
   BODYWEIGHT_HOLD: 'Hold',
 };
 
-/** Sorts any muscle group by the anatomical order; unknown values go last. */
 export function muscleRank(group: MuscleGroup): number {
   const index = MUSCLE_ORDER.indexOf(group);
   return index === -1 ? MUSCLE_ORDER.length : index;

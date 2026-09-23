@@ -7,14 +7,7 @@ const props = withDefaults(
     error?: string | null;
     isEmpty?: boolean;
     emptyLabel?: string;
-    /**
-     * Desktop height of the plotting area. It is a MIN height, not a fixed one:
-     * the card stretches to fill its grid row, which is what keeps neighbouring
-     * cards flush instead of leaving a gap under the shorter one. Capped
-     * against the viewport so a tall card still fits a phone screen.
-     */
     height?: number;
-    /** Screen-reader summary of the series. */
     ariaLabel?: string;
   }>(),
   { height: 280, emptyLabel: 'No data for this period.' },
@@ -33,7 +26,6 @@ const emit = defineEmits<{ retry: [] }>();
       <slot name="toolbar" />
     </header>
 
-    <!-- flex-1 makes the body absorb whatever height the grid row hands down. -->
     <div
       class="relative flex min-h-0 flex-1 flex-col p-3"
       :style="{ minHeight: `min(${props.height}px, 60vh)` }"
@@ -60,16 +52,6 @@ const emit = defineEmits<{ retry: [] }>();
         {{ props.emptyLabel }}
       </p>
 
-      <!--
-        The chart is decorative to assistive tech; the accessible content is the
-        aria-label summary plus the table in #fallback.
-      -->
-      <!--
-        The min-height is repeated here on purpose. flex-1 alone only resolves
-        when an ancestor has a definite height, which a dashboard grid cell
-        provides but a plain auto-height parent does not — there the chart
-        collapsed to 0px and ECharts rendered an empty canvas.
-      -->
       <div
         v-else
         class="relative min-h-0 flex-1"
