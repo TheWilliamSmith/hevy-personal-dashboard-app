@@ -137,3 +137,48 @@ export interface CalendarDay {
   volumeKg: number;
   durationSec: number;
 }
+
+/* ------------------------------------------------------- muscle heat map */
+
+/**
+ * Mirrors MuscleHeatmapDto in api/src/stats/dto/stats-response.dto.ts,
+ * verified field-for-field against the running API.
+ */
+export type HeatmapMetric = 'sets' | 'volume' | 'reps';
+
+/** Mirrors the Prisma MuscleGroup enum, as BodyHeatmap expects it. */
+export type MuscleGroup =
+  | 'CHEST'
+  | 'BACK'
+  | 'TRAPS'
+  | 'SHOULDERS'
+  | 'BICEPS'
+  | 'TRICEPS'
+  | 'FOREARMS'
+  | 'QUADS'
+  | 'HAMSTRINGS'
+  | 'GLUTES'
+  | 'ADDUCTORS'
+  | 'CALVES'
+  | 'ABS'
+  | 'CARDIO'
+  | 'FULL_BODY';
+
+/** Every MuscleGroup key is always present; 0 means untrained, never absent. */
+export type MuscleGroupValues = Record<MuscleGroup, number>;
+
+export interface MuscleHeatmap {
+  metric: HeatmapMetric;
+  /** The resolved window, echoed back. */
+  from: string;
+  to: string;
+  values: MuscleGroupValues;
+  max: number;
+  topMuscle: MuscleGroup | null;
+  /** Lowest 3 by value, excluding groups never trained in the window. */
+  leastTrained: MuscleGroup[];
+  /** `values` divided by the number of ISO weeks in range. */
+  weeklyAverage: MuscleGroupValues;
+  /** Same shape as `values`, for the preceding window of equal length. */
+  previous: MuscleGroupValues;
+}

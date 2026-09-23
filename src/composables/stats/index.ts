@@ -122,5 +122,6 @@ export function useStatsCalendar(year: MaybeRefOrGetter<number>): StatsResource<
   );
 }
 
+export { useMuscleHeatmap } from './useMuscleHeatmap';
 export { useDashboardFilters } from './useDashboardFilters';
 export type { StatsResource } from './useStatsResource';
