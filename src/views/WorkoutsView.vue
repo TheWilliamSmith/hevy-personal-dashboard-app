@@ -51,7 +51,7 @@ const statusMessage = computed(() => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-6">
+  <div class="flex flex-col gap-6 px-4 sm:px-6">
     <header>
       <h1 class="text-2xl font-semibold text-slate-900">Workouts</h1>
     </header>
@@ -70,8 +70,8 @@ const statusMessage = computed(() => {
     <p class="sr-only" role="status" aria-live="polite">{{ statusMessage }}</p>
 
     <div :aria-busy="isLoading">
-      <ul v-if="isLoading" class="flex flex-col gap-3">
-        <WorkoutCardSkeleton :count="5" />
+      <ul v-if="isLoading" class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+        <WorkoutCardSkeleton :count="8" />
       </ul>
 
       <div
@@ -114,7 +114,7 @@ const statusMessage = computed(() => {
         </template>
       </div>
 
-      <ul v-else class="flex flex-col gap-3">
+      <ul v-else class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
         <WorkoutCard
           v-for="workout in workouts"
           :key="workout.id"

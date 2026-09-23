@@ -31,7 +31,7 @@ const orderedExercises = computed(() =>
 </script>
 
 <template>
-  <div class="flex flex-col gap-6">
+  <div class="flex flex-col gap-6 px-4 sm:px-6">
     <RouterLink
       :to="{ name: 'home', query: { ...backQuery, tab: 'workouts' } }"
       class="text-sm font-medium text-indigo-700 underline underline-offset-2 hover:text-indigo-900"
@@ -96,7 +96,8 @@ const orderedExercises = computed(() =>
           </div>
         </dl>
 
-        <div class="flex flex-col gap-4">
+        <!-- Two exercise tables side by side once the screen is wide enough. -->
+        <div class="grid items-start gap-4 xl:grid-cols-2">
           <ExerciseSection
             v-for="exercise in orderedExercises"
             :key="exercise.id"

@@ -17,7 +17,7 @@ describe('tab definitions', () => {
     expect(FULL_WIDTH_TABS.has('dashboard')).toBe(true);
     expect(FULL_WIDTH_TABS.has('exercises')).toBe(true);
     expect(FULL_WIDTH_TABS.has('body')).toBe(true);
-    expect(FULL_WIDTH_TABS.has('workouts')).toBe(false);
+    expect(FULL_WIDTH_TABS.has('workouts')).toBe(true);
     expect(FULL_WIDTH_TABS.has('imports')).toBe(false);
   });
 });

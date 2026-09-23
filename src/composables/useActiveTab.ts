@@ -12,7 +12,7 @@ export const TABS: ReadonlyArray<{ name: TabName; label: string }> = [
 ];
 
 /** The dashboard grid wants the whole viewport; the other tabs do not. */
-export const FULL_WIDTH_TABS: ReadonlySet<TabName> = new Set<TabName>(['dashboard', 'body', 'exercises']);
+export const FULL_WIDTH_TABS: ReadonlySet<TabName> = new Set<TabName>(['dashboard', 'body', 'workouts', 'exercises']);
 
 function isTab(value: unknown): value is TabName {
   return (

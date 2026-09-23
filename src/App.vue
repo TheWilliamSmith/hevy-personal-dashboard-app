@@ -10,12 +10,13 @@ const { tab, isFullWidth } = useActiveTab();
 
 <template>
   <div class="min-h-screen bg-slate-100">
-    <header class="bg-white">
+    <header class="border-b border-slate-200 bg-white">
       <!--
-        The header keeps one width whatever the tab, so the tab row does not
-        jump sideways when the full-bleed dashboard is selected.
+        Full width like the tabs below it. The horizontal padding matches the
+        full-bleed views (px-4 / sm:px-6) so the title and tabs line up with
+        the page content.
       -->
-      <div class="mx-auto w-full max-w-screen-2xl px-6 pt-4">
+      <div class="w-full px-4 pt-4 sm:px-6">
         <h1 class="mb-3 font-semibold text-slate-900">Hevy Personal Dashboard</h1>
         <AppTabs />
       </div>
