@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 
+import { secureRandom } from '@/utils/random';
+
 const props = withDefaults(defineProps<{ colors: readonly string[]; count?: number }>(), {
   count: 110,
 });
@@ -31,11 +33,11 @@ onMounted(() => {
   const pieces: Piece[] = Array.from({ length: props.count }, (_, i) => ({
     x: w / 2,
     y: h * 0.45,
-    vx: (Math.random() - 0.5) * 11,
-    vy: -Math.random() * 9 - 3,
-    size: 5 + Math.random() * 5,
-    spin: (Math.random() - 0.5) * 0.3,
-    angle: Math.random() * Math.PI,
+    vx: (secureRandom() - 0.5) * 11,
+    vy: -secureRandom() * 9 - 3,
+    size: 5 + secureRandom() * 5,
+    spin: (secureRandom() - 0.5) * 0.3,
+    angle: secureRandom() * Math.PI,
     color: props.colors[i % props.colors.length] ?? '#6366f1',
   }));
 
