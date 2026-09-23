@@ -1,43 +1,27 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 import { RouterLink } from 'vue-router';
 
 import CalendarHeatmapCard from '@/components/dashboard/CalendarHeatmapCard.vue';
 import DashboardToolbar from '@/components/dashboard/DashboardToolbar.vue';
 import DistributionCard from '@/components/dashboard/DistributionCard.vue';
-import ExerciseProgressionCard from '@/components/dashboard/ExerciseProgressionCard.vue';
 import KpiTile from '@/components/dashboard/KpiTile.vue';
-import MuscleBalanceCard from '@/components/dashboard/MuscleBalanceCard.vue';
 import RecordsTableCard from '@/components/dashboard/RecordsTableCard.vue';
-import TopExercisesCard from '@/components/dashboard/TopExercisesCard.vue';
 import VolumeTimeseriesCard from '@/components/dashboard/VolumeTimeseriesCard.vue';
 import {
   useDashboardFilters,
-  useExerciseProgression,
   useStatsCalendar,
   useStatsDistribution,
-  useMuscleHeatmap,
-  useStatsExercises,
   useStatsOverview,
   useStatsRecords,
   useStatsTimeseries,
 } from '@/composables/stats';
-import type {
-  ExerciseSortBy,
-  HeatmapMetric,
-  ProgressionMetric,
-  TimeseriesMetric,
-} from '@/types/stats';
+import type { TimeseriesMetric } from '@/types/stats';
 import { formatDuration, formatInteger, formatVolume } from '@/utils/format';
 
 const filters = useDashboardFilters();
 
-const sortBy = ref<ExerciseSortBy>('volume');
-const selectedExercise = ref('');
 const timeseriesMetric = ref<TimeseriesMetric>('volume');
-const progressionMetric = ref<ProgressionMetric>('est1RM');
-const heatmapMetric = ref<HeatmapMetric>('sets');
-const countSecondary = ref(false);
 
 /**
  * Every resource starts fetching during setup, in the same tick: they run
@@ -51,10 +35,6 @@ const timeseries = useStatsTimeseries(
   () => timeseriesMetric.value,
   () => filters.granularity.value,
 );
-const exercises = useStatsExercises(
-  () => filters.range.value,
-  () => sortBy.value,
-);
 const weekday = useStatsDistribution(
   () => filters.range.value,
   () => 'weekday',
@@ -65,25 +45,8 @@ const repRange = useStatsDistribution(
 );
 const calendar = useStatsCalendar(() => filters.year.value);
 const records = useStatsRecords();
-const heatmap = useMuscleHeatmap(
-  () => filters.range.value,
-  () => heatmapMetric.value,
-  () => countSecondary.value,
-);
-const progression = useExerciseProgression(
-  () => filters.range.value,
-  () => selectedExercise.value,
-  () => progressionMetric.value,
-);
 
-const exerciseNames = computed(() => (exercises.data.value ?? []).map((stat) => stat.name));
 
-// The picker is fed by the ranking, so default to whatever tops it.
-watch(exerciseNames, (names) => {
-  if (!selectedExercise.value && names.length > 0) {
-    selectedExercise.value = names[0] ?? '';
-  }
-});
 
 const stats = computed(() => overview.data.value);
 const previous = computed(() => overview.data.value?.previous ?? null);
@@ -256,43 +219,8 @@ const kpis = computed(() => [
         />
       </div>
 
-      <div class="md:col-span-2 xl:col-span-6">
-        <MuscleBalanceCard
-          :heatmap="heatmap.data.value"
-          :metric="heatmapMetric"
-          :include-secondary="countSecondary"
-          :is-loading="heatmap.isLoading.value"
-          :error="heatmap.error.value"
-          @retry="heatmap.refresh"
-          @metric="heatmapMetric = $event"
-          @toggle-secondary="countSecondary = !countSecondary"
-        />
-      </div>
 
-      <div class="md:col-span-2 xl:col-span-6">
-        <TopExercisesCard
-          :exercises="exercises.data.value"
-          :sort-by="sortBy"
-          :is-loading="exercises.isLoading.value"
-          :error="exercises.error.value"
-          @retry="exercises.refresh"
-          @sort-by="sortBy = $event"
-        />
-      </div>
 
-      <div class="md:col-span-2 xl:col-span-12">
-        <ExerciseProgressionCard
-          :points="progression.data.value"
-          :exercises="exerciseNames"
-          :selected="selectedExercise"
-          :metric="progressionMetric"
-          :is-loading="progression.isLoading.value"
-          :error="progression.error.value"
-          @retry="progression.refresh"
-          @select="selectedExercise = $event"
-          @metric="progressionMetric = $event"
-        />
-      </div>
 
       <div class="md:col-span-2 xl:col-span-12">
         <RecordsTableCard

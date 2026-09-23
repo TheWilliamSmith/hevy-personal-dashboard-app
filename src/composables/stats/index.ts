@@ -6,12 +6,8 @@ import type {
   DistributionBucket,
   DistributionDimension,
   ExerciseRecords,
-  ExerciseSortBy,
-  ExerciseStats,
   Granularity,
   Overview,
-  ProgressionMetric,
-  ProgressionPoint,
   StatsRange,
   TimeseriesMetric,
   TimeseriesPoint,
@@ -52,44 +48,6 @@ export function useStatsTimeseries(
         signal,
       ),
     () => [toValue(range), toValue(metric), toValue(granularity)],
-  );
-}
-
-export function useStatsExercises(
-  range: MaybeRefOrGetter<StatsRange>,
-  sortBy: MaybeRefOrGetter<ExerciseSortBy>,
-  limit = 15,
-): StatsResource<ExerciseStats[]> {
-  return useStatsResource(
-    (signal) =>
-      apiGet<ExerciseStats[]>(
-        '/stats/exercises',
-        { ...rangeParams(toValue(range)), sortBy: toValue(sortBy), limit },
-        signal,
-      ),
-    () => [toValue(range), toValue(sortBy)],
-  );
-}
-
-/** `name` carries spaces and parentheses, so it is encoded into the path. */
-export function useExerciseProgression(
-  range: MaybeRefOrGetter<StatsRange>,
-  exercise: MaybeRefOrGetter<string>,
-  metric: MaybeRefOrGetter<ProgressionMetric>,
-): StatsResource<ProgressionPoint[]> {
-  return useStatsResource(
-    async (signal) => {
-      const name = toValue(exercise);
-      if (!name) {
-        return [];
-      }
-      return apiGet<ProgressionPoint[]>(
-        `/stats/exercises/${encodeURIComponent(name)}/progression`,
-        { ...rangeParams(toValue(range)), metric: toValue(metric) },
-        signal,
-      );
-    },
-    () => [toValue(range), toValue(exercise), toValue(metric)],
   );
 }
 

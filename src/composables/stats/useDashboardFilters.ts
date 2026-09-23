@@ -116,7 +116,15 @@ export function useDashboardFilters(): UseDashboardFilters {
         query[key] = value;
       }
     }
-    // Dashboard is the default tab, so it needs no `tab` parameter.
+
+    // These filters are shared by the Dashboard and the Body tab, so the
+    // current tab has to survive a range change. Dashboard is the default and
+    // needs no parameter; any other tab must be written back explicitly.
+    const currentTab = route.query.tab;
+    if (typeof currentTab === 'string' && currentTab !== '' && currentTab !== 'dashboard') {
+      query.tab = currentTab;
+    }
+
     void router.push({ name: 'home', query });
   }
 

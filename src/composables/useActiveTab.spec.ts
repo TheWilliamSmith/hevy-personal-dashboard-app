@@ -3,9 +3,10 @@ import { describe, expect, it } from 'vitest';
 import { FULL_WIDTH_TABS, TABS } from './useActiveTab';
 
 describe('tab definitions', () => {
-  it('exposes the four tabs, dashboard first', () => {
+  it('exposes the five tabs, dashboard first', () => {
     expect(TABS.map((tab) => tab.name)).toEqual([
       'dashboard',
+      'body',
       'workouts',
       'exercises',
       'imports',
@@ -15,6 +16,7 @@ describe('tab definitions', () => {
   it('gives the grid-based tabs the full viewport, and nothing else', () => {
     expect(FULL_WIDTH_TABS.has('dashboard')).toBe(true);
     expect(FULL_WIDTH_TABS.has('exercises')).toBe(true);
+    expect(FULL_WIDTH_TABS.has('body')).toBe(true);
     expect(FULL_WIDTH_TABS.has('workouts')).toBe(false);
     expect(FULL_WIDTH_TABS.has('imports')).toBe(false);
   });

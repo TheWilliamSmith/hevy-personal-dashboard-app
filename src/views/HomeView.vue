@@ -12,6 +12,7 @@ const DashboardPanel = defineAsyncComponent(() => import('@/views/DashboardView.
 const WorkoutsPanel = defineAsyncComponent(() => import('@/views/WorkoutsView.vue'));
 const WorkoutDetailPanel = defineAsyncComponent(() => import('@/views/WorkoutDetailView.vue'));
 const ImportPanel = defineAsyncComponent(() => import('@/views/ImportView.vue'));
+const BodyPanel = defineAsyncComponent(() => import('@/views/BodyView.vue'));
 const ExercisesPanel = defineAsyncComponent(() => import('@/views/ExercisesView.vue'));
 const ExerciseDetailPanel = defineAsyncComponent(() => import('@/views/ExerciseDetailView.vue'));
 
@@ -31,6 +32,9 @@ const exerciseSlug = computed(() =>
 const panel = computed(() => {
   if (tab.value === 'imports') {
     return ImportPanel;
+  }
+  if (tab.value === 'body') {
+    return BodyPanel;
   }
   if (tab.value === 'workouts') {
     return workoutId.value ? WorkoutDetailPanel : WorkoutsPanel;

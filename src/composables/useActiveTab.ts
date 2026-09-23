@@ -1,21 +1,23 @@
 import { computed, type ComputedRef } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
-export type TabName = 'dashboard' | 'workouts' | 'exercises' | 'imports';
+export type TabName = 'dashboard' | 'body' | 'workouts' | 'exercises' | 'imports';
 
 export const TABS: ReadonlyArray<{ name: TabName; label: string }> = [
   { name: 'dashboard', label: 'Dashboard' },
+  { name: 'body', label: 'Body' },
   { name: 'workouts', label: 'Workouts' },
   { name: 'exercises', label: 'Exercises' },
   { name: 'imports', label: 'Imports' },
 ];
 
 /** The dashboard grid wants the whole viewport; the other tabs do not. */
-export const FULL_WIDTH_TABS: ReadonlySet<TabName> = new Set<TabName>(['dashboard', 'exercises']);
+export const FULL_WIDTH_TABS: ReadonlySet<TabName> = new Set<TabName>(['dashboard', 'body', 'exercises']);
 
 function isTab(value: unknown): value is TabName {
   return (
     value === 'dashboard' ||
+    value === 'body' ||
     value === 'workouts' ||
     value === 'exercises' ||
     value === 'imports'

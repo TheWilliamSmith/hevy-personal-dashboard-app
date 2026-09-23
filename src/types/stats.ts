@@ -15,11 +15,6 @@ export type Granularity = 'day' | 'week' | 'month';
 /** Values accepted by /stats/timeseries?metric= */
 export type TimeseriesMetric = 'volume' | 'sets' | 'reps' | 'duration' | 'workouts';
 
-/** Values accepted by /stats/exercises/:name/progression?metric= */
-export type ProgressionMetric = 'maxWeight' | 'est1RM' | 'volume' | 'totalReps';
-
-export type ExerciseSortBy = 'volume' | 'sets' | 'sessions';
-
 export type DistributionDimension = 'weekday' | 'hourOfDay' | 'setType' | 'repRange';
 
 /** Shared window. Omitting both bounds means all time. */
