@@ -13,6 +13,7 @@ const WorkoutsPanel = defineAsyncComponent(() => import('@/views/WorkoutsView.vu
 const WorkoutDetailPanel = defineAsyncComponent(() => import('@/views/WorkoutDetailView.vue'));
 const ImportPanel = defineAsyncComponent(() => import('@/views/ImportView.vue'));
 const BodyPanel = defineAsyncComponent(() => import('@/views/BodyView.vue'));
+const ProgressPanel = defineAsyncComponent(() => import('@/views/ProgressView.vue'));
 const ExercisesPanel = defineAsyncComponent(() => import('@/views/ExercisesView.vue'));
 const ExerciseDetailPanel = defineAsyncComponent(() => import('@/views/ExerciseDetailView.vue'));
 
@@ -35,6 +36,9 @@ const panel = computed(() => {
   }
   if (tab.value === 'body') {
     return BodyPanel;
+  }
+  if (tab.value === 'progress') {
+    return ProgressPanel;
   }
   if (tab.value === 'workouts') {
     return workoutId.value ? WorkoutDetailPanel : WorkoutsPanel;

@@ -6,6 +6,7 @@ import CalendarHeatmapCard from '@/components/dashboard/CalendarHeatmapCard.vue'
 import DashboardToolbar from '@/components/dashboard/DashboardToolbar.vue';
 import DistributionCard from '@/components/dashboard/DistributionCard.vue';
 import KpiTile from '@/components/dashboard/KpiTile.vue';
+import NeedsAttentionCard from '@/components/dashboard/NeedsAttentionCard.vue';
 import RecordsTableCard from '@/components/dashboard/RecordsTableCard.vue';
 import VolumeTimeseriesCard from '@/components/dashboard/VolumeTimeseriesCard.vue';
 import {
@@ -17,6 +18,7 @@ import {
   useStatsTimeseries,
 } from '@/composables/stats';
 import type { TimeseriesMetric } from '@/types/stats';
+import { useProgressSummary } from '@/composables/useProgressSummary';
 import { formatDuration, formatInteger, formatVolume } from '@/utils/format';
 
 const filters = useDashboardFilters();
@@ -45,8 +47,8 @@ const repRange = useStatsDistribution(
 );
 const calendar = useStatsCalendar(() => filters.year.value);
 const records = useStatsRecords();
-
-
+// Server-classified; the Dashboard never re-derives a progress status.
+const attention = useProgressSummary();
 
 const stats = computed(() => overview.data.value);
 const previous = computed(() => overview.data.value?.previous ?? null);
@@ -219,10 +221,16 @@ const kpis = computed(() => [
         />
       </div>
 
+      <div class="md:col-span-2 xl:col-span-4">
+        <NeedsAttentionCard
+          :summary="attention.data.value"
+          :is-loading="attention.isLoading.value"
+          :error="attention.error.value"
+          @retry="attention.refresh"
+        />
+      </div>
 
-
-
-      <div class="md:col-span-2 xl:col-span-12">
+      <div class="md:col-span-2 xl:col-span-8">
         <RecordsTableCard
           :records="records.data.value"
           :is-loading="records.isLoading.value"
