@@ -8,7 +8,7 @@ export type TabName =
   | 'trophies'
   | 'workouts'
   | 'exercises'
-  | 'imports';
+  | 'data';
 
 export const TABS: ReadonlyArray<{ name: TabName; label: string }> = [
   { name: 'dashboard', label: 'Dashboard' },
@@ -17,7 +17,7 @@ export const TABS: ReadonlyArray<{ name: TabName; label: string }> = [
   { name: 'trophies', label: 'Trophies' },
   { name: 'workouts', label: 'Workouts' },
   { name: 'exercises', label: 'Exercises' },
-  { name: 'imports', label: 'Imports' },
+  { name: 'data', label: 'Data' },
 ];
 
 export const FULL_WIDTH_TABS: ReadonlySet<TabName> = new Set<TabName>([
@@ -37,7 +37,7 @@ function isTab(value: unknown): value is TabName {
     value === 'trophies' ||
     value === 'workouts' ||
     value === 'exercises' ||
-    value === 'imports'
+    value === 'data'
   );
 }
 

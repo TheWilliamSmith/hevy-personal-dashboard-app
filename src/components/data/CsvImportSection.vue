@@ -98,7 +98,6 @@ async function onDeleteConfirmed(deleteWorkouts: boolean): Promise<void> {
 <template>
   <div class="flex flex-col gap-6">
     <div>
-      <h1 class="mb-3 text-2xl font-semibold text-slate-900">Imports</h1>
       <HevyImportButton
         ref="importButton"
         :is-busy="isBusy"

@@ -155,6 +155,39 @@ const DAY_FORMATTER = new Intl.DateTimeFormat('fr-FR', {
   timeZone: 'UTC',
 });
 
+export function formatRelativeTime(value: string | Date | null | undefined): string {
+  if (value === null || value === undefined || value === '') {
+    return EMPTY;
+  }
+
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return EMPTY;
+  }
+
+  const diffSec = Math.round((Date.now() - date.getTime()) / 1000);
+  if (diffSec < 60) {
+    return 'just now';
+  }
+
+  const diffMin = Math.round(diffSec / 60);
+  if (diffMin < 60) {
+    return `${diffMin} minute${diffMin === 1 ? '' : 's'} ago`;
+  }
+
+  const diffHour = Math.round(diffMin / 60);
+  if (diffHour < 24) {
+    return `${diffHour} hour${diffHour === 1 ? '' : 's'} ago`;
+  }
+
+  const diffDay = Math.round(diffHour / 24);
+  if (diffDay < 30) {
+    return `${diffDay} day${diffDay === 1 ? '' : 's'} ago`;
+  }
+
+  return formatDate(date);
+}
+
 export function formatDay(value: string | Date | null | undefined): string {
   if (value === null || value === undefined || value === '') {
     return EMPTY;

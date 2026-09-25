@@ -16,11 +16,11 @@ function trophy(code: string, unlocked = true): AchievementItem {
   };
 }
 
-function stubFetch(status: number) {
+function stubFetch(status: number, body: unknown = {}) {
   const calls: string[] = [];
   vi.stubGlobal('fetch', vi.fn(async (url: string) => {
     calls.push(String(url));
-    return new Response('{}', { status, headers: { 'Content-Type': 'application/json' } });
+    return new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
   }));
   return calls;
 }
@@ -71,5 +71,43 @@ describe('celebration queue', () => {
     q.enqueue([trophy('A'), trophy('B'), trophy('C')]);
     await q.acknowledgeAll();
     expect(q.remaining.value).toBe(0);
+  });
+
+  it('loads unseen achievements from the server and enqueues them', async () => {
+    stubFetch(200, [trophy('A'), trophy('B', false)]);
+    const q = await freshQueue();
+    await q.loadUnseen();
+    expect(q.queue.value.map((item) => item.code)).toEqual(['A']);
+  });
+
+  it('only loads unseen achievements once per session', async () => {
+    const calls = stubFetch(200, [trophy('A')]);
+    const q = await freshQueue();
+    await q.loadUnseen();
+    await q.loadUnseen();
+    expect(calls.filter((url) => url.endsWith('/achievements/unseen'))).toHaveLength(1);
+  });
+
+  it('marks itself unavailable when the endpoint does not exist yet', async () => {
+    stubFetch(404);
+    const q = await freshQueue();
+    await q.loadUnseen();
+    expect(q.unavailable.value).toBe(true);
+    expect(q.queue.value).toEqual([]);
+  });
+
+  it('leaves the queue empty on an unexpected server error', async () => {
+    stubFetch(500);
+    const q = await freshQueue();
+    await q.loadUnseen();
+    expect(q.queue.value).toEqual([]);
+    expect(q.unavailable.value).toBe(false);
+  });
+
+  it('current is null and acknowledge is a no-op on an empty queue', async () => {
+    stubFetch(200);
+    const q = await freshQueue();
+    expect(q.current.value).toBeNull();
+    await expect(q.acknowledge()).resolves.toBeUndefined();
   });
 });

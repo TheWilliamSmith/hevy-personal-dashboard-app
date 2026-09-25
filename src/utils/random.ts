@@ -1,4 +1,4 @@
-const UINT32_RANGE = 0x1_0000_0000;
+const UINT32_RANGE = 4_294_967_296;
 
 export function secureRandom(): number {
   const buffer = new Uint32Array(1);

@@ -6,6 +6,8 @@ const routes: RouteRecordRaw[] = [
     name: 'home',
     component: () => import('@/views/HomeView.vue'),
   },
+  { path: '/data', redirect: () => ({ name: 'home', query: { tab: 'data' } }) },
+  { path: '/imports', redirect: () => ({ name: 'home', query: { tab: 'data' } }) },
   { path: '/:pathMatch(.*)*', redirect: { name: 'home' } },
 ];
 
@@ -22,4 +24,11 @@ export const router = createRouter({
       to.query.exercise !== from.query.exercise;
     return changedView ? { top: 0 } : false;
   },
+});
+
+router.beforeEach((to) => {
+  if (to.query.tab === 'imports') {
+    return { name: 'home', query: { ...to.query, tab: 'data' } };
+  }
+  return true;
 });

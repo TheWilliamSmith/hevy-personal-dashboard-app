@@ -3,6 +3,7 @@ import { defineAsyncComponent, onMounted } from 'vue';
 import { RouterView } from 'vue-router';
 
 import AppTabs from '@/components/AppTabs.vue';
+import ConnectionIndicator from '@/components/data/ConnectionIndicator.vue';
 import ToastStack from '@/components/ui/ToastStack.vue';
 import { useActiveTab } from '@/composables/useActiveTab';
 import { useCelebrations } from '@/composables/useCelebrations';
@@ -21,7 +22,10 @@ onMounted(() => void celebrations.loadUnseen());
   <div class="min-h-screen bg-slate-100">
     <header class="border-b border-slate-200 bg-white">
       <div class="w-full px-4 pt-4 sm:px-6">
-        <h1 class="mb-3 font-semibold text-slate-900">Hevy Personal Dashboard</h1>
+        <div class="mb-3 flex items-center justify-between gap-3">
+          <h1 class="font-semibold text-slate-900">Hevy Personal Dashboard</h1>
+          <ConnectionIndicator />
+        </div>
         <AppTabs />
       </div>
     </header>
