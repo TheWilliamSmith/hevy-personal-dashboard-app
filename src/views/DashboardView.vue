@@ -1,226 +1,124 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import { RouterLink } from 'vue-router';
+import { computed } from 'vue';
 
-import CalendarHeatmapCard from '@/components/dashboard/CalendarHeatmapCard.vue';
-import DashboardToolbar from '@/components/dashboard/DashboardToolbar.vue';
-import DistributionCard from '@/components/dashboard/DistributionCard.vue';
-import KpiTile from '@/components/dashboard/KpiTile.vue';
-import NeedsAttentionCard from '@/components/dashboard/NeedsAttentionCard.vue';
-import TrophiesCard from '@/components/dashboard/TrophiesCard.vue';
-import VolumeTimeseriesCard from '@/components/dashboard/VolumeTimeseriesCard.vue';
+import KeyMetrics from '@/components/home/KeyMetrics.vue';
+import MuscleFocusCard from '@/components/home/MuscleFocusCard.vue';
+import RangeSwitch from '@/components/home/RangeSwitch.vue';
+import TrainingCalendar from '@/components/home/TrainingCalendar.vue';
+import TrophySpotlight from '@/components/home/TrophySpotlight.vue';
+import VolumeTrendCard from '@/components/home/VolumeTrendCard.vue';
 import {
   useDashboardFilters,
-  useStatsCalendar,
-  useStatsDistribution,
+  useMuscleHeatmap,
   useStatsOverview,
   useStatsTimeseries,
 } from '@/composables/stats';
-import type { TimeseriesMetric } from '@/types/stats';
-import { useProgressSummary } from '@/composables/useProgressSummary';
+import { RANGE_PRESETS, type RangePreset } from '@/composables/stats/useDashboardFilters';
 import { useStatsResource } from '@/composables/stats/useStatsResource';
 import { apiGet } from '@/lib/api';
 import type { AchievementsSummary } from '@/types/achievements';
-import { formatDuration, formatInteger, formatVolume } from '@/utils/format';
+import type { CalendarDay, Granularity, StatsRange } from '@/types/stats';
+import { buildCalendarGrid, rollingSum, yearsBetween } from '@/utils/calendar';
+
+const CALENDAR_WEEKS = 36;
+const ROLLING_DAYS = 7;
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+const GRANULARITY_BY_PRESET: Readonly<Record<RangePreset, Granularity>> = {
+  '30d': 'day',
+  '3m': 'day',
+  '6m': 'week',
+  '1y': 'month',
+  all: 'month',
+  custom: 'week',
+};
 
 const filters = useDashboardFilters();
 
-const timeseriesMetric = ref<TimeseriesMetric>('volume');
+const preset = computed<RangePreset>(() =>
+  filters.preset.value === 'custom' ? '30d' : filters.preset.value,
+);
+const granularity = computed(() => GRANULARITY_BY_PRESET[preset.value]);
+
+const rangeLabel = computed(() => {
+  const found = RANGE_PRESETS.find((candidate) => candidate.value === preset.value);
+  return found?.days ? `Last ${found.label}` : 'All time';
+});
+
+const calendarYears = computed(() => {
+  const grid = buildCalendarGrid(new Date(), CALENDAR_WEEKS, new Map());
+  return yearsBetween(grid.from, grid.to);
+});
 
 const overview = useStatsOverview(() => filters.range.value);
-const timeseries = useStatsTimeseries(
-  () => filters.range.value,
-  () => timeseriesMetric.value,
-  () => filters.granularity.value,
+const isRolling = computed(() => granularity.value === 'day' && filters.range.value.from !== undefined);
+
+const volumeRange = computed<StatsRange>(() => {
+  const range = filters.range.value;
+  if (!isRolling.value || !range.from) {
+    return range;
+  }
+  const from = new Date(new Date(range.from).getTime() - (ROLLING_DAYS - 1) * DAY_MS);
+  return { ...range, from: from.toISOString() };
+});
+
+const volume = useStatsTimeseries(
+  () => volumeRange.value,
+  () => 'volume',
+  () => granularity.value,
 );
-const weekday = useStatsDistribution(
-  () => filters.range.value,
-  () => 'weekday',
+
+const volumePoints = computed(() => {
+  const points = volume.data.value;
+  if (!points || !isRolling.value) {
+    return points;
+  }
+  return rollingSum(points, ROLLING_DAYS);
+});
+
+const volumeCaption = computed(() =>
+  isRolling.value
+    ? `Rolling ${ROLLING_DAYS}-day volume · ${rangeLabel.value}`
+    : `Volume per ${granularity.value} · ${rangeLabel.value}`,
 );
-const repRange = useStatsDistribution(
+const muscles = useMuscleHeatmap(
   () => filters.range.value,
-  () => 'repRange',
+  () => 'sets',
+  () => false,
 );
-const calendar = useStatsCalendar(() => filters.year.value);
-const attention = useProgressSummary();
+const calendar = useStatsResource(
+  async (signal) => {
+    const years = await Promise.all(
+      calendarYears.value.map((year) => apiGet<CalendarDay[]>('/stats/calendar', { year }, signal)),
+    );
+    return years.flat();
+  },
+  () => calendarYears.value,
+);
 const trophies = useStatsResource(
   (signal) => apiGet<AchievementsSummary>('/achievements/summary', {}, signal),
   () => null,
 );
-
-const stats = computed(() => overview.data.value);
-const previous = computed(() => overview.data.value?.previous ?? null);
-
-const availableYears = computed(() => {
-  const first = stats.value?.firstWorkoutAt;
-  const last = stats.value?.lastWorkoutAt;
-  const thisYear = new Date().getUTCFullYear();
-
-  if (!first || !last) {
-    return [thisYear];
-  }
-
-  const start = new Date(first).getUTCFullYear();
-  const end = new Date(last).getUTCFullYear();
-  return Array.from({ length: end - start + 1 }, (_, index) => start + index);
-});
-
-const isEmptyDashboard = computed(
-  () => stats.value !== null && stats.value !== undefined && stats.value.totalWorkouts === 0,
-);
-
-const kpis = computed(() => [
-  {
-    label: 'Workouts',
-    value: formatInteger(stats.value?.totalWorkouts ?? null),
-    current: stats.value?.totalWorkouts ?? null,
-    previous: previous.value?.totalWorkouts ?? null,
-  },
-  {
-    label: 'Total volume',
-    value: formatVolume(stats.value?.totalVolumeKg ?? null),
-    current: stats.value?.totalVolumeKg ?? null,
-    previous: previous.value?.totalVolumeKg ?? null,
-  },
-  {
-    label: 'Total sets',
-    value: formatInteger(stats.value?.totalSets ?? null),
-    current: stats.value?.totalSets ?? null,
-    previous: previous.value?.totalSets ?? null,
-  },
-  {
-    label: 'Total reps',
-    value: formatInteger(stats.value?.totalReps ?? null),
-    current: stats.value?.totalReps ?? null,
-    previous: null,
-  },
-  {
-    label: 'Total time',
-    value: formatDuration(stats.value?.totalDurationSec ?? null),
-    current: stats.value?.totalDurationSec ?? null,
-    previous: null,
-  },
-  {
-    label: 'Avg session',
-    value: formatDuration(stats.value?.avgDurationSec ?? null),
-    current: stats.value?.avgDurationSec ?? null,
-    previous: previous.value?.avgDurationSec ?? null,
-  },
-]);
 </script>
 
 <template>
-  <div>
-    <DashboardToolbar
-      :preset="filters.preset.value"
-      :granularity="filters.granularity.value"
-      :custom-from="filters.customFrom.value"
-      :custom-to="filters.customTo.value"
-      @preset="filters.setPreset"
-      @custom-range="filters.setCustomRange"
-      @granularity="filters.setGranularity"
-    />
+  <div class="px-4 pb-10 sm:px-6">
+    <Teleport to="#topbar-actions" defer>
+      <RangeSwitch :model-value="preset" @update:model-value="filters.setPreset" />
+    </Teleport>
 
-    <div
-      v-if="isEmptyDashboard"
-      class="border-y border-dashed border-slate-300 bg-white p-16 text-center"
-    >
-      <p class="text-slate-700">No workouts yet.</p>
-      <RouterLink
-        :to="{ name: 'home', query: { tab: 'imports' } }"
-        class="mt-3 inline-block text-sm font-medium text-indigo-700 underline underline-offset-2"
-      >
-        Import your Hevy export
-      </RouterLink>
-    </div>
-
-    <div
-      v-else
-      class="grid grid-cols-1 gap-px border-y border-slate-200 bg-slate-200 md:grid-cols-2 xl:grid-cols-12"
-    >
-      <div class="md:col-span-2 xl:col-span-12">
-        <div v-if="overview.error.value" class="bg-red-50 p-4" role="alert">
-          <p class="text-sm text-red-900">{{ overview.error.value }}</p>
-          <button
-            type="button"
-            class="mt-2 rounded-lg border border-red-200 bg-white px-3 py-1.5 text-sm font-medium text-red-800 hover:bg-red-100"
-            @click="overview.refresh"
-          >
-            Retry
-          </button>
-        </div>
-        <div class="grid grid-cols-2 gap-px bg-slate-200 sm:grid-cols-3 xl:grid-cols-6" v-else>
-          <KpiTile
-            v-for="kpi in kpis"
-            :key="kpi.label"
-            :label="kpi.label"
-            :value="kpi.value"
-            :current="kpi.current"
-            :previous="kpi.previous"
-            :comparison-label="filters.comparisonLabel.value"
-            :is-loading="overview.isLoading.value"
-          />
-        </div>
-      </div>
-
-      <div class="md:col-span-2 xl:col-span-8">
-        <VolumeTimeseriesCard
-          :points="timeseries.data.value"
-          :metric="timeseriesMetric"
-          :granularity="filters.granularity.value"
-          :is-loading="timeseries.isLoading.value"
-          :error="timeseries.error.value"
-          @retry="timeseries.refresh"
-          @metric="timeseriesMetric = $event"
-        />
-      </div>
-
-      <div class="flex flex-col gap-px bg-slate-200 md:col-span-2 xl:col-span-4">
-        <DistributionCard
-          class="min-h-0 flex-1"
-          title="By weekday"
-          subtitle="Volume per day of week"
-          variant="bar"
-          :buckets="weekday.data.value"
-          :is-loading="weekday.isLoading.value"
-          :error="weekday.error.value"
-          @retry="weekday.refresh"
-        />
-        <DistributionCard
-          class="min-h-0 flex-1"
-          title="By rep range"
-          subtitle="Share of sets"
-          variant="donut"
-          :buckets="repRange.data.value"
-          :is-loading="repRange.isLoading.value"
-          :error="repRange.error.value"
-          @retry="repRange.refresh"
-        />
-      </div>
-
-      <div class="md:col-span-2 xl:col-span-12">
-        <CalendarHeatmapCard
+    <div class="flex flex-col gap-10 pt-6">
+      <div class="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)] lg:gap-0">
+        <TrainingCalendar
+          class="lg:pr-8"
+          :week-count="CALENDAR_WEEKS"
           :days="calendar.data.value"
-          :year="filters.year.value"
-          :available-years="availableYears"
           :is-loading="calendar.isLoading.value"
           :error="calendar.error.value"
           @retry="calendar.refresh"
-          @year="filters.setYear"
         />
-      </div>
-
-      <div class="md:col-span-1 xl:col-span-6">
-        <NeedsAttentionCard
-          :summary="attention.data.value"
-          :is-loading="attention.isLoading.value"
-          :error="attention.error.value"
-          @retry="attention.refresh"
-        />
-      </div>
-
-      <div class="md:col-span-1 xl:col-span-6">
-        <TrophiesCard
+        <TrophySpotlight
+          class="border-zinc-800 lg:border-l lg:pl-8"
           :summary="trophies.data.value"
           :is-loading="trophies.isLoading.value"
           :error="trophies.error.value"
@@ -228,6 +126,34 @@ const kpis = computed(() => [
         />
       </div>
 
+      <div class="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:gap-0">
+        <MuscleFocusCard
+          class="lg:pr-8"
+          :heatmap="muscles.data.value"
+          :range-label="rangeLabel"
+          :is-loading="muscles.isLoading.value"
+          :error="muscles.error.value"
+          @retry="muscles.refresh"
+        />
+        <VolumeTrendCard
+          class="border-zinc-800 lg:border-l lg:pl-8"
+          :points="volumePoints"
+          :granularity="granularity"
+          :total-volume-kg="overview.data.value?.totalVolumeKg ?? null"
+          :caption="volumeCaption"
+          :is-loading="volume.isLoading.value"
+          :error="volume.error.value"
+          @retry="volume.refresh"
+        />
+      </div>
+
+      <KeyMetrics
+        :overview="overview.data.value"
+        :range-label="rangeLabel"
+        :is-loading="overview.isLoading.value"
+        :error="overview.error.value"
+        @retry="overview.refresh"
+      />
     </div>
   </div>
 </template>
