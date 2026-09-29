@@ -1,10 +1,10 @@
-PM ?= pnpm
+# Hevy Personal Dashboard App: day-to-day commands.
+#
+#   make setup   once, right after cloning: installs everything `make dev` needs
+#   make dev     runs the Vite dev server (the API must run on API_URL)
 
-##########################################################
-# API_URL must match VITE_API_PROXY_TARGET               #
-# in .env.development                                    #
-##########################################################
-API_URL ?= http://localhost:3000
+PM ?= pnpm
+API_URL ?= http://localhost:8080
 
 .DEFAULT_GOAL := help
 .PHONY: help setup dev check-tools check-api
@@ -24,5 +24,6 @@ check-tools:
 		command -v $$tool >/dev/null 2>&1 || { echo "Missing required tool: $$tool"; exit 1; }; \
 	done
 
+# Warns only: the front starts anyway and picks the API up once it is running.
 check-api:
 	@curl -s -o /dev/null --max-time 2 $(API_URL) || echo "Warning: no API on $(API_URL). Start it with make dev in hevy-personal-dashboard-api."

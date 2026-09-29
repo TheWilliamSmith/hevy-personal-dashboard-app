@@ -38,7 +38,7 @@ make setup   # une seule fois : dépendances exactes du lockfile
 make dev     # serveur Vite sur http://localhost:5173
 ```
 
-L'API doit tourner (`make dev` dans `hevy-personal-dashboard-api`). Si elle ne répond pas sur `http://localhost:3000`, `make dev` affiche un avertissement mais démarre quand même le front. Pour une API sur un autre port : `make dev API_URL=http://localhost:4000`, en plus de surcharger `VITE_API_PROXY_TARGET` (voir plus bas). `make help` liste toutes les commandes.
+L'API doit tourner (`make dev` dans `hevy-personal-dashboard-api`). Si elle ne répond pas sur `http://localhost:8080`, `make dev` affiche un avertissement mais démarre quand même le front. Pour une API sur un autre port : `make dev API_URL=http://localhost:4000`, en plus de surcharger `VITE_API_PROXY_TARGET` (voir plus bas). `make help` liste toutes les commandes.
 
 Les étapes ci-dessous détaillent ce que font ces deux commandes.
 
@@ -51,7 +51,7 @@ cd hevy-personal-dashboard-app
 
 ### 2. Lancer l'API
 
-L'API doit tourner avant de démarrer le front. Suivre les instructions du README de [`hevy-personal-dashboard-api`](https://github.com/TheWilliamSmith/hevy-personal-dashboard-api). Par défaut, elle écoute sur <http://localhost:3000>.
+L'API doit tourner avant de démarrer le front. Suivre les instructions du README de [`hevy-personal-dashboard-api`](https://github.com/TheWilliamSmith/hevy-personal-dashboard-api). Par défaut, elle écoute sur <http://localhost:8080>.
 
 ### 3. Installer les dépendances
 
@@ -72,7 +72,7 @@ Le fichier `.env.development` est versionné et suffit en local. Aucune copie n'
 | Variable | Valeur | Rôle |
 | --- | --- | --- |
 | `VITE_API_URL` | `/api` | préfixe des appels HTTP du front |
-| `VITE_API_PROXY_TARGET` | `http://localhost:3000` | cible du proxy Vite |
+| `VITE_API_PROXY_TARGET` | `http://localhost:8080` | cible du proxy Vite |
 
 Le serveur Vite redirige `/api/*` vers l'API et retire le préfixe `/api` (voir `vite.config.ts`). Ainsi, aucune configuration CORS n'est nécessaire. Si l'API tourne sur un autre port, surcharger la cible dans un fichier `.env.development.local` (ignoré par Git) :
 
