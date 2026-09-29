@@ -2,8 +2,8 @@
 import { defineAsyncComponent, onMounted } from 'vue';
 import { RouterView } from 'vue-router';
 
-import AppTabs from '@/components/AppTabs.vue';
-import ConnectionIndicator from '@/components/data/ConnectionIndicator.vue';
+import AppSidebar from '@/components/layout/AppSidebar.vue';
+import AppTopBar from '@/components/layout/AppTopBar.vue';
 import ToastStack from '@/components/ui/ToastStack.vue';
 import { useActiveTab } from '@/composables/useActiveTab';
 import { useCelebrations } from '@/composables/useCelebrations';
@@ -19,25 +19,19 @@ onMounted(() => void celebrations.loadUnseen());
 </script>
 
 <template>
-  <div class="min-h-screen bg-slate-100">
-    <header class="border-b border-slate-200 bg-white">
-      <div class="w-full px-4 pt-4 sm:px-6">
-        <div class="mb-3 flex items-center justify-between gap-3">
-          <h1 class="font-semibold text-slate-900">Hevy Personal Dashboard</h1>
-          <ConnectionIndicator />
-        </div>
-        <AppTabs />
-      </div>
-    </header>
+  <div class="flex min-h-screen bg-slate-100">
+    <AppSidebar />
 
-    <main
-      :id="`panel-${tab}`"
-      role="tabpanel"
-      :aria-labelledby="`tab-${tab}`"
-      :class="isFullWidth ? 'w-full py-4' : 'mx-auto w-full max-w-4xl p-6'"
-    >
-      <RouterView />
-    </main>
+    <div class="flex min-w-0 flex-1 flex-col">
+      <AppTopBar />
+
+      <main
+        :id="`panel-${tab}`"
+        :class="isFullWidth ? 'w-full py-4' : 'mx-auto w-full max-w-4xl p-6'"
+      >
+        <RouterView />
+      </main>
+    </div>
 
     <ToastStack />
     <CelebrationModal v-if="celebrations.remaining.value > 0" />
