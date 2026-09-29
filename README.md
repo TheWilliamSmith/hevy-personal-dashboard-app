@@ -19,6 +19,7 @@ Cette application ne fonctionne pas seule. Elle consomme l'API NestJS [`hevy-per
 | --- | --- |
 | Node.js | 22.x (CI : `22.15.0`) |
 | pnpm | 10.x (CI : `10.29.3`) |
+| make | fourni avec les Command Line Tools sur macOS |
 | API `hevy-personal-dashboard-api` | lancée en local (voir son README) |
 
 Installer pnpm si besoin :
@@ -27,6 +28,19 @@ Installer pnpm si besoin :
 corepack enable
 corepack prepare pnpm@10.29.3 --activate
 ```
+
+### Démarrage rapide
+
+```bash
+git clone git@github.com:TheWilliamSmith/hevy-personal-dashboard-app.git
+cd hevy-personal-dashboard-app
+make setup   # une seule fois : dépendances exactes du lockfile
+make dev     # serveur Vite sur http://localhost:5173
+```
+
+L'API doit tourner (`make dev` dans `hevy-personal-dashboard-api`). Si elle ne répond pas sur `http://localhost:3000`, `make dev` affiche un avertissement mais démarre quand même le front. Pour une API sur un autre port : `make dev API_URL=http://localhost:4000`, en plus de surcharger `VITE_API_PROXY_TARGET` (voir plus bas). `make help` liste toutes les commandes.
+
+Les étapes ci-dessous détaillent ce que font ces deux commandes.
 
 ### 1. Cloner le dépôt
 
