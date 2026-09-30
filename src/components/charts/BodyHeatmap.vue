@@ -357,9 +357,8 @@ function describe(group: MuscleGroup): string {
 .body-heatmap__legend { display: flex; align-items: center; gap: 4px; }
 .body-heatmap__legend i {
   display: inline-block;
-  width: 14px;
-  height: 14px;
-  border: 1px solid var(--bh-border);
+  width: 10px;
+  height: 10px;
   border-radius: 3px;
 }
 .body-heatmap__legend i[data-level='0'] { background: var(--bh-l0); }
@@ -375,13 +374,14 @@ function describe(group: MuscleGroup): string {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 3px 8px;
-  border: 1px solid var(--bh-border);
-  border-radius: 999px;
-  background: transparent;
-  color: inherit;
+  padding: 4px 10px;
+  border: 1px solid #27272a;
+  border-radius: 6px;
+  background: #18181b;
+  color: #f4f4f5;
   font: inherit;
   font-size: 12px;
+  font-weight: 500;
   cursor: pointer;
 }
 

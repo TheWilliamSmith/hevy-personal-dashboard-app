@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { Layers, PersonStanding, Repeat, Target, TrendingUp, Weight } from 'lucide-vue-next';
+import { CalendarDays, Layers, Repeat, Target, TrendingUp, Weight } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import { RouterLink, useRouter } from 'vue-router';
 
+import BalanceSpotlight from '@/components/body/BalanceSpotlight.vue';
 import MuscleRanking, { type RankingEntry } from '@/components/body/MuscleRanking.vue';
+import PeriodComparisonChart from '@/components/body/PeriodComparisonChart.vue';
 import BodyHeatmap from '@/components/charts/BodyHeatmap.vue';
 import MetricGrid, { type MetricItem } from '@/components/ui/MetricGrid.vue';
 import RangeSwitch from '@/components/ui/RangeSwitch.vue';
@@ -89,9 +91,30 @@ const biggestGain = computed(() =>
     .sort((left, right) => (right.change ?? 0) - (left.change ?? 0))[0] ?? null,
 );
 
+const weeklyAverage = computed(() => {
+  const payload = data.value;
+  if (!payload) {
+    return null;
+  }
+  const trained = MAPPED_MUSCLES.filter((muscle) => payload.values[muscle] > 0);
+  if (trained.length === 0) {
+    return 0;
+  }
+  return trained.reduce((sum, muscle) => sum + payload.weeklyAverage[muscle], 0) / trained.length;
+});
+
+const comparedMuscles = computed(() => {
+  const payload = data.value;
+  if (!payload) {
+    return [];
+  }
+  return MUSCLE_ORDER.filter((muscle) => payload.values[muscle] > 0 || payload.previous[muscle] > 0).sort(
+    (left, right) => payload.values[right] - payload.values[left],
+  );
+});
+
 const highlights = computed<MetricItem[]>(() => {
   const payload = data.value;
-  const trained = payload ? MAPPED_MUSCLES.filter((muscle) => payload.values[muscle] > 0).length : null;
   return [
     {
       label: 'Top muscle',
@@ -99,14 +122,14 @@ const highlights = computed<MetricItem[]>(() => {
       icon: Target,
     },
     {
-      label: 'Muscles trained',
-      value: trained === null ? '—' : `${trained} / ${MAPPED_MUSCLES.length}`,
-      icon: PersonStanding,
-    },
-    {
       label: `Total ${metricLabel.value.toLowerCase()}`,
       value: total.value === null ? '—' : format(total.value),
       icon: metric.value === 'volume' ? Weight : metric.value === 'reps' ? Repeat : Layers,
+    },
+    {
+      label: 'Weekly avg per muscle',
+      value: weeklyAverage.value === null ? '—' : format(Math.round(weeklyAverage.value * 10) / 10),
+      icon: CalendarDays,
     },
     {
       label: 'Biggest gain',
@@ -170,8 +193,20 @@ function openExercises(group: MuscleGroup): void {
             </div>
           </section>
 
-          <section class="flex flex-col gap-4 border-zinc-800 lg:border-l lg:pl-8">
-            <SectionHeader title="Ranking" subtitle="Change vs the previous period">
+          <BalanceSpotlight
+            class="border-zinc-800 lg:border-l lg:pl-8"
+            :heatmap="data"
+            :mapped-muscles="MAPPED_MUSCLES"
+            :range-label="rangeLabel"
+            :unit="unit"
+            :format="format"
+            :is-loading="heatmap.isLoading.value"
+          />
+        </div>
+
+        <div class="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:gap-0">
+          <section class="flex flex-col gap-4 lg:pr-8">
+            <SectionHeader title="Ranking" :subtitle="`${metricLabel} per muscle · change vs the previous period`">
               <p class="text-right">
                 <span class="text-2xl font-semibold text-white tabular-nums">
                   {{ total === null ? '—' : format(total) }}
@@ -187,11 +222,21 @@ function openExercises(group: MuscleGroup): void {
             <MuscleRanking
               v-else
               :entries="entries"
-              :least-trained="data?.leastTrained ?? []"
               :highlighted="highlighted"
               :format="format"
               @highlight="highlighted = $event"
             />
+          </section>
+
+          <section class="flex flex-col gap-4 border-zinc-800 lg:border-l lg:pl-8">
+            <SectionHeader title="This period vs previous" :subtitle="`${metricLabel} per muscle · ${rangeLabel}`" />
+            <div class="h-[28rem] lg:h-auto lg:min-h-[20rem] lg:flex-1">
+              <div v-if="heatmap.isLoading.value && !data" class="h-full animate-pulse rounded-md bg-zinc-900" />
+              <p v-else-if="comparedMuscles.length === 0" class="flex h-full items-center justify-center text-sm text-zinc-500">
+                Nothing to compare in this period.
+              </p>
+              <PeriodComparisonChart v-else-if="data" :heatmap="data" :muscles="comparedMuscles" :format="format" />
+            </div>
           </section>
         </div>
 
