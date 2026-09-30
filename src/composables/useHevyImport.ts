@@ -1,9 +1,12 @@
 import { readonly, ref, type DeepReadonly, type Ref } from 'vue';
 
 import { apiPost, apiUrl, authHeaders, extractApiMessage, ApiError } from '@/lib/api';
+import { reportUnauthorized } from '@/lib/session-expiry';
 import type { ImportError, ImportPreview, ImportResult, ImportStatus } from '@/types/imports';
 
 export const MAX_FILE_BYTES = 10 * 1024 * 1024;
+
+const PREVIEW_PATH = '/imports/hevy/preview';
 
 const CSV_EXTENSION = /\.csv$/i;
 
@@ -97,6 +100,7 @@ export function useHevyImport(): UseHevyImport {
     return new Promise<void>((resolve) => {
       const xhr = new XMLHttpRequest();
       request = xhr;
+      const auth = authHeaders();
 
       const settle = (): void => {
         request = null;
@@ -123,6 +127,7 @@ export function useHevyImport(): UseHevyImport {
           return;
         }
 
+        reportUnauthorized(PREVIEW_PATH, xhr.status, 'Authorization' in auth);
         fail(messageForStatus(xhr.status, extractApiMessage(xhr.responseText)), xhr.status);
         settle();
       });
@@ -139,8 +144,8 @@ export function useHevyImport(): UseHevyImport {
 
       xhr.addEventListener('abort', settle);
 
-      xhr.open('POST', apiUrl('/imports/hevy/preview'));
-      for (const [name, value] of Object.entries(authHeaders())) {
+      xhr.open('POST', apiUrl(PREVIEW_PATH));
+      for (const [name, value] of Object.entries(auth)) {
         xhr.setRequestHeader(name, value);
       }
       xhr.responseType = 'text';

@@ -1,5 +1,6 @@
 import { accessToken } from './auth-session';
 import { shouldBypassHttpCache } from './data-version';
+import { reportUnauthorized } from './session-expiry';
 
 export const API_URL: string = import.meta.env.VITE_API_URL;
 
@@ -71,31 +72,6 @@ function buildQuery(params: QueryParams): string {
   return query ? `?${query}` : '';
 }
 
-export async function apiGet<T>(
-  path: string,
-  params: QueryParams = {},
-  signal?: AbortSignal,
-): Promise<T> {
-  let response: Response;
-
-  const cache: RequestCache | undefined = shouldBypassHttpCache() ? 'reload' : undefined;
-
-  try {
-    response = await fetch(apiUrl(path) + buildQuery(params), { headers: authHeaders(), signal, cache });
-  } catch (error) {
-    if (error instanceof DOMException && error.name === 'AbortError') {
-      throw error;
-    }
-    throw new ApiError('Could not reach the server. Check your connection.', null);
-  }
-
-  if (!response.ok) {
-    throw await readError(response);
-  }
-
-  return (await response.json()) as T;
-}
-
 function messageForStatus(status: number, apiMessage: string | null): string {
   if (status === 404) {
     return apiMessage ?? 'Not found.';
@@ -112,20 +88,29 @@ function messageForStatus(status: number, apiMessage: string | null): string {
   return apiMessage ?? `Request failed (HTTP ${status}).`;
 }
 
-async function readError(response: Response): Promise<ApiError> {
-  const body = await response.text();
-  return new ApiError(messageForStatus(response.status, extractApiMessage(body)), response.status, parseBody(body));
+interface RequestOptions {
+  method?: 'GET' | 'POST' | 'PATCH' | 'DELETE';
+  params?: QueryParams;
+  body?: unknown;
+  signal?: AbortSignal;
+  cache?: RequestCache;
 }
 
-export async function apiPost<T>(path: string, body: unknown, signal?: AbortSignal): Promise<T> {
-  let response: Response;
+async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
+  const auth = authHeaders();
+  const headers: Record<string, string> = { ...auth };
+  if (options.body !== undefined) {
+    headers['Content-Type'] = 'application/json';
+  }
 
+  let response: Response;
   try {
-    response = await fetch(apiUrl(path), {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...authHeaders() },
-      body: JSON.stringify(body),
-      signal,
+    response = await fetch(apiUrl(path) + buildQuery(options.params ?? {}), {
+      method: options.method,
+      headers,
+      body: options.body === undefined ? undefined : JSON.stringify(options.body),
+      signal: options.signal,
+      cache: options.cache,
     });
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') {
@@ -135,55 +120,26 @@ export async function apiPost<T>(path: string, body: unknown, signal?: AbortSign
   }
 
   if (!response.ok) {
-    throw await readError(response);
+    reportUnauthorized(path, response.status, 'Authorization' in auth);
+    const raw = await response.text();
+    throw new ApiError(messageForStatus(response.status, extractApiMessage(raw)), response.status, parseBody(raw));
   }
 
   return (await response.json()) as T;
 }
 
-export async function apiDelete<T>(
-  path: string,
-  params: QueryParams = {},
-  signal?: AbortSignal,
-): Promise<T> {
-  let response: Response;
-
-  try {
-    response = await fetch(apiUrl(path) + buildQuery(params), { method: 'DELETE', headers: authHeaders(), signal });
-  } catch (error) {
-    if (error instanceof DOMException && error.name === 'AbortError') {
-      throw error;
-    }
-    throw new ApiError('Could not reach the server. Check your connection.', null);
-  }
-
-  if (!response.ok) {
-    throw await readError(response);
-  }
-
-  return (await response.json()) as T;
+export function apiGet<T>(path: string, params: QueryParams = {}, signal?: AbortSignal): Promise<T> {
+  return request<T>(path, { params, signal, cache: shouldBypassHttpCache() ? 'reload' : undefined });
 }
 
-export async function apiPatch<T>(path: string, body: unknown, signal?: AbortSignal): Promise<T> {
-  let response: Response;
+export function apiPost<T>(path: string, body: unknown, signal?: AbortSignal): Promise<T> {
+  return request<T>(path, { method: 'POST', body, signal });
+}
 
-  try {
-    response = await fetch(apiUrl(path), {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', ...authHeaders() },
-      body: JSON.stringify(body),
-      signal,
-    });
-  } catch (error) {
-    if (error instanceof DOMException && error.name === 'AbortError') {
-      throw error;
-    }
-    throw new ApiError('Could not reach the server. Check your connection.', null);
-  }
+export function apiPatch<T>(path: string, body: unknown, signal?: AbortSignal): Promise<T> {
+  return request<T>(path, { method: 'PATCH', body, signal });
+}
 
-  if (!response.ok) {
-    throw await readError(response);
-  }
-
-  return (await response.json()) as T;
+export function apiDelete<T>(path: string, params: QueryParams = {}, signal?: AbortSignal): Promise<T> {
+  return request<T>(path, { method: 'DELETE', params, signal });
 }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue';
+import { computed, onMounted, reactive, ref } from 'vue';
 import { RouterLink, useRoute, useRouter } from 'vue-router';
 
 import AuthError from '@/components/auth/AuthError.vue';
@@ -7,6 +7,7 @@ import AuthField from '@/components/auth/AuthField.vue';
 import AuthLayout from '@/components/auth/AuthLayout.vue';
 import OAuthButtons from '@/components/auth/OAuthButtons.vue';
 import { useAuth, type OAuthProvider } from '@/composables/useAuth';
+import { useToasts } from '@/composables/useToasts';
 import { errorMessage, isEmail, safeRedirect } from '@/utils/auth';
 
 const route = useRoute();
@@ -17,6 +18,15 @@ const form = reactive({ email: '', password: '', remember: true });
 const touched = reactive({ email: false, password: false });
 const submitted = ref(false);
 const formError = ref<string | null>(null);
+
+onMounted(() => {
+  if (route.query.reason !== 'expired') {
+    return;
+  }
+  useToasts().push({ tone: 'warning', title: 'Your session ended', description: 'Sign in again to continue.' });
+  const { reason: _reason, ...rest } = route.query;
+  void router.replace({ query: rest });
+});
 
 function enterApp(): void {
   void router.replace(safeRedirect(route.query.redirect) ?? { name: 'home' });

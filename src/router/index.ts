@@ -71,3 +71,11 @@ export function authRedirect(to: RouteTarget, signedIn: boolean): RouteLocationR
 }
 
 router.beforeEach((to) => legacyTabRedirect(to.query) ?? authRedirect(to, loadSession() !== null) ?? true);
+
+export function sessionExpiredTarget(to: RouteTarget): RouteLocationRaw {
+  const query: Record<string, string> = { reason: 'expired' };
+  if (to.meta.layout !== 'auth' && to.fullPath !== '/') {
+    query.redirect = to.fullPath;
+  }
+  return { name: 'sign-in', query };
+}
