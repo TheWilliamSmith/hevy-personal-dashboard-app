@@ -41,52 +41,52 @@ function onDocumentClick(event: MouseEvent): void {
 
 document.addEventListener('mousedown', onDocumentClick);
 onBeforeUnmount(() => document.removeEventListener('mousedown', onDocumentClick));
+
+const focus = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400';
 </script>
 
 <template>
   <div ref="root" class="relative">
     <button
       type="button"
-      class="rounded-lg border border-slate-300 px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
-      :aria-pressed="props.muted"
-      :aria-expanded="props.muted ? undefined : open"
-      :aria-label="`${props.muted ? 'Unmute' : 'Mute'} ${props.exerciseName}`"
-      :disabled="props.busy"
+      class="rounded-md border border-zinc-800 bg-zinc-900 px-2.5 py-1 text-xs font-medium text-zinc-100 transition-colors hover:bg-zinc-800 disabled:opacity-50"
+      :class="focus"
+      :aria-pressed="muted"
+      :aria-expanded="muted ? undefined : open"
+      :aria-label="`${muted ? 'Unmute' : 'Mute'} ${exerciseName}`"
+      :disabled="busy"
       @click="onClick"
     >
-      {{ props.muted ? 'Unmute' : 'Mute' }}
+      {{ muted ? 'Unmute' : 'Mute' }}
     </button>
 
     <div
       v-if="open"
-      class="absolute right-0 z-30 mt-1 w-64 rounded-xl border border-slate-200 bg-white p-3 shadow-lg"
+      class="absolute right-0 z-30 mt-1 w-64 rounded-lg border border-zinc-800 bg-zinc-900 p-3 shadow-xl shadow-black/40"
       role="dialog"
-      :aria-label="`Mute ${props.exerciseName}`"
+      :aria-label="`Mute ${exerciseName}`"
       @keydown.escape="open = false"
     >
-      <label :for="`mute-reason-${props.exerciseId}`" class="text-xs font-medium text-slate-600">
-        Reason (optional)
-      </label>
+      <label :for="`mute-reason-${exerciseId}`" class="text-xs text-zinc-400">Reason (optional)</label>
       <input
-        :id="`mute-reason-${props.exerciseId}`"
+        :id="`mute-reason-${exerciseId}`"
         ref="input"
         v-model="reason"
         type="text"
         maxlength="200"
         placeholder="Injury, off-season, not a priority…"
-        class="mt-1 w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm"
+        class="mt-1 w-full rounded-md border border-zinc-700 bg-zinc-950 px-2 py-1.5 text-sm text-zinc-100 placeholder:text-zinc-600"
+        :class="focus"
         @keydown.enter.prevent="confirm"
       />
-      <p class="mt-2 text-xs text-slate-500">
-        Muted exercises leave the counts and move to the Muted section.
-      </p>
+      <p class="mt-2 text-xs text-zinc-500">Muted exercises leave the counts and move to the Muted section.</p>
       <div class="mt-3 flex justify-end gap-2">
-        <button type="button" class="text-xs font-medium text-slate-600" @click="open = false">
+        <button type="button" class="rounded-md px-2 py-1 text-xs font-medium text-zinc-400 hover:text-zinc-100" :class="focus" @click="open = false">
           Cancel
         </button>
         <button
           type="button"
-          class="rounded-lg bg-slate-900 px-3 py-1 text-xs font-medium text-white"
+          class="rounded-md bg-white px-3 py-1 text-xs font-medium text-zinc-900 hover:bg-zinc-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
           @click="confirm"
         >
           Mute

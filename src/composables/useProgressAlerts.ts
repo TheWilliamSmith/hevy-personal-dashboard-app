@@ -95,6 +95,7 @@ export interface UseProgressAlerts {
   sort: ComputedRef<ProgressSort>;
   counts: ComputedRef<StatusCounts>;
   total: ComputedRef<number>;
+  items: ComputedRef<ProgressItem[]>;
   visible: ComputedRef<ProgressItem[]>;
   muted: ComputedRef<MutedExercise[]>;
   isLoading: Ref<boolean>;
@@ -348,6 +349,7 @@ export function useProgressAlerts(): UseProgressAlerts {
     sort,
     counts,
     total,
+    items: computed(() => response.value?.items ?? []),
     visible,
     muted,
     isLoading,

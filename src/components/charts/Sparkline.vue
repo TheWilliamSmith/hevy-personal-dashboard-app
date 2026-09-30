@@ -8,9 +8,10 @@ const props = withDefaults(
     markers?: readonly number[];
     width?: number;
     height?: number;
+    markerStroke?: string;
     label: string;
   }>(),
-  { markers: () => [], width: 96, height: 24 },
+  { markers: () => [], width: 96, height: 24, markerStroke: '#fff' },
 );
 
 const PADDING = 3;
@@ -66,7 +67,7 @@ const markerCoords = computed(() =>
       :cy="point.y"
       r="2.5"
       :fill="props.color"
-      stroke="#fff"
+      :stroke="props.markerStroke"
       stroke-width="1"
     />
   </svg>
