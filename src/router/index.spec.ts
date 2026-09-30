@@ -16,6 +16,17 @@ describe('the app router', () => {
     });
   });
 
+  it.each([
+    ['/sign-in', 'sign-in'],
+    ['/sign-up', 'sign-up'],
+    ['/forgot-password', 'forgot-password'],
+    ['/reset-password', 'reset-password'],
+  ])('serves %s outside the app shell', (path, name) => {
+    const resolved = router.resolve(path);
+    expect(resolved.name).toBe(name);
+    expect(resolved.meta.layout).toBe('auth');
+  });
+
   it('leaves every other tab alone', () => {
     expect(legacyTabRedirect({ tab: 'workouts' })).toBeNull();
   });

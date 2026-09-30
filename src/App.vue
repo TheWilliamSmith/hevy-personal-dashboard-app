@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineAsyncComponent, onMounted, ref, watch } from 'vue';
+import { computed, defineAsyncComponent, onMounted, ref, watch } from 'vue';
 import { RouterView, useRoute } from 'vue-router';
 
 import AppSidebar from '@/components/layout/AppSidebar.vue';
@@ -16,6 +16,8 @@ const route = useRoute();
 const { tab } = useActiveTab();
 const celebrations = useCelebrations();
 
+const isAuthLayout = computed(() => route.meta.layout === 'auth');
+
 const content = ref<HTMLElement | null>(null);
 
 watch(
@@ -27,7 +29,12 @@ onMounted(() => void celebrations.loadUnseen());
 </script>
 
 <template>
-  <div class="flex h-dvh overflow-hidden bg-zinc-950">
+  <div v-if="isAuthLayout" class="h-dvh overflow-y-auto overscroll-contain">
+    <RouterView />
+    <ToastStack />
+  </div>
+
+  <div v-else class="flex h-dvh overflow-hidden bg-zinc-950">
     <AppSidebar />
 
     <div class="flex min-h-0 min-w-0 flex-1 flex-col">

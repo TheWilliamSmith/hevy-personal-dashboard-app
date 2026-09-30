@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed, defineAsyncComponent } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { RouterLink, useRoute, useRouter } from 'vue-router';
 
 import ProfileForm from '@/components/profile/ProfileForm.vue';
 import ProfileHeader from '@/components/profile/ProfileHeader.vue';
+import SectionHeader from '@/components/ui/SectionHeader.vue';
 import SegmentedControl, { type SegmentedOption } from '@/components/ui/SegmentedControl.vue';
 import { useProfile } from '@/composables/useProfile';
 import { useToasts } from '@/composables/useToasts';
@@ -29,6 +30,9 @@ function setSection(next: Section): void {
   void router.replace({ name: 'home', query: { tab: 'settings', ...(next === 'data' ? { section: 'data' } : {}) } });
 }
 
+const secondary =
+  'rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm font-medium transition-colors hover:bg-zinc-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400';
+
 async function onSave(next: UserProfile): Promise<void> {
   await save(next);
   push({ tone: 'success', title: 'Profile saved', description: 'Demo mode: changes last until you reload the page.' });
@@ -45,6 +49,14 @@ async function onSave(next: UserProfile): Promise<void> {
       <div class="flex flex-col gap-10 pt-6">
         <ProfileHeader :profile="profile" :stats="stats" />
         <ProfileForm :profile="profile" :is-saving="isSaving" @save="onSave" />
+
+        <section class="flex flex-col gap-4">
+          <SectionHeader title="Account" subtitle="Sign-in and security" />
+          <div class="flex flex-wrap gap-2">
+            <RouterLink :to="{ name: 'forgot-password' }" :class="[secondary, 'text-zinc-100']">Change password</RouterLink>
+            <RouterLink :to="{ name: 'sign-in' }" :class="[secondary, 'text-red-400 hover:text-red-300']">Sign out</RouterLink>
+          </div>
+        </section>
       </div>
     </div>
 
