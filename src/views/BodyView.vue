@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { CalendarDays, Layers, Repeat, Target, TrendingUp, Weight } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
-import { RouterLink, useRouter } from 'vue-router';
+import { useRouter } from 'vue-router';
 
 import BalanceSpotlight from '@/components/body/BalanceSpotlight.vue';
 import MuscleRanking, { type RankingEntry } from '@/components/body/MuscleRanking.vue';
 import PeriodComparisonChart from '@/components/body/PeriodComparisonChart.vue';
 import BodyHeatmap from '@/components/charts/BodyHeatmap.vue';
+import EmptyState from '@/components/ui/EmptyState.vue';
 import MetricGrid, { type MetricItem } from '@/components/ui/MetricGrid.vue';
 import RangeSwitch from '@/components/ui/RangeSwitch.vue';
 import SectionError from '@/components/ui/SectionError.vue';
@@ -170,17 +171,9 @@ function openExercises(group: MuscleGroup): void {
               </label>
             </div>
 
-            <div class="h-[26rem] sm:h-[30rem]">
+            <div class="relative h-[26rem] sm:h-[30rem]">
               <div v-if="heatmap.isLoading.value && !data" class="h-full animate-pulse rounded-md bg-zinc-900" />
-              <div v-else-if="isEmpty" class="flex h-full flex-col items-center justify-center gap-2">
-                <p class="text-sm text-zinc-500">No training in this period.</p>
-                <RouterLink
-                  :to="{ name: 'home', query: { tab: 'settings', section: 'data' } }"
-                  class="text-sm font-medium text-zinc-200 underline decoration-zinc-600 underline-offset-2"
-                >
-                  Connect Hevy or import a CSV export
-                </RouterLink>
-              </div>
+              <EmptyState v-else-if="isEmpty" overlay import-link message="No training in this period." />
               <BodyHeatmap
                 v-else
                 :values="data?.values ?? {}"
@@ -218,7 +211,7 @@ function openExercises(group: MuscleGroup): void {
             <ul v-if="heatmap.isLoading.value && !data" class="flex flex-col gap-4" aria-hidden="true">
               <li v-for="index in 8" :key="index" class="h-7 animate-pulse rounded bg-zinc-900" />
             </ul>
-            <p v-else-if="entries.length === 0" class="text-sm text-zinc-500">No muscle trained in this period.</p>
+            <EmptyState v-else-if="entries.length === 0" message="No muscle trained in this period." />
             <MuscleRanking
               v-else
               :entries="entries"
@@ -230,11 +223,9 @@ function openExercises(group: MuscleGroup): void {
 
           <section class="flex flex-col gap-4 border-zinc-800 lg:border-l lg:pl-8">
             <SectionHeader title="This period vs previous" :subtitle="`${metricLabel} per muscle · ${rangeLabel}`" />
-            <div class="h-[28rem] lg:h-auto lg:min-h-[20rem] lg:flex-1">
+            <div class="relative h-[28rem] lg:h-auto lg:min-h-[20rem] lg:flex-1">
               <div v-if="heatmap.isLoading.value && !data" class="h-full animate-pulse rounded-md bg-zinc-900" />
-              <p v-else-if="comparedMuscles.length === 0" class="flex h-full items-center justify-center text-sm text-zinc-500">
-                Nothing to compare in this period.
-              </p>
+              <EmptyState v-else-if="comparedMuscles.length === 0" overlay message="Nothing to compare in this period." />
               <PeriodComparisonChart v-else-if="data" :heatmap="data" :muscles="comparedMuscles" :format="format" />
             </div>
           </section>

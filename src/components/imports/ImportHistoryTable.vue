@@ -2,6 +2,7 @@
 import { ChevronRight } from 'lucide-vue-next';
 import { RouterLink } from 'vue-router';
 
+import EmptyState from '@/components/ui/EmptyState.vue';
 import Pagination from '@/components/ui/Pagination.vue';
 import SectionError from '@/components/ui/SectionError.vue';
 import SectionHeader from '@/components/ui/SectionHeader.vue';
@@ -54,7 +55,7 @@ const focus = 'focus-visible:outline-2 focus-visible:outline-offset-1 focus-visi
 
     <SectionError v-else-if="error" :message="error" @retry="emit('retry')" />
 
-    <p v-else-if="batches.length === 0" class="py-10 text-center text-sm text-zinc-500">No imports yet.</p>
+    <EmptyState v-else-if="batches.length === 0" message="No imports yet." />
 
     <ul v-else>
       <li v-for="batch in batches" :key="batch.id" class="border-b border-zinc-800 last:border-b-0">

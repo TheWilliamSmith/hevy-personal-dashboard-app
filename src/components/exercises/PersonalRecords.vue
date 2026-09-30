@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import { RouterLink } from 'vue-router';
 
+import EmptyState from '@/components/ui/EmptyState.vue';
 import SectionHeader from '@/components/ui/SectionHeader.vue';
 import type { ExerciseKind, ExerciseRecords } from '@/types/exercises';
 import {
@@ -113,7 +114,7 @@ const others = computed(() => tiles.value.slice(1));
   <section class="flex h-full flex-col gap-4">
     <SectionHeader title="Personal records" subtitle="Best efforts on this exercise" />
 
-    <p v-if="!hero" class="text-sm text-zinc-500">No record yet.</p>
+    <EmptyState v-if="!hero" message="No record yet." />
 
     <template v-else>
       <RouterLink

@@ -2,6 +2,7 @@
 import { ChevronRight } from 'lucide-vue-next';
 import { RouterLink } from 'vue-router';
 
+import EmptyState from '@/components/ui/EmptyState.vue';
 import Pagination from '@/components/ui/Pagination.vue';
 import SectionError from '@/components/ui/SectionError.vue';
 import SectionHeader from '@/components/ui/SectionHeader.vue';
@@ -66,7 +67,7 @@ function hasDetail(run: HevySyncRun): boolean {
 
     <SectionError v-else-if="error" :message="error" @retry="emit('retry')" />
 
-    <p v-else-if="runs.length === 0" class="py-10 text-center text-sm text-zinc-500">No syncs yet.</p>
+    <EmptyState v-else-if="runs.length === 0" message="No syncs yet." />
 
     <ul v-else>
       <li v-for="run in runs" :key="run.id" class="border-b border-zinc-800 last:border-b-0">

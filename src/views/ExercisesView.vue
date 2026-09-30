@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from 'vue';
-import { RouterLink } from 'vue-router';
 
 import CatalogSpotlight from '@/components/exercises/CatalogSpotlight.vue';
 import ExerciseRow from '@/components/exercises/ExerciseRow.vue';
 import ExerciseToolbar from '@/components/exercises/ExerciseToolbar.vue';
 import TopExercises from '@/components/exercises/TopExercises.vue';
+import EmptyState from '@/components/ui/EmptyState.vue';
 import SectionError from '@/components/ui/SectionError.vue';
 import SectionHeader from '@/components/ui/SectionHeader.vue';
 import { useExercises } from '@/composables/useExercises';
@@ -120,18 +120,9 @@ function anchorId(group: string): string {
 
             <SectionError v-else-if="error" :message="error" @retry="refresh" />
 
-            <div v-else-if="isEmptyCatalog" class="flex flex-col items-center gap-2 py-16 text-center">
-              <p class="text-sm text-zinc-500">No exercises yet.</p>
-              <RouterLink
-                :to="{ name: 'home', query: { tab: 'settings', section: 'data' } }"
-                class="text-sm font-medium text-zinc-200 underline decoration-zinc-600 underline-offset-2"
-              >
-                Connect Hevy or import a CSV export
-              </RouterLink>
-            </div>
+            <EmptyState v-else-if="isEmptyCatalog" import-link message="No exercises yet." />
 
-            <div v-else-if="groups.length === 0" class="flex flex-col items-center gap-2 py-16 text-center">
-              <p class="text-sm text-zinc-500">No exercises match these filters.</p>
+            <EmptyState v-else-if="groups.length === 0" message="No exercises match these filters.">
               <button
                 type="button"
                 class="text-sm font-medium text-zinc-200 underline decoration-zinc-600 underline-offset-2"
@@ -139,7 +130,7 @@ function anchorId(group: string): string {
               >
                 Clear filters
               </button>
-            </div>
+            </EmptyState>
 
             <div v-else class="flex flex-col gap-8" :class="{ 'opacity-60 transition-opacity': isLoading }">
               <section

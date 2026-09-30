@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router';
 
+import EmptyState from '@/components/ui/EmptyState.vue';
 import SectionError from '@/components/ui/SectionError.vue';
 import SectionHeader from '@/components/ui/SectionHeader.vue';
 import type { WorkoutSummary } from '@/types/workouts';
@@ -21,7 +22,7 @@ const emit = defineEmits<{ retry: [] }>();
 
     <SectionError v-if="error" :message="error" @retry="emit('retry')" />
 
-    <p v-else-if="!isLoading && !workout" class="text-sm text-zinc-500">No workout yet.</p>
+    <EmptyState v-else-if="!isLoading && !workout" message="No workout yet." />
 
     <template v-else>
       <div>

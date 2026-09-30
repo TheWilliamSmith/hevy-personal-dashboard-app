@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
+import EmptyState from '@/components/ui/EmptyState.vue';
 import SectionError from '@/components/ui/SectionError.vue';
 import SectionHeader from '@/components/ui/SectionHeader.vue';
 import { MUSCLE_LABELS, MUSCLE_ORDER } from '@/constants/muscles';
@@ -37,7 +38,7 @@ const rows = computed(() => {
 </script>
 
 <template>
-  <section class="flex flex-col gap-5">
+  <section class="flex h-full flex-col gap-5">
     <SectionHeader title="Muscle focus" :subtitle="`Share of working sets · ${rangeLabel}`">
       <p class="text-right">
         <span class="text-2xl font-semibold text-white tabular-nums">{{ formatInteger(totalSets) }}</span>
@@ -51,7 +52,7 @@ const rows = computed(() => {
       <li v-for="index in 5" :key="index" class="h-6 animate-pulse rounded bg-zinc-900" />
     </ul>
 
-    <p v-else-if="rows.length === 0" class="text-sm text-zinc-500">No working sets in this period.</p>
+    <EmptyState v-else-if="rows.length === 0" message="No working sets in this period." />
 
     <ul v-else class="flex flex-col gap-4">
       <li v-for="(row, index) in rows" :key="row.muscle">

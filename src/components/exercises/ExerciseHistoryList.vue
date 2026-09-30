@@ -3,6 +3,7 @@ import { ChevronRight } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { RouterLink } from 'vue-router';
 
+import EmptyState from '@/components/ui/EmptyState.vue';
 import SectionHeader from '@/components/ui/SectionHeader.vue';
 import type { HistoryEntry } from '@/types/exercises';
 import { EMPTY, formatDate, formatNumber, formatVolume, formatWeight } from '@/utils/format';
@@ -49,9 +50,7 @@ const cell = 'px-2 py-2 text-sm text-zinc-100 tabular-nums';
   <section class="flex flex-col gap-2">
     <SectionHeader title="Session history" :subtitle="`${total} sessions · newest first`" />
 
-    <p v-if="entries.length === 0" class="py-10 text-center text-sm text-zinc-500">
-      No sessions recorded for this exercise.
-    </p>
+    <EmptyState v-if="entries.length === 0" message="No sessions recorded for this exercise." />
 
     <ul v-else>
       <li v-for="entry in entries" :key="entry.workoutId" class="border-b border-zinc-800 last:border-b-0">

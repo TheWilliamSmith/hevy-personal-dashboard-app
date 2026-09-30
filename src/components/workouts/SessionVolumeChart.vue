@@ -3,6 +3,7 @@ import type { EChartsOption } from 'echarts';
 import { computed } from 'vue';
 
 import BaseChart from '@/components/dashboard/BaseChart.vue';
+import EmptyState from '@/components/ui/EmptyState.vue';
 import SectionHeader from '@/components/ui/SectionHeader.vue';
 import { baseOption, categoryAxis, formatAxisValue, resolveTheme, valueAxis } from '@/charts/theme';
 import type { WorkoutSummary } from '@/types/workouts';
@@ -90,9 +91,7 @@ function onSelect(index: number): void {
 
     <div class="relative h-64">
       <div v-if="isLoading && workouts.length === 0" class="absolute inset-0 animate-pulse rounded-md bg-zinc-900" />
-      <p v-else-if="workouts.length === 0" class="absolute inset-0 flex items-center justify-center text-sm text-zinc-500">
-        No workout to chart.
-      </p>
+      <EmptyState v-else-if="workouts.length === 0" overlay message="No workout to chart." />
       <BaseChart
         v-else
         :option="option"

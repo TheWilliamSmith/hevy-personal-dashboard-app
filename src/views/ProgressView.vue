@@ -8,6 +8,7 @@ import MuteButton from '@/components/progress/MuteButton.vue';
 import ProgressRow from '@/components/progress/ProgressRow.vue';
 import ProgressSettings from '@/components/progress/ProgressSettings.vue';
 import StatusOverview from '@/components/progress/StatusOverview.vue';
+import EmptyState from '@/components/ui/EmptyState.vue';
 import SectionError from '@/components/ui/SectionError.vue';
 import SectionHeader from '@/components/ui/SectionHeader.vue';
 import SegmentedControl, { type SegmentedOption } from '@/components/ui/SegmentedControl.vue';
@@ -111,15 +112,7 @@ const focus = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visi
         @reset="progress.resetDefaults"
       />
 
-      <div v-if="isGloballyEmpty" class="flex flex-col items-center gap-2 py-16 text-center">
-        <p class="text-sm text-zinc-500">No training history to assess yet.</p>
-        <RouterLink
-          :to="{ name: 'home', query: { tab: 'settings', section: 'data' } }"
-          class="text-sm font-medium text-zinc-200 underline decoration-zinc-600 underline-offset-2"
-        >
-          Connect Hevy or import a CSV export
-        </RouterLink>
-      </div>
+      <EmptyState v-if="isGloballyEmpty" import-link message="No training history to assess yet." />
 
       <SectionError v-else-if="progress.error.value" :message="progress.error.value" @retry="progress.refresh" />
 
@@ -174,9 +167,7 @@ const focus = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visi
             <li v-for="row in 8" :key="row" class="h-12 animate-pulse rounded-md bg-zinc-900" />
           </ul>
 
-          <p v-else-if="progress.visible.value.length === 0" class="py-10 text-center text-sm text-zinc-500">
-            {{ emptyMessage }}
-          </p>
+          <EmptyState v-else-if="progress.visible.value.length === 0" :message="emptyMessage" />
 
           <ul v-else :aria-busy="progress.isLoading.value">
             <ProgressRow

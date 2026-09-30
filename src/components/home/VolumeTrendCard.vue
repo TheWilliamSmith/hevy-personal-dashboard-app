@@ -3,6 +3,7 @@ import type { EChartsOption } from 'echarts';
 import { computed } from 'vue';
 
 import BaseChart from '@/components/dashboard/BaseChart.vue';
+import EmptyState from '@/components/ui/EmptyState.vue';
 import SectionError from '@/components/ui/SectionError.vue';
 import SectionHeader from '@/components/ui/SectionHeader.vue';
 import { baseOption, categoryAxis, formatAxisValue, resolveTheme, valueAxis } from '@/charts/theme';
@@ -97,9 +98,7 @@ const option = computed<EChartsOption>(() => ({
 
     <div v-else class="relative h-64">
       <div v-if="isLoading && !points" class="absolute inset-0 animate-pulse rounded-md bg-zinc-900" />
-      <p v-else-if="!hasData" class="absolute inset-0 flex items-center justify-center text-sm text-zinc-500">
-        No volume in this period.
-      </p>
+      <EmptyState v-else-if="!hasData" overlay message="No volume in this period." />
       <BaseChart v-else :option="option" :aria-label="caption" />
     </div>
   </section>

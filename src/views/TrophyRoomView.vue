@@ -8,6 +8,7 @@ import SecretTrophyTile from '@/components/achievements/SecretTrophyTile.vue';
 import SeriesTile from '@/components/achievements/SeriesTile.vue';
 import TrophyCard from '@/components/achievements/TrophyCard.vue';
 import UnlockedSpotlight from '@/components/achievements/UnlockedSpotlight.vue';
+import EmptyState from '@/components/ui/EmptyState.vue';
 import SectionError from '@/components/ui/SectionError.vue';
 import SectionHeader from '@/components/ui/SectionHeader.vue';
 import SegmentedControl, { type SegmentedOption } from '@/components/ui/SegmentedControl.vue';
@@ -89,9 +90,7 @@ const EMPTY: Record<TrophyShow, string> = {
           <div v-for="card in 12" :key="card" class="h-44 animate-pulse rounded-lg bg-zinc-900" />
         </div>
 
-        <p v-else-if="trophies.visibleCount.value === 0" class="py-12 text-center text-sm text-zinc-500">
-          {{ EMPTY[trophies.show.value] }}
-        </p>
+        <EmptyState v-else-if="trophies.visibleCount.value === 0" :message="EMPTY[trophies.show.value]" />
 
         <section v-for="section in layouts" :key="section.family" class="flex flex-col gap-4">
           <SectionHeader

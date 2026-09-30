@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
+import EmptyState from '@/components/ui/EmptyState.vue';
 import SectionHeader from '@/components/ui/SectionHeader.vue';
 import type { WorkoutExerciseDetail } from '@/types/workouts';
 import { formatVolume } from '@/utils/format';
@@ -21,10 +22,10 @@ const rows = computed(() =>
 </script>
 
 <template>
-  <section class="flex flex-col gap-5">
+  <section class="flex h-full flex-col gap-5">
     <SectionHeader title="Volume by exercise" subtitle="Share of the workout volume, warm-ups included" />
 
-    <p v-if="rows.length === 0" class="text-sm text-zinc-500">No weighted work in this workout.</p>
+    <EmptyState v-if="rows.length === 0" message="No weighted work in this workout." />
 
     <ul v-else class="flex flex-col gap-4">
       <li v-for="row in rows" :key="row.id">

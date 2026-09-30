@@ -3,6 +3,7 @@ import type { EChartsOption } from 'echarts';
 import { computed, ref } from 'vue';
 
 import BaseChart from '@/components/dashboard/BaseChart.vue';
+import EmptyState from '@/components/ui/EmptyState.vue';
 import SectionHeader from '@/components/ui/SectionHeader.vue';
 import SegmentedControl, { type SegmentedOption } from '@/components/ui/SegmentedControl.vue';
 import { baseOption, categoryAxis, resolveTheme, valueAxis } from '@/charts/theme';
@@ -196,9 +197,7 @@ const option = computed<EChartsOption>(() => ({
     </div>
 
     <div class="relative h-72">
-      <p v-if="!hasData" class="absolute inset-0 flex items-center justify-center text-sm text-zinc-500">
-        No sessions in this range.
-      </p>
+      <EmptyState v-if="!hasData" overlay message="No sessions in this range." />
       <BaseChart v-else :option="option" :aria-label="`${metricLabel} over ${filtered.length} sessions`" />
     </div>
   </section>

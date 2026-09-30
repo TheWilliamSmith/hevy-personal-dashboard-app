@@ -80,6 +80,7 @@ Toujours les classes Tailwind ci-dessous, jamais de couleur en dur dans un templ
 | --- | --- |
 | `SectionHeader` | Titre + sous-titre à gauche ; le slot par défaut (à droite) reçoit soit un chiffre de section, soit un contrôle, soit un bouton secondaire. |
 | `SectionError` | Erreur de chargement d'une section, avec bouton Retry. Remplace le contenu de la section. |
+| `EmptyState` | Section sans donnée : phrase centrée dans la section. `overlay` dans une zone de hauteur fixe (graphique), `import-link` pour le lien vers Data, slot pour une autre action (Clear filters). |
 | `SegmentedControl` | Choix exclusif (métrique, vue…). `shortLabel` optionnel pour mobile. |
 | `RangeSwitch` | Choix de période (30 days… All), branché sur `useDashboardFilters`. |
 | `MetricGrid` | Grille de chiffres clés avec icône. |
@@ -141,7 +142,7 @@ Pour un graphique, `BaseChart` (`src/components/dashboard/BaseChart.vue`) dans u
 Chaque section gère ses trois états, indépendamment des autres sections :
 
 - **Chargement** : un skeleton de la même forme que le contenu, `animate-pulse bg-zinc-900` (ou `text-zinc-700` sur un chiffre). Seulement tant qu'aucune donnée n'est affichée : un rechargement garde l'ancienne donnée visible.
-- **Vide** : phrase courte `text-sm text-zinc-500`, et un lien vers l'onglet Data si l'utilisateur doit agir.
+- **Vide** : toujours `EmptyState`, jamais un `<p>` à la main. La phrase est courte et centrée horizontalement et verticalement dans la section (hauteur minimale `min-h-48`, ou toute la zone du graphique avec `overlay`), pour que deux sections côte à côte restent alignées. Lien vers l'onglet Data (`import-link`) si l'utilisateur doit agir.
 - **Erreur** : `SectionError` avec Retry.
 
 ## Responsive

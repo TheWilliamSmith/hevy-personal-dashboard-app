@@ -8,6 +8,7 @@ import ExerciseHistoryList from '@/components/exercises/ExerciseHistoryList.vue'
 import ExerciseProgressionChart from '@/components/exercises/ExerciseProgressionChart.vue';
 import MergeExerciseDialog from '@/components/exercises/MergeExerciseDialog.vue';
 import PersonalRecords from '@/components/exercises/PersonalRecords.vue';
+import EmptyState from '@/components/ui/EmptyState.vue';
 import MetricGrid, { type MetricItem } from '@/components/ui/MetricGrid.vue';
 import SectionError from '@/components/ui/SectionError.vue';
 import { useExercise } from '@/composables/useExercise';
@@ -113,9 +114,7 @@ const focus = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visi
         <div class="h-16 animate-pulse rounded-md bg-zinc-900" />
       </div>
 
-      <div v-else-if="error && notFound" class="flex flex-col items-center gap-2 py-16 text-center">
-        <p class="text-sm text-zinc-500">This exercise does not exist.</p>
-      </div>
+      <EmptyState v-else-if="error && notFound" message="This exercise does not exist." />
 
       <SectionError v-else-if="error" :message="error" @retry="refresh" />
 

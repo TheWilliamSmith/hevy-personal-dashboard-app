@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import { RouterLink } from 'vue-router';
 
+import EmptyState from '@/components/ui/EmptyState.vue';
 import SectionHeader from '@/components/ui/SectionHeader.vue';
 import { MUSCLE_STYLES } from '@/constants/muscles';
 import type { ExerciseCard } from '@/types/exercises';
@@ -20,14 +21,14 @@ const rows = computed(() => {
 </script>
 
 <template>
-  <section class="flex flex-col gap-5">
+  <section class="flex h-full flex-col gap-5">
     <SectionHeader title="Most trained" subtitle="Sessions per exercise · exercises listed below" />
 
     <ul v-if="isLoading && exercises.length === 0" class="flex flex-col gap-5" aria-hidden="true">
       <li v-for="index in 5" :key="index" class="h-6 animate-pulse rounded bg-zinc-900" />
     </ul>
 
-    <p v-else-if="rows.length === 0" class="text-sm text-zinc-500">No exercise performed yet.</p>
+    <EmptyState v-else-if="rows.length === 0" message="No exercise performed yet." />
 
     <ul v-else class="flex flex-col gap-1">
       <li v-for="row in rows" :key="row.exercise.id">

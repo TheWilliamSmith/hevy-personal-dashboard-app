@@ -3,6 +3,7 @@ import { ChevronLeft, Clock, Layers, Repeat, Weight } from 'lucide-vue-next';
 import { computed } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
 
+import EmptyState from '@/components/ui/EmptyState.vue';
 import MetricGrid, { type MetricItem } from '@/components/ui/MetricGrid.vue';
 import SectionError from '@/components/ui/SectionError.vue';
 import SectionHeader from '@/components/ui/SectionHeader.vue';
@@ -56,9 +57,7 @@ const metrics = computed<MetricItem[]>(() => [
         <div class="h-64 animate-pulse rounded-md bg-zinc-900" />
       </div>
 
-      <div v-else-if="error && notFound" class="flex flex-col items-center gap-2 py-16 text-center">
-        <p class="text-sm text-zinc-500">This workout does not exist.</p>
-      </div>
+      <EmptyState v-else-if="error && notFound" message="This workout does not exist." />
 
       <SectionError v-else-if="error" :message="error" @retry="retry" />
 
@@ -87,7 +86,7 @@ const metrics = computed<MetricItem[]>(() => [
 
         <section class="flex flex-col gap-6">
           <SectionHeader title="Exercises" subtitle="In the order they were performed" />
-          <p v-if="orderedExercises.length === 0" class="text-sm text-zinc-500">No exercise logged in this workout.</p>
+          <EmptyState v-if="orderedExercises.length === 0" message="No exercise logged in this workout." />
           <div v-else class="grid grid-cols-[minmax(0,1fr)] gap-x-10 gap-y-10 xl:grid-cols-2">
             <ExerciseSection v-for="exercise in orderedExercises" :key="exercise.id" :exercise="exercise" />
           </div>

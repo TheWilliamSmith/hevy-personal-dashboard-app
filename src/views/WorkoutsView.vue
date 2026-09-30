@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { RouterLink, useRouter } from 'vue-router';
+import { useRouter } from 'vue-router';
 
+import EmptyState from '@/components/ui/EmptyState.vue';
 import Pagination from '@/components/ui/Pagination.vue';
 import SectionError from '@/components/ui/SectionError.vue';
 import SectionHeader from '@/components/ui/SectionHeader.vue';
@@ -115,27 +116,16 @@ function openWorkout(id: string): void {
 
           <SectionError v-else-if="error" :message="error" @retry="retry" />
 
-          <div v-else-if="workouts.length === 0" class="flex flex-col items-center gap-2 py-12 text-center">
-            <template v-if="hasActiveFilters">
-              <p class="text-sm text-zinc-500">No workouts match these filters.</p>
-              <button
-                type="button"
-                class="text-sm font-medium text-zinc-200 underline decoration-zinc-600 underline-offset-2"
-                @click="clearFilters"
-              >
-                Clear filters
-              </button>
-            </template>
-            <template v-else>
-              <p class="text-sm text-zinc-500">No workouts yet.</p>
-              <RouterLink
-                :to="{ name: 'home', query: { tab: 'settings', section: 'data' } }"
-                class="text-sm font-medium text-zinc-200 underline decoration-zinc-600 underline-offset-2"
-              >
-                Connect Hevy or import a CSV export
-              </RouterLink>
-            </template>
-          </div>
+          <EmptyState v-else-if="workouts.length === 0 && hasActiveFilters" message="No workouts match these filters.">
+            <button
+              type="button"
+              class="text-sm font-medium text-zinc-200 underline decoration-zinc-600 underline-offset-2"
+              @click="clearFilters"
+            >
+              Clear filters
+            </button>
+          </EmptyState>
+          <EmptyState v-else-if="workouts.length === 0" import-link message="No workouts yet." />
 
           <ul v-else :class="{ 'opacity-60 transition-opacity': isLoading }">
             <WorkoutRow v-for="workout in workouts" :key="workout.id" :workout="workout" :back-query="backQuery" />
