@@ -82,7 +82,7 @@ const field =
   <BaseDialog
     :open="props.open"
     labelled-by="edit-classification-title"
-    tone="dark"
+   
     :locked="props.isSaving"
     @close="emit('cancel')"
   >

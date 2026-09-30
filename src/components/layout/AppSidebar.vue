@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import {
   Activity,
-  Database,
   Dumbbell,
   LayoutDashboard,
   ListChecks,
   PanelLeftClose,
   PanelLeftOpen,
   PersonStanding,
+  Settings,
   TrendingUp,
   Trophy,
   X,
@@ -16,7 +16,9 @@ import { computed, onBeforeUnmount, onMounted, watch, type Component } from 'vue
 import { RouterLink } from 'vue-router';
 
 import HevySyncCard from '@/components/layout/HevySyncCard.vue';
+import ProfileAvatar from '@/components/profile/ProfileAvatar.vue';
 import { TABS, useActiveTab, type TabName } from '@/composables/useActiveTab';
+import { useProfile } from '@/composables/useProfile';
 import { useSidebar } from '@/composables/useSidebar';
 
 const ICONS: Readonly<Record<TabName, Component>> = {
@@ -26,16 +28,14 @@ const ICONS: Readonly<Record<TabName, Component>> = {
   trophies: Trophy,
   workouts: Dumbbell,
   exercises: ListChecks,
-  data: Database,
+  settings: Settings,
 };
-
-const FOOTER_TABS: ReadonlySet<TabName> = new Set<TabName>(['data']);
 
 const { tab } = useActiveTab();
 const { collapsed, mobileOpen, toggleCollapsed, closeMobile } = useSidebar();
+const { profile } = useProfile();
 
-const mainItems = computed(() => TABS.filter((item) => !FOOTER_TABS.has(item.name)));
-const footerItems = computed(() => TABS.filter((item) => FOOTER_TABS.has(item.name)));
+const mainItems = computed(() => TABS.filter((item) => item.name !== 'settings'));
 
 function linkTo(name: TabName) {
   return name === 'dashboard' ? { name: 'home' } : { name: 'home', query: { tab: name } };
@@ -118,23 +118,27 @@ const iconButton =
         </li>
       </ul>
 
-      <ul class="mt-auto space-y-0.5 pt-4">
-        <li v-for="item in footerItems" :key="item.name">
-          <RouterLink
-            :to="linkTo(item.name)"
-            :class="[itemBase, tab === item.name ? itemActive : itemIdle, { 'lg:justify-center': collapsed }]"
-            :aria-current="tab === item.name ? 'page' : undefined"
-            :title="collapsed ? item.label : undefined"
-          >
-            <component :is="ICONS[item.name]" class="h-4 w-4 shrink-0" aria-hidden="true" />
-            <span :class="{ 'lg:sr-only': collapsed }">{{ item.label }}</span>
-          </RouterLink>
-        </li>
-      </ul>
     </nav>
 
-    <div class="shrink-0 p-3" :class="{ 'lg:hidden': collapsed }">
+    <div class="shrink-0 px-3 pb-2" :class="{ 'lg:hidden': collapsed }">
       <HevySyncCard />
+    </div>
+
+    <div class="shrink-0 border-t border-zinc-800 p-3">
+      <RouterLink
+        :to="linkTo('settings')"
+        class="flex items-center gap-3 rounded-md p-1.5 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400"
+        :class="[tab === 'settings' ? 'bg-zinc-800' : 'hover:bg-zinc-900', { 'lg:justify-center': collapsed }]"
+        :aria-current="tab === 'settings' ? 'page' : undefined"
+        :title="collapsed ? 'Profile and settings' : undefined"
+      >
+        <ProfileAvatar :name="profile.displayName" :url="profile.avatarUrl" />
+        <span class="min-w-0 flex-1" :class="{ 'lg:sr-only': collapsed }">
+          <span class="block truncate text-sm font-medium text-zinc-100">{{ profile.displayName }}</span>
+          <span class="block truncate text-[11px] text-zinc-500">@{{ profile.username }}</span>
+        </span>
+        <Settings class="h-4 w-4 shrink-0 text-zinc-500" :class="{ 'lg:hidden': collapsed }" aria-hidden="true" />
+      </RouterLink>
     </div>
   </aside>
 </template>

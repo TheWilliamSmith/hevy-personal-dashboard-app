@@ -114,7 +114,7 @@ const focus = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visi
       <div v-if="isGloballyEmpty" class="flex flex-col items-center gap-2 py-16 text-center">
         <p class="text-sm text-zinc-500">No training history to assess yet.</p>
         <RouterLink
-          :to="{ name: 'home', query: { tab: 'data' } }"
+          :to="{ name: 'home', query: { tab: 'settings', section: 'data' } }"
           class="text-sm font-medium text-zinc-200 underline decoration-zinc-600 underline-offset-2"
         >
           Connect Hevy or import a CSV export

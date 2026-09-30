@@ -4,9 +4,9 @@ import { useToasts } from '@/composables/useToasts';
 const { toasts, dismiss } = useToasts();
 
 const TONES: Readonly<Record<string, string>> = {
-  success: 'border-emerald-200 bg-emerald-50 text-emerald-900',
-  warning: 'border-amber-200 bg-amber-50 text-amber-900',
-  error: 'border-red-200 bg-red-50 text-red-900',
+  success: 'border-emerald-500/40 bg-zinc-900 text-emerald-200',
+  warning: 'border-amber-500/40 bg-zinc-900 text-amber-200',
+  error: 'border-red-500/40 bg-zinc-900 text-red-200',
 };
 </script>
 
@@ -19,7 +19,7 @@ const TONES: Readonly<Record<string, string>> = {
     <div
       v-for="toast in toasts"
       :key="toast.id"
-      class="pointer-events-auto flex items-start gap-3 rounded-xl border p-3 shadow-lg"
+      class="pointer-events-auto flex items-start gap-3 rounded-lg border p-3 shadow-xl shadow-black/40"
       :class="TONES[toast.tone]"
     >
       <div class="min-w-0 flex-1">

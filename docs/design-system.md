@@ -83,6 +83,8 @@ Toujours les classes Tailwind ci-dessous, jamais de couleur en dur dans un templ
 | `SegmentedControl` | Choix exclusif (métrique, vue…). `shortLabel` optionnel pour mobile. |
 | `RangeSwitch` | Choix de période (30 days… All), branché sur `useDashboardFilters`. |
 | `MetricGrid` | Grille de chiffres clés avec icône. |
+| `Pagination` | Page précédente / suivante d'une liste paginée (`label`, `unit`). |
+| `BaseDialog`, `ConfirmDialog` | Fenêtre modale ; confirmation simple, `tone="danger"` pour une action destructrice. |
 
 Pour un graphique, `BaseChart` (`src/components/dashboard/BaseChart.vue`) dans un conteneur `relative h-64`.
 
@@ -110,7 +112,7 @@ Pour un graphique, `BaseChart` (`src/components/dashboard/BaseChart.vue`) dans u
 - **Champ texte** : `rounded-md border border-zinc-700 bg-zinc-950 px-2 py-1.5 text-sm text-zinc-100 placeholder:text-zinc-600`.
 - **Case à cocher, slider** : `accent-blue-600`, libellé `text-xs text-zinc-400` avec la valeur en `font-medium text-zinc-100`.
 - **Popover** : `rounded-lg border border-zinc-800 bg-zinc-900 p-3 shadow-xl shadow-black/40`, fermé par Échap et par un clic à l'extérieur.
-- **Dialogue** : `BaseDialog` avec `tone="dark"` ; en-tête et pied séparés par `border-zinc-800`, action principale en bouton blanc, action destructrice en `bg-red-600 text-white`, avertissement dans un bloc d'erreur (`border-red-900/60 bg-red-950/40 text-red-200`).
+- **Dialogue** : `BaseDialog` (sombre, `size="md"` pour une fenêtre étroite) ; en-tête et pied séparés par `border-zinc-800`, action principale en bouton blanc, action destructrice en `bg-red-600 text-white`, avertissement dans un bloc d'erreur (`border-red-900/60 bg-red-950/40 text-red-200`).
 - **Filtre multiple** (muscles…) : boutons `rounded-md border px-2 py-1 text-xs` avec pastille de couleur ; sélectionné `border-zinc-600 bg-zinc-800 text-white`, sinon `border-zinc-800 text-zinc-400`.
 - **Panneau repliable** (réglages, éléments masqués) : ouvert par un bouton avec `aria-expanded`, chevron `ChevronRight` qui tourne de 90° une fois ouvert.
 - **Focus** : tout élément interactif a `focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400` (`outline-white` sur un bouton blanc).
@@ -156,10 +158,10 @@ Chaque section gère ses trois états, indépendamment des autres sections :
 - Groupe de boutons exclusifs : `role="group"` + `aria-label`, chaque bouton avec `aria-pressed`.
 - Contraste : jamais de `text-zinc-600` ou plus sombre pour une information utile.
 
-## Migrer une page vers ce design
+## Ajouter une page
 
-1. Ajouter l'onglet à `DARK_TABS` dans `src/App.vue`.
-2. Supprimer le titre de page du contenu (il est dans la barre du haut).
-3. Déplacer les contrôles globaux dans `#topbar-actions`.
-4. Remplacer cartes blanches et bordures claires par des sections posées sur le fond, séparées par l'espace et les lignes `border-zinc-800`.
+1. Conteneur `px-4 pb-10 sm:px-6` puis `flex flex-col gap-10 pt-6`, comme les autres vues.
+2. Pas de titre de page dans le contenu : il est dans la barre du haut.
+3. Contrôles globaux dans `#topbar-actions`.
+4. Une rangée à deux colonnes en haut (contenu principal | chiffre héros), puis des sections pleine largeur.
 5. Réutiliser les composants de `src/components/ui/`, puis vérifier desktop (1440 px) et mobile (390 px).

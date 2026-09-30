@@ -82,7 +82,7 @@ VITE_API_PROXY_TARGET=http://localhost:4000
 
 ### 5. Charger des données
 
-Au premier lancement, la base est vide. Ouvrir l'onglet **Data** (<http://localhost:5173/?tab=data>) et choisir une source :
+Au premier lancement, la base est vide. Ouvrir **Settings → Data** (bloc profil en bas de la sidebar, ou <http://localhost:5173/?tab=settings&section=data>) et choisir une source :
 
 - **Connexion Hevy** : coller la clé API Hevy (format UUID). Elle se trouve dans les paramètres développeur de Hevy. Un abonnement **Hevy Pro** est requis.
 - **Import CSV** : importer l'export CSV des séances depuis l'application Hevy. Un aperçu s'affiche avant confirmation.

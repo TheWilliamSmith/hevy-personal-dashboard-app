@@ -41,7 +41,7 @@ const confettiColors = computed(() =>
       <p
         id="celebration-title"
         class="text-xs font-semibold tracking-wider uppercase"
-        :class="negative ? 'text-amber-700' : 'text-indigo-600'"
+        :class="negative ? 'text-amber-400' : 'text-blue-400'"
       >
         {{ negative ? 'A little nudge' : 'Achievement unlocked' }}
       </p>
@@ -54,16 +54,16 @@ const confettiColors = computed(() =>
         <TrophyCard :item="current" featured />
       </div>
 
-      <p v-if="negative" class="mt-4 text-sm text-amber-800">
+      <p v-if="negative" class="mt-4 text-sm text-amber-300">
         Not a reward — a hint about what your training is skipping.
       </p>
-      <p v-else class="mt-4 text-2xl font-bold text-slate-900">+{{ current.xp }} XP</p>
+      <p v-else class="mt-4 text-2xl font-bold text-white">+{{ current.xp }} XP</p>
 
       <div class="mt-6 flex items-center justify-center gap-3">
         <button
           v-if="remaining > 1"
           type="button"
-          class="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100"
+          class="rounded-md px-3 py-2 text-sm font-medium text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100"
           @click="acknowledgeAll"
         >
           Skip all ({{ remaining }})
@@ -71,8 +71,8 @@ const confettiColors = computed(() =>
         <button
           type="button"
           data-autofocus
-          class="rounded-lg px-5 py-2 text-sm font-semibold text-white"
-          :class="negative ? 'bg-amber-600 hover:bg-amber-700' : 'bg-indigo-600 hover:bg-indigo-700'"
+          class="rounded-md px-5 py-2 text-sm font-semibold"
+          :class="negative ? 'bg-amber-500 text-zinc-950 hover:bg-amber-400' : 'bg-white text-zinc-900 hover:bg-zinc-200'"
           @click="acknowledge"
         >
           {{ negative ? 'Noted' : 'Nice' }}<span v-if="remaining > 1" class="font-normal opacity-80"> · {{ remaining - 1 }} more</span>

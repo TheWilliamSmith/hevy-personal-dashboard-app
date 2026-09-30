@@ -175,7 +175,7 @@ function openExercises(group: MuscleGroup): void {
               <div v-else-if="isEmpty" class="flex h-full flex-col items-center justify-center gap-2">
                 <p class="text-sm text-zinc-500">No training in this period.</p>
                 <RouterLink
-                  :to="{ name: 'home', query: { tab: 'data' } }"
+                  :to="{ name: 'home', query: { tab: 'settings', section: 'data' } }"
                   class="text-sm font-medium text-zinc-200 underline decoration-zinc-600 underline-offset-2"
                 >
                   Connect Hevy or import a CSV export

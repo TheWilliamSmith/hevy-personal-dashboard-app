@@ -1,11 +1,22 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest';
 
-import { router } from './index';
+import { legacyTabRedirect, router } from './index';
 
 describe('the app router', () => {
   it('registers the single home route plus a catch-all redirect', () => {
     expect(router.resolve('/').name).toBe('home');
     expect(router.resolve('/anything/else').matched[0]?.redirect).toEqual({ name: 'home' });
+  });
+
+  it.each(['data', 'imports'])('sends the legacy %s tab to the data section of settings', (legacy) => {
+    expect(legacyTabRedirect({ tab: legacy, page: '2' })).toEqual({
+      name: 'home',
+      query: { tab: 'settings', section: 'data', page: '2' },
+    });
+  });
+
+  it('leaves every other tab alone', () => {
+    expect(legacyTabRedirect({ tab: 'workouts' })).toBeNull();
   });
 });

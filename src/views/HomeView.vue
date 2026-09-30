@@ -7,7 +7,7 @@ import { useActiveTab } from '@/composables/useActiveTab';
 const DashboardPanel = defineAsyncComponent(() => import('@/views/DashboardView.vue'));
 const WorkoutsPanel = defineAsyncComponent(() => import('@/views/WorkoutsView.vue'));
 const WorkoutDetailPanel = defineAsyncComponent(() => import('@/views/WorkoutDetailView.vue'));
-const DataPanel = defineAsyncComponent(() => import('@/views/DataView.vue'));
+const SettingsPanel = defineAsyncComponent(() => import('@/views/SettingsView.vue'));
 const BodyPanel = defineAsyncComponent(() => import('@/views/BodyView.vue'));
 const ProgressPanel = defineAsyncComponent(() => import('@/views/ProgressView.vue'));
 const TrophiesPanel = defineAsyncComponent(() => import('@/views/TrophyRoomView.vue'));
@@ -26,8 +26,8 @@ const exerciseSlug = computed(() =>
 );
 
 const panel = computed(() => {
-  if (tab.value === 'data') {
-    return DataPanel;
+  if (tab.value === 'settings') {
+    return SettingsPanel;
   }
   if (tab.value === 'body') {
     return BodyPanel;

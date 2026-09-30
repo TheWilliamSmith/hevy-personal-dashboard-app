@@ -4,7 +4,7 @@ Front Vue 3 du Hevy Personal Dashboard. Il consomme l'API `hevy-personal-dashboa
 
 ## Design
 
-**Avant toute modification d'interface, lire [docs/design-system.md](docs/design-system.md) et le respecter.** La page Dashboard (`src/views/DashboardView.vue`) est la référence visuelle. Les pages sont refaites une à une ; une page refaite est listée dans `DARK_TABS` (`src/App.vue`).
+**Avant toute modification d'interface, lire [docs/design-system.md](docs/design-system.md) et le respecter.** La page Dashboard (`src/views/DashboardView.vue`) est la référence visuelle.
 
 ## Commandes
 

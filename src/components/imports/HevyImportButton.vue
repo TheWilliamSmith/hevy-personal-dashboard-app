@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Upload } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 const props = defineProps<{
@@ -15,7 +16,7 @@ const openPickerButton = ref<HTMLButtonElement | null>(null);
 const isDragging = ref(false);
 
 const label = computed(() =>
-  props.isBusy ? `Analysing… ${props.progress}%` : 'Import Hevy export',
+  props.isBusy ? `Analysing… ${props.progress}%` : 'Choose a CSV file',
 );
 
 function clearInput(): void {
@@ -51,12 +52,8 @@ defineExpose({ focus: () => openPickerButton.value?.focus() });
 <template>
   <section class="w-full">
     <div
-      class="rounded-xl border-2 border-dashed p-6 text-center transition-colors"
-      :class="
-        isDragging
-          ? 'border-indigo-500 bg-indigo-50'
-          : 'border-slate-300 bg-white hover:border-slate-400'
-      "
+      class="flex flex-col items-center gap-3 rounded-lg border border-dashed px-6 py-8 text-center transition-colors"
+      :class="isDragging ? 'border-blue-500 bg-blue-500/10' : 'border-zinc-700 hover:border-zinc-500'"
       @dragover.prevent="isDragging = true"
       @dragleave="isDragging = false"
       @drop.prevent="onDrop"
@@ -70,48 +67,44 @@ defineExpose({ focus: () => openPickerButton.value?.focus() });
         @change="onChange"
       />
 
-      <p class="text-sm text-slate-600">Drop your Hevy CSV export here, or</p>
+      <Upload class="h-6 w-6 text-zinc-500" aria-hidden="true" />
+      <p class="text-sm text-zinc-400">Drop your Hevy CSV export here, or</p>
 
       <button
         ref="openPickerButton"
         type="button"
-        class="mt-3 w-full rounded-lg bg-indigo-600 px-4 py-2 font-medium text-white transition-colors hover:bg-indigo-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:cursor-not-allowed disabled:opacity-60"
-        :disabled="props.isBusy"
-        :aria-busy="props.isBusy"
+        class="rounded-md bg-white px-4 py-2 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:cursor-not-allowed disabled:opacity-60"
+        :disabled="isBusy"
+        :aria-busy="isBusy"
         @click="openPicker"
       >
         {{ label }}
       </button>
 
-      <p v-if="props.fileName" class="mt-3 truncate text-sm text-slate-700">
-        {{ props.fileName }}
-      </p>
+      <p v-if="fileName" class="max-w-full truncate text-xs text-zinc-400">{{ fileName }}</p>
 
       <div
-        v-if="props.isBusy"
-        class="mt-3 h-2 w-full overflow-hidden rounded-full bg-slate-200"
+        v-if="isBusy"
+        class="h-1.5 w-full max-w-sm overflow-hidden rounded-full bg-zinc-800"
         role="progressbar"
         aria-label="Upload progress"
-        :aria-valuenow="props.progress"
+        :aria-valuenow="progress"
         aria-valuemin="0"
         aria-valuemax="100"
       >
-        <div
-          class="h-full bg-indigo-600 transition-[width] duration-150"
-          :style="{ width: `${props.progress}%` }"
-        />
+        <div class="h-full bg-blue-500 transition-[width] duration-150" :style="{ width: `${progress}%` }" />
       </div>
     </div>
 
     <div
-      v-if="props.error"
-      class="mt-3 rounded-xl border border-red-200 bg-red-50 p-4"
+      v-if="error"
+      class="mt-3 flex items-center justify-between gap-3 rounded-md border border-red-900/60 bg-red-950/40 px-3 py-2"
       role="alert"
     >
-      <p class="text-sm text-red-900">{{ props.error }}</p>
+      <p class="text-sm text-red-200">{{ error }}</p>
       <button
         type="button"
-        class="mt-2 text-sm font-medium text-red-800 underline underline-offset-2"
+        class="shrink-0 rounded-md border border-red-800 px-2 py-1 text-xs font-medium text-red-100 hover:bg-red-900/50"
         @click="emit('dismissError')"
       >
         Try again

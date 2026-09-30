@@ -2,10 +2,10 @@
 import { computed } from 'vue';
 import { RouterLink, useRouter } from 'vue-router';
 
+import Pagination from '@/components/ui/Pagination.vue';
 import SectionError from '@/components/ui/SectionError.vue';
 import SectionHeader from '@/components/ui/SectionHeader.vue';
 import LatestWorkout from '@/components/workouts/LatestWorkout.vue';
-import PaginationControls from '@/components/workouts/PaginationControls.vue';
 import SessionVolumeChart from '@/components/workouts/SessionVolumeChart.vue';
 import WorkoutFiltersBar from '@/components/workouts/WorkoutFilters.vue';
 import WorkoutRow from '@/components/workouts/WorkoutRow.vue';
@@ -129,7 +129,7 @@ function openWorkout(id: string): void {
             <template v-else>
               <p class="text-sm text-zinc-500">No workouts yet.</p>
               <RouterLink
-                :to="{ name: 'home', query: { tab: 'data' } }"
+                :to="{ name: 'home', query: { tab: 'settings', section: 'data' } }"
                 class="text-sm font-medium text-zinc-200 underline decoration-zinc-600 underline-offset-2"
               >
                 Connect Hevy or import a CSV export
@@ -142,7 +142,13 @@ function openWorkout(id: string): void {
           </ul>
         </div>
 
-        <PaginationControls v-if="meta && meta.totalPages > 1 && !error" :meta="meta" @change="goToPage" />
+        <Pagination
+          v-if="meta && meta.totalPages > 1 && !error"
+          :meta="meta"
+          label="Workouts pagination"
+          unit="workouts"
+          @change="goToPage"
+        />
       </section>
     </div>
   </div>

@@ -73,7 +73,7 @@ const buttonClass =
     </button>
     <RouterLink
       v-else-if="connection.indicatorTone.value === 'disconnected'"
-      :to="{ name: 'home', query: { tab: 'data' } }"
+      :to="{ name: 'home', query: { tab: 'settings', section: 'data' } }"
       :class="[buttonClass, 'mt-3']"
     >
       Connect

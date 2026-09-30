@@ -103,11 +103,11 @@ const tile = 'flex flex-col gap-0.5 px-4 py-3';
     :locked="props.isConfirming"
     @close="emit('cancel')"
   >
-    <header class="border-b border-slate-200 px-5 py-4">
-      <h2 id="import-preview-title" class="text-base font-semibold text-slate-900">
+    <header class="border-b border-zinc-800 px-5 py-4">
+      <h2 id="import-preview-title" class="text-base font-semibold text-white">
         Review import
       </h2>
-      <p class="mt-0.5 truncate text-sm text-slate-500">
+      <p class="mt-0.5 truncate text-sm text-zinc-500">
         {{ props.preview?.fileName }}
         <span aria-hidden="true"> · </span>
         {{ formatInteger(props.preview?.rowsParsed ?? 0) }} rows parsed
@@ -115,7 +115,7 @@ const tile = 'flex flex-col gap-0.5 px-4 py-3';
 
       <p
         v-if="props.preview?.alreadyImportedFile"
-        class="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900"
+        class="mt-3 rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm text-amber-200"
       >
         You already imported this exact file. Confirming again will only add workouts that are
         still missing.
@@ -125,16 +125,16 @@ const tile = 'flex flex-col gap-0.5 px-4 py-3';
     <div class="min-h-0 flex-1 overflow-y-auto">
       <div
         v-if="warnings.length > 0 && !dismissedWarnings"
-        class="border-b border-amber-200 bg-amber-50 px-5 py-3"
+        class="border-b border-amber-500/30 bg-amber-500/10 px-5 py-3"
         role="alert"
       >
         <div class="flex items-start gap-3">
-          <ul class="min-w-0 flex-1 list-disc space-y-1 pl-4 text-sm text-amber-900">
+          <ul class="min-w-0 flex-1 list-disc space-y-1 pl-4 text-sm text-amber-200">
             <li v-for="warning in warnings" :key="warning">{{ warning }}</li>
           </ul>
           <button
             type="button"
-            class="shrink-0 text-xs font-medium text-amber-800 underline underline-offset-2"
+            class="shrink-0 text-xs font-medium text-amber-300 underline underline-offset-2"
             @click="dismissedWarnings = true"
           >
             Dismiss
@@ -142,36 +142,36 @@ const tile = 'flex flex-col gap-0.5 px-4 py-3';
         </div>
       </div>
 
-      <dl class="grid grid-cols-3 gap-px border-b border-slate-200 bg-slate-200">
-        <div :class="[tile, 'bg-white']">
-          <dt class="text-xs font-medium text-slate-500">New workouts</dt>
-          <dd class="text-xl font-semibold text-indigo-700">
+      <dl class="grid grid-cols-3 border-b border-zinc-800">
+        <div :class="tile">
+          <dt class="text-xs text-zinc-500">New workouts</dt>
+          <dd class="text-2xl font-semibold text-white tabular-nums">
             {{ formatInteger(summary?.newWorkouts ?? 0) }}
           </dd>
         </div>
-        <div :class="[tile, 'bg-white']">
-          <dt class="text-xs font-medium text-slate-500">Already present</dt>
-          <dd class="text-xl font-semibold text-slate-400">
+        <div :class="tile">
+          <dt class="text-xs text-zinc-500">Already present</dt>
+          <dd class="text-2xl font-semibold text-zinc-500 tabular-nums">
             {{ formatInteger(summary?.existingWorkouts ?? 0) }}
           </dd>
         </div>
-        <div :class="[tile, 'bg-white']">
-          <dt class="text-xs font-medium text-slate-500">New sets</dt>
-          <dd class="text-xl font-semibold text-indigo-700">
+        <div :class="tile">
+          <dt class="text-xs text-zinc-500">New sets</dt>
+          <dd class="text-2xl font-semibold text-white tabular-nums">
             {{ formatInteger(summary?.newSets ?? 0) }}
           </dd>
         </div>
       </dl>
 
-      <p v-if="nothingToImport" class="px-5 py-4 text-sm text-slate-600">
+      <p v-if="nothingToImport" class="px-5 py-4 text-sm text-zinc-400">
         Nothing to import — every workout in this file is already in your data.
       </p>
 
-      <section v-if="newWorkouts.length > 0" class="border-b border-slate-100">
+      <section v-if="newWorkouts.length > 0" class="border-b border-zinc-800">
         <h3>
           <button
             type="button"
-            class="flex w-full items-center gap-2 px-5 py-3 text-left text-sm font-semibold text-slate-900 hover:bg-slate-50"
+            class="flex w-full items-center gap-2 px-5 py-3 text-left text-sm font-medium text-zinc-100 hover:bg-zinc-800/60"
             :aria-expanded="showNew"
             @click="showNew = !showNew"
           >
@@ -181,19 +181,19 @@ const tile = 'flex flex-col gap-0.5 px-4 py-3';
         </h3>
 
         <div v-if="showNew" class="px-5 pb-4">
-          <ul class="flex flex-col gap-2">
+          <ul class="flex flex-col">
             <li
               v-for="workout in pagedNew"
               :key="workout.externalKey"
-              class="rounded-lg border border-slate-200 p-3"
+              class="border-b border-zinc-800 py-3 last:border-b-0"
             >
               <div class="flex flex-wrap items-baseline justify-between gap-2">
-                <p class="truncate text-sm font-medium text-slate-900">{{ workout.title }}</p>
-                <time :datetime="workout.startedAt" class="text-xs text-slate-500">
+                <p class="truncate text-sm font-medium text-zinc-100">{{ workout.title }}</p>
+                <time :datetime="workout.startedAt" class="text-xs text-zinc-500">
                   {{ formatDate(workout.startedAt) }}
                 </time>
               </div>
-              <p class="mt-1 flex flex-wrap gap-x-4 text-xs text-slate-600">
+              <p class="mt-1 flex flex-wrap gap-x-4 text-xs text-zinc-400">
                 <span>{{ formatDuration(workout.durationSec) }}</span>
                 <span>{{ workout.exerciseCount }} exercises</span>
                 <span>{{ workout.setCount }} sets</span>
@@ -203,7 +203,7 @@ const tile = 'flex flex-col gap-0.5 px-4 py-3';
                 <li
                   v-for="name in workout.exerciseNames"
                   :key="name"
-                  class="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-700"
+                  class="rounded-md bg-zinc-800 px-2 py-0.5 text-[11px] text-zinc-300"
                 >
                   {{ name }}
                 </li>
@@ -218,16 +218,16 @@ const tile = 'flex flex-col gap-0.5 px-4 py-3';
           >
             <button
               type="button"
-              class="rounded border border-slate-300 px-2 py-1 disabled:opacity-40"
+              class="rounded-md border border-zinc-800 bg-zinc-900 px-2 py-1 text-zinc-100 hover:bg-zinc-800 disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400"
               :disabled="newPage <= 1"
               @click="newPage -= 1"
             >
               Previous
             </button>
-            <span class="text-slate-500">Page {{ newPage }} of {{ newPages }}</span>
+            <span class="text-zinc-500">Page {{ newPage }} of {{ newPages }}</span>
             <button
               type="button"
-              class="rounded border border-slate-300 px-2 py-1 disabled:opacity-40"
+              class="rounded-md border border-zinc-800 bg-zinc-900 px-2 py-1 text-zinc-100 hover:bg-zinc-800 disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400"
               :disabled="newPage >= newPages"
               @click="newPage += 1"
             >
@@ -241,7 +241,7 @@ const tile = 'flex flex-col gap-0.5 px-4 py-3';
         <h3>
           <button
             type="button"
-            class="flex w-full items-center gap-2 px-5 py-3 text-left text-sm font-semibold text-slate-900 hover:bg-slate-50"
+            class="flex w-full items-center gap-2 px-5 py-3 text-left text-sm font-medium text-zinc-100 hover:bg-zinc-800/60"
             :aria-expanded="showExisting"
             @click="showExisting = !showExisting"
           >
@@ -251,14 +251,14 @@ const tile = 'flex flex-col gap-0.5 px-4 py-3';
         </h3>
 
         <div v-if="showExisting" class="px-5 pb-4">
-          <ul class="divide-y divide-slate-100">
+          <ul class="divide-y divide-zinc-800">
             <li
               v-for="workout in pagedExisting"
               :key="workout.externalKey"
               class="flex flex-wrap items-baseline justify-between gap-x-4 py-1.5 text-xs"
             >
-              <span class="truncate text-slate-700">{{ workout.title }}</span>
-              <span class="text-slate-500">
+              <span class="truncate text-zinc-200">{{ workout.title }}</span>
+              <span class="text-zinc-500">
                 {{ formatDate(workout.startedAt) }}
                 <span aria-hidden="true"> · </span>
                 imported {{ formatDate(workout.importedAt) }}
@@ -273,16 +273,16 @@ const tile = 'flex flex-col gap-0.5 px-4 py-3';
           >
             <button
               type="button"
-              class="rounded border border-slate-300 px-2 py-1 disabled:opacity-40"
+              class="rounded-md border border-zinc-800 bg-zinc-900 px-2 py-1 text-zinc-100 hover:bg-zinc-800 disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400"
               :disabled="existingPage <= 1"
               @click="existingPage -= 1"
             >
               Previous
             </button>
-            <span class="text-slate-500">Page {{ existingPage }} of {{ existingPages }}</span>
+            <span class="text-zinc-500">Page {{ existingPage }} of {{ existingPages }}</span>
             <button
               type="button"
-              class="rounded border border-slate-300 px-2 py-1 disabled:opacity-40"
+              class="rounded-md border border-zinc-800 bg-zinc-900 px-2 py-1 text-zinc-100 hover:bg-zinc-800 disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400"
               :disabled="existingPage >= existingPages"
               @click="existingPage += 1"
             >
@@ -293,19 +293,19 @@ const tile = 'flex flex-col gap-0.5 px-4 py-3';
       </section>
     </div>
 
-    <footer class="flex flex-wrap items-center gap-3 border-t border-slate-200 px-5 py-4">
-      <p v-if="hasExpired" class="mr-auto text-xs text-red-700">
+    <footer class="flex flex-wrap items-center gap-3 border-t border-zinc-800 px-5 py-4">
+      <p v-if="hasExpired" class="mr-auto text-xs text-red-400">
         This preview expired. Upload the file again.
       </p>
-      <p v-else class="mr-auto text-xs text-slate-500">
+      <p v-else class="mr-auto text-xs text-zinc-500">
         Expires in <span class="font-medium tabular-nums">{{ countdown }}</span>
       </p>
 
-      <p v-if="props.error" class="w-full text-sm text-red-800" role="alert">{{ props.error }}</p>
+      <p v-if="props.error" class="w-full text-sm text-red-400" role="alert">{{ props.error }}</p>
 
       <button
         type="button"
-        class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-40"
+        class="rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm font-medium text-zinc-100 hover:bg-zinc-800 disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400"
         :disabled="props.isConfirming"
         @click="emit('cancel')"
       >
@@ -315,7 +315,7 @@ const tile = 'flex flex-col gap-0.5 px-4 py-3';
       <button
         v-if="hasExpired"
         type="button"
-        class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+        class="rounded-md bg-white px-3 py-2 text-sm font-medium text-zinc-900 hover:bg-zinc-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
         @click="emit('reupload')"
       >
         Re-upload the file
@@ -324,14 +324,14 @@ const tile = 'flex flex-col gap-0.5 px-4 py-3';
       <button
         v-else
         type="button"
-        class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+        class="inline-flex items-center gap-2 rounded-md bg-white px-3 py-2 text-sm font-medium text-zinc-900 hover:bg-zinc-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:cursor-not-allowed disabled:opacity-50"
         :disabled="!canConfirm"
         :aria-busy="props.isConfirming"
         @click="emit('confirm')"
       >
         <span
           v-if="props.isConfirming"
-          class="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white"
+          class="h-3.5 w-3.5 animate-spin rounded-full border-2 border-current/30 border-t-current"
           aria-hidden="true"
         />
         Import {{ formatInteger(summary?.newWorkouts ?? 0) }} workouts

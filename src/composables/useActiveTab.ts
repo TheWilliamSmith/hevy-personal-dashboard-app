@@ -8,7 +8,7 @@ export type TabName =
   | 'trophies'
   | 'workouts'
   | 'exercises'
-  | 'data';
+  | 'settings';
 
 export const TABS: ReadonlyArray<{ name: TabName; label: string }> = [
   { name: 'dashboard', label: 'Dashboard' },
@@ -17,17 +17,8 @@ export const TABS: ReadonlyArray<{ name: TabName; label: string }> = [
   { name: 'trophies', label: 'Trophies' },
   { name: 'workouts', label: 'Workouts' },
   { name: 'exercises', label: 'Exercises' },
-  { name: 'data', label: 'Data' },
+  { name: 'settings', label: 'Settings' },
 ];
-
-export const FULL_WIDTH_TABS: ReadonlySet<TabName> = new Set<TabName>([
-  'dashboard',
-  'body',
-  'progress',
-  'trophies',
-  'workouts',
-  'exercises',
-]);
 
 function isTab(value: unknown): value is TabName {
   return (
@@ -37,13 +28,12 @@ function isTab(value: unknown): value is TabName {
     value === 'trophies' ||
     value === 'workouts' ||
     value === 'exercises' ||
-    value === 'data'
+    value === 'settings'
   );
 }
 
 export interface UseActiveTab {
   tab: ComputedRef<TabName>;
-  isFullWidth: ComputedRef<boolean>;
   setTab: (tab: TabName) => void;
 }
 
@@ -55,7 +45,6 @@ export function useActiveTab(): UseActiveTab {
 
   return {
     tab,
-    isFullWidth: computed(() => FULL_WIDTH_TABS.has(tab.value)),
     setTab: (next) => {
       if (next === tab.value) {
         return;

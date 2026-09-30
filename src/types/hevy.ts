@@ -2,41 +2,53 @@ import type { AchievementItem } from './achievements';
 
 export type HevySyncStatus = 'RUNNING' | 'SUCCESS' | 'PARTIAL' | 'FAILED';
 
-export type HevySyncTrigger = 'MANUAL' | 'SCHEDULED' | 'AFTER_CONNECT';
+export type HevySyncTrigger = 'MANUAL' | 'CRON' | 'POST_CONNECT';
 
-export interface FlaggedExercise {
-  name: string;
-  externalKey: string;
-}
+export type HevySyncWarning =
+  | {
+      type: 'UNMAPPED_MUSCLE_GROUP';
+      hevyTemplateId: string;
+      exerciseTitle: string;
+      rawValue: string | null;
+    }
+  | {
+      type: 'UNMATCHED_OVERLAPPING_WORKOUT';
+      hevyId: string;
+      title: string;
+      startedAt: string;
+      existingWorkoutId: string;
+      existingTitle: string;
+    };
 
 export interface HevySyncRun {
   id: string;
   trigger: HevySyncTrigger;
   status: HevySyncStatus;
-  full: boolean;
   startedAt: string;
   finishedAt: string | null;
-  durationSec: number | null;
   requestCount: number;
+  pagesProcessed: number;
+  pagesTotal: number | null;
   workoutsCreated: number;
   workoutsUpdated: number;
   workoutsDeleted: number;
   workoutsMatched: number;
-  errorMessage: string | null;
-  flaggedExercises: FlaggedExercise[];
+  exercisesCreated: number;
+  warnings: HevySyncWarning[] | null;
+  error: string | null;
   newAchievements?: AchievementItem[];
 }
 
 export interface HevyConnected {
   connected: true;
-  username: string;
-  keyMasked: string;
-  connectedAt: string;
+  apiKeyLast4: string | null;
+  username: string | null;
+  status: 'ACTIVE' | 'INVALID' | 'UNAUTHORIZED' | 'UNKNOWN' | null;
   lastSyncAt: string | null;
   lastSyncStatus: HevySyncStatus | null;
-  hevyWorkoutCount: number;
-  localWorkoutCount: number;
-  activeSyncRunId: string | null;
+  workoutsInHevy: number | null;
+  workoutsLocal: number | null;
+  drift: number | null;
 }
 
 export interface HevyNotConnected {

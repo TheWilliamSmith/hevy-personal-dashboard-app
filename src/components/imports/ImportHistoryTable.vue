@@ -1,14 +1,15 @@
 <script setup lang="ts">
+import { ChevronRight } from 'lucide-vue-next';
 import { RouterLink } from 'vue-router';
 
-import type {
-  ImportBatchDetail,
-  ImportBatchSummary,
-} from '@/types/imports';
+import Pagination from '@/components/ui/Pagination.vue';
+import SectionError from '@/components/ui/SectionError.vue';
+import SectionHeader from '@/components/ui/SectionHeader.vue';
+import type { ImportBatchDetail, ImportBatchSummary } from '@/types/imports';
 import type { PaginationMeta } from '@/types/workouts';
 import { formatDate, formatInteger, formatVolume } from '@/utils/format';
 
-const props = defineProps<{
+defineProps<{
   batches: ImportBatchSummary[];
   meta: PaginationMeta | null;
   isLoading: boolean;
@@ -27,168 +28,130 @@ const emit = defineEmits<{
   page: [page: number];
 }>();
 
-const head = 'px-3 py-2 text-left text-xs font-semibold text-slate-600 whitespace-nowrap';
-const cell = 'px-3 py-2 text-sm text-slate-800 whitespace-nowrap';
+function statsOf(batch: ImportBatchSummary) {
+  return [
+    { label: 'Rows', value: formatInteger(batch.rowCount) },
+    { label: 'Created', value: formatInteger(batch.workoutsCreated) },
+    { label: 'Skipped', value: formatInteger(batch.workoutsSkipped) },
+    { label: 'Sets', value: formatInteger(batch.setsCreated) },
+    {
+      label: 'Still present',
+      value: `${formatInteger(batch.workoutsStillPresent)} / ${formatInteger(batch.workoutsCreated)}`,
+    },
+  ];
+}
+
+const focus = 'focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-zinc-400';
 </script>
 
 <template>
-  <section class="rounded-xl border border-slate-200 bg-white">
-    <header class="border-b border-slate-100 px-4 py-3">
-      <h2 class="text-sm font-semibold text-slate-900">Import history</h2>
-    </header>
+  <section class="flex flex-col gap-2">
+    <SectionHeader title="Import history" :subtitle="meta ? `${meta.total} imports · newest first` : 'Newest first'" />
 
-    <div v-if="props.isLoading" class="flex flex-col gap-2 p-4" aria-busy="true">
-      <div v-for="row in 4" :key="row" class="h-10 animate-pulse rounded bg-slate-100" />
-    </div>
+    <ul v-if="isLoading && batches.length === 0" class="flex flex-col gap-3 pt-2" aria-busy="true">
+      <li v-for="row in 4" :key="row" class="h-12 animate-pulse rounded-md bg-zinc-900" />
+    </ul>
 
-    <div v-else-if="props.error" class="p-6 text-center" role="alert">
-      <p class="text-sm text-red-900">{{ props.error }}</p>
-      <button
-        type="button"
-        class="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-sm font-medium text-red-800 hover:bg-red-100"
-        @click="emit('retry')"
-      >
-        Retry
-      </button>
-    </div>
+    <SectionError v-else-if="error" :message="error" @retry="emit('retry')" />
 
-    <p v-else-if="props.batches.length === 0" class="p-10 text-center text-sm text-slate-500">
-      No imports yet.
-    </p>
+    <p v-else-if="batches.length === 0" class="py-10 text-center text-sm text-zinc-500">No imports yet.</p>
 
-    <div v-else class="overflow-x-auto">
-      <table class="w-full border-collapse">
-        <caption class="sr-only">Import history, newest first</caption>
-        <thead class="bg-slate-50">
-          <tr>
-            <th scope="col" :class="head">Date</th>
-            <th scope="col" :class="head">File</th>
-            <th scope="col" :class="head">Rows</th>
-            <th scope="col" :class="head">Created</th>
-            <th scope="col" :class="head">Skipped</th>
-            <th scope="col" :class="head">Sets</th>
-            <th scope="col" :class="head">Still present</th>
-            <th scope="col" :class="head">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <template v-for="batch in props.batches" :key="batch.id">
-            <tr class="border-t border-slate-100 hover:bg-slate-50">
-              <td :class="cell">
-                <button
-                  type="button"
-                  class="text-left hover:underline"
-                  :aria-expanded="props.expandedId === batch.id"
-                  :aria-controls="`batch-detail-${batch.id}`"
-                  @click="emit('toggle', batch.id)"
-                >
-                  <span aria-hidden="true" class="mr-1 text-xs">
-                    {{ props.expandedId === batch.id ? '▾' : '▸' }}
-                  </span>
-                  {{ formatDate(batch.importedAt) }}
-                </button>
-              </td>
-              <th scope="row" :class="[cell, 'max-w-[16rem] truncate text-left font-medium']">
-                {{ batch.fileName }}
-              </th>
-              <td :class="cell">{{ formatInteger(batch.rowCount) }}</td>
-              <td :class="cell">{{ formatInteger(batch.workoutsCreated) }}</td>
-              <td :class="cell">{{ formatInteger(batch.workoutsSkipped) }}</td>
-              <td :class="cell">{{ formatInteger(batch.setsCreated) }}</td>
-              <td :class="[cell, batch.workoutsStillPresent === 0 ? 'text-slate-400' : '']">
-                {{ formatInteger(batch.workoutsStillPresent) }} / {{ formatInteger(batch.workoutsCreated) }}
-              </td>
-              <td :class="cell">
-                <span
-                  :title="
-                    batch.rollbackable
-                      ? undefined
-                      : 'This batch no longer owns any workout, so it cannot be rolled back.'
-                  "
-                >
-                  <button
-                    type="button"
-                    class="rounded-lg border border-red-200 px-2.5 py-1 text-xs font-medium text-red-700 hover:bg-red-50 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400 disabled:hover:bg-transparent"
-                    :disabled="!batch.rollbackable || props.deletingId === batch.id"
-                    @click="emit('requestDelete', batch)"
-                  >
-                    Delete
-                  </button>
+    <ul v-else>
+      <li v-for="batch in batches" :key="batch.id" class="border-b border-zinc-800 last:border-b-0">
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            class="grid min-w-0 flex-1 grid-cols-[1rem_minmax(0,1fr)] items-center gap-x-3 rounded-md px-2 py-3 text-left transition-colors hover:bg-zinc-900 lg:grid-cols-[1rem_minmax(0,1.5fr)_repeat(5,5.5rem)]"
+            :class="focus"
+            :aria-expanded="expandedId === batch.id"
+            :aria-controls="`batch-detail-${batch.id}`"
+            @click="emit('toggle', batch.id)"
+          >
+            <ChevronRight
+              class="h-4 w-4 text-zinc-500 transition-transform"
+              :class="{ 'rotate-90': expandedId === batch.id }"
+              aria-hidden="true"
+            />
+            <span class="min-w-0">
+              <span class="block truncate text-sm font-medium text-zinc-100">{{ batch.fileName }}</span>
+              <span class="block text-[11px] text-zinc-500">
+                {{ formatDate(batch.importedAt) }}
+                <span class="lg:hidden">
+                  · {{ formatInteger(batch.workoutsCreated) }} workouts, {{ formatInteger(batch.setsCreated) }} sets
                 </span>
-              </td>
-            </tr>
+              </span>
+            </span>
+            <span v-for="stat in statsOf(batch)" :key="stat.label" class="hidden flex-col lg:flex">
+              <span
+                class="text-sm tabular-nums"
+                :class="stat.label === 'Still present' && batch.workoutsStillPresent === 0 ? 'text-zinc-600' : 'text-zinc-100'"
+              >
+                {{ stat.value }}
+              </span>
+              <span class="text-[11px] text-zinc-500">{{ stat.label }}</span>
+            </span>
+          </button>
 
-            <tr v-if="props.expandedId === batch.id" :id="`batch-detail-${batch.id}`">
-              <td colspan="8" class="border-t border-slate-100 bg-slate-50 px-4 py-3">
-                <div v-if="props.isDetailLoading" class="flex flex-col gap-2" aria-busy="true">
-                  <div v-for="row in 3" :key="row" class="h-6 animate-pulse rounded bg-slate-200" />
-                </div>
+          <span
+            class="shrink-0"
+            :title="batch.rollbackable ? undefined : 'This batch no longer owns any workout, so it cannot be rolled back.'"
+          >
+            <button
+              type="button"
+              class="rounded-md border border-zinc-800 bg-zinc-900 px-2.5 py-1 text-xs font-medium text-red-400 transition-colors hover:bg-zinc-800 hover:text-red-300 disabled:cursor-not-allowed disabled:text-zinc-600 disabled:hover:bg-zinc-900"
+              :class="focus"
+              :disabled="!batch.rollbackable || deletingId === batch.id"
+              @click="emit('requestDelete', batch)"
+            >
+              Delete
+            </button>
+          </span>
+        </div>
 
-                <p v-else-if="props.detailError" class="text-sm text-red-900" role="alert">
-                  {{ props.detailError }}
-                </p>
+        <div
+          v-if="expandedId === batch.id"
+          :id="`batch-detail-${batch.id}`"
+          class="mb-3 ml-7 rounded-md bg-zinc-900 px-4 py-3"
+        >
+          <div v-if="isDetailLoading" class="flex flex-col gap-2" aria-busy="true">
+            <div v-for="row in 3" :key="row" class="h-6 animate-pulse rounded bg-zinc-800" />
+          </div>
 
-                <p
-                  v-else-if="!props.detail || props.detail.workouts.length === 0"
-                  class="text-sm text-slate-500"
-                >
-                  This import has no workouts left.
-                </p>
+          <p v-else-if="detailError" class="text-sm text-red-300" role="alert">{{ detailError }}</p>
 
-                <ul v-else class="divide-y divide-slate-200">
-                  <li
-                    v-for="workout in props.detail.workouts"
-                    :key="workout.id"
-                    class="flex flex-wrap items-baseline justify-between gap-x-4 py-1.5 text-sm"
-                  >
-                    <RouterLink
-                      :to="{ name: 'home', query: { tab: 'workouts', workout: workout.id } }"
-                      class="truncate font-medium text-indigo-700 underline underline-offset-2"
-                    >
-                      {{ workout.title }}
-                    </RouterLink>
-                    <span class="text-xs text-slate-500">
-                      {{ formatDate(workout.startedAt) }}
-                      <span aria-hidden="true"> · </span>
-                      {{ workout.exerciseCount }} exercises
-                      <span aria-hidden="true"> · </span>
-                      {{ workout.setCount }} sets
-                      <span aria-hidden="true"> · </span>
-                      {{ formatVolume(workout.totalVolumeKg) }}
-                    </span>
-                  </li>
-                </ul>
-              </td>
-            </tr>
-          </template>
-        </tbody>
-      </table>
-    </div>
+          <p v-else-if="!detail || detail.workouts.length === 0" class="text-sm text-zinc-500">
+            This import has no workouts left.
+          </p>
 
-    <nav
-      v-if="props.meta && props.meta.totalPages > 1"
-      class="flex items-center justify-between gap-4 border-t border-slate-100 px-4 py-3"
-      aria-label="Import history pagination"
-    >
-      <button
-        type="button"
-        class="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-40"
-        :disabled="props.meta.page <= 1"
-        @click="emit('page', props.meta.page - 1)"
-      >
-        Previous
-      </button>
-      <p class="text-sm text-slate-600">
-        Page {{ props.meta.page }} of {{ props.meta.totalPages }}
-      </p>
-      <button
-        type="button"
-        class="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-40"
-        :disabled="props.meta.page >= props.meta.totalPages"
-        @click="emit('page', props.meta.page + 1)"
-      >
-        Next
-      </button>
-    </nav>
+          <ul v-else class="divide-y divide-zinc-800">
+            <li
+              v-for="workout in detail.workouts"
+              :key="workout.id"
+              class="flex flex-wrap items-baseline justify-between gap-x-4 py-2 text-sm"
+            >
+              <RouterLink
+                :to="{ name: 'home', query: { tab: 'workouts', workout: workout.id } }"
+                class="truncate font-medium text-zinc-200 underline decoration-zinc-600 underline-offset-2 hover:decoration-zinc-300"
+              >
+                {{ workout.title }}
+              </RouterLink>
+              <span class="text-xs text-zinc-500">
+                {{ formatDate(workout.startedAt) }} · {{ workout.exerciseCount }} exercises ·
+                {{ workout.setCount }} sets · {{ formatVolume(workout.totalVolumeKg) }}
+              </span>
+            </li>
+          </ul>
+        </div>
+      </li>
+    </ul>
+
+    <Pagination
+      v-if="meta && meta.totalPages > 1"
+      class="pt-2"
+      :meta="meta"
+      label="Import history pagination"
+      unit="imports"
+      @change="emit('page', $event)"
+    />
   </section>
 </template>

@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-vue-next';
 
 import type { PaginationMeta } from '@/types/workouts';
 
-defineProps<{ meta: PaginationMeta }>();
+defineProps<{ meta: PaginationMeta; label: string; unit: string }>();
 const emit = defineEmits<{ change: [page: number] }>();
 
 const button =
@@ -11,7 +11,7 @@ const button =
 </script>
 
 <template>
-  <nav class="flex items-center justify-between gap-4" aria-label="Workouts pagination">
+  <nav class="flex items-center justify-between gap-4" :aria-label="label">
     <button type="button" :class="button" :disabled="meta.page <= 1" @click="emit('change', meta.page - 1)">
       <ChevronLeft class="h-4 w-4" aria-hidden="true" />
       Previous
@@ -19,7 +19,7 @@ const button =
 
     <p class="text-xs text-zinc-400 tabular-nums">
       Page {{ meta.page }} of {{ meta.totalPages }}
-      <span class="text-zinc-500">· {{ meta.total }} workouts</span>
+      <span class="text-zinc-500">· {{ meta.total }} {{ unit }}</span>
     </p>
 
     <button

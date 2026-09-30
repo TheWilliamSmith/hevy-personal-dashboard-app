@@ -62,10 +62,6 @@ async function fetchConnection(): Promise<void> {
   try {
     const response = await apiGet<HevyConnectionState>('/hevy/connection');
     state.value = response;
-
-    if (response.connected && response.activeSyncRunId && !pollTimer) {
-      await attachToRun(response.activeSyncRunId);
-    }
   } catch (caught) {
     loadError.value = caught instanceof ApiError ? caught.message : 'Something went wrong.';
   } finally {
@@ -94,14 +90,6 @@ async function pollRun(id: string): Promise<void> {
 function startPolling(id: string): void {
   stopPolling();
   pollTimer = setInterval(() => void pollRun(id), POLL_INTERVAL_MS);
-}
-
-async function attachToRun(id: string): Promise<void> {
-  await pollRun(id);
-  const current = activeRun.value;
-  if (current?.status === 'RUNNING') {
-    startPolling(id);
-  }
 }
 
 async function attachToRunningRun(): Promise<void> {
@@ -184,7 +172,7 @@ const indicatorTone: ComputedRef<'connected' | 'attention' | 'disconnected' | 'u
     if (current.lastSyncStatus === 'FAILED' || current.lastSyncStatus === 'PARTIAL') {
       return 'attention';
     }
-    if (current.hevyWorkoutCount > current.localWorkoutCount) {
+    if ((current.drift ?? 0) > 0) {
       return 'attention';
     }
     return 'connected';

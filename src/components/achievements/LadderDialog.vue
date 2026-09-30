@@ -27,7 +27,7 @@ const percent = computed(() => (next.value ? progressPercent(next.value) : 100))
 </script>
 
 <template>
-  <BaseDialog :open="ladder !== null" labelled-by="ladder-dialog-title" tone="dark" size="md" @close="emit('close')">
+  <BaseDialog :open="ladder !== null" labelled-by="ladder-dialog-title" size="md" @close="emit('close')">
     <template v-if="ladder">
       <header class="flex items-center gap-3 border-b border-zinc-800 px-5 py-4">
         <span

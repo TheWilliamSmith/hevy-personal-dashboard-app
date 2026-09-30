@@ -44,7 +44,7 @@ const selected = computed(() => options.value.find((option) => option.id === sel
   <BaseDialog
     :open="props.open"
     labelled-by="merge-exercise-title"
-    tone="dark"
+   
     :locked="props.isSaving"
     @close="emit('cancel')"
   >

@@ -9,8 +9,8 @@ const connection = useHevyConnection();
 const DOT_CLASS: Readonly<Record<string, string>> = {
   connected: 'bg-emerald-500',
   attention: 'bg-amber-500',
-  disconnected: 'bg-slate-300',
-  unknown: 'bg-slate-200',
+  disconnected: 'bg-zinc-500',
+  unknown: 'bg-zinc-700',
 };
 
 const label = computed(() => {
@@ -30,8 +30,8 @@ const label = computed(() => {
 
 <template>
   <RouterLink
-    :to="{ name: 'home', query: { tab: 'data' } }"
-    class="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium text-slate-600 hover:bg-slate-100"
+    :to="{ name: 'home', query: { tab: 'settings', section: 'data' } }"
+    class="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium text-zinc-400 hover:bg-zinc-900"
     :title="label"
   >
     <span

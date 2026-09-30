@@ -5,7 +5,6 @@ const props = defineProps<{
   open: boolean;
   labelledBy: string;
   locked?: boolean;
-  tone?: 'light' | 'dark';
   size?: 'md' | 'lg';
 }>();
 
@@ -90,8 +89,7 @@ onBeforeUnmount(() => lockScroll(false));
   <Teleport to="body">
     <div
       v-if="props.open"
-      class="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-6"
-      :class="props.tone === 'dark' ? 'bg-black/60' : 'bg-slate-900/40'"
+      class="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-0 sm:items-center sm:p-6"
       @mousedown.self="requestClose"
     >
       <div
@@ -100,11 +98,8 @@ onBeforeUnmount(() => lockScroll(false));
         aria-modal="true"
         :aria-labelledby="props.labelledBy"
         tabindex="-1"
-        class="flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-2xl shadow-xl outline-none sm:rounded-2xl"
-        :class="[
-          props.size === 'md' ? 'max-w-lg' : 'max-w-3xl',
-          props.tone === 'dark' ? 'border border-zinc-800 bg-zinc-900 text-zinc-100 shadow-black/60' : 'bg-white',
-        ]"
+        class="flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-2xl border border-zinc-800 bg-zinc-900 text-zinc-100 shadow-xl shadow-black/60 outline-none sm:rounded-2xl"
+        :class="props.size === 'md' ? 'max-w-lg' : 'max-w-3xl'"
         @keydown="onKeydown"
       >
         <slot />

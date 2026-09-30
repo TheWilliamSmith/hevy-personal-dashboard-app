@@ -5,6 +5,7 @@ import DeleteBatchDialog from '@/components/imports/DeleteBatchDialog.vue';
 import HevyImportButton from '@/components/imports/HevyImportButton.vue';
 import ImportHistoryTable from '@/components/imports/ImportHistoryTable.vue';
 import ImportPreviewModal from '@/components/imports/ImportPreviewModal.vue';
+import SectionHeader from '@/components/ui/SectionHeader.vue';
 import { useHevyImport } from '@/composables/useHevyImport';
 import { useImportBatches } from '@/composables/useImportBatches';
 import { useCelebrations } from '@/composables/useCelebrations';
@@ -96,8 +97,14 @@ async function onDeleteConfirmed(deleteWorkouts: boolean): Promise<void> {
 </script>
 
 <template>
-  <div class="flex flex-col gap-6">
-    <div>
+  <div class="flex flex-col gap-10">
+    <section class="flex flex-col gap-4">
+      <SectionHeader title="CSV import" subtitle="Import a Hevy export by hand" />
+      <p class="max-w-prose text-sm text-zinc-400">
+        Use this for a one-off import, or to keep your data current by hand if your Hevy
+        subscription lapses and the connection stops syncing. A preview shows what will be added
+        before anything is written.
+      </p>
       <HevyImportButton
         ref="importButton"
         :is-busy="isBusy"
@@ -107,7 +114,7 @@ async function onDeleteConfirmed(deleteWorkouts: boolean): Promise<void> {
         @file="selectFile"
         @dismiss-error="reset"
       />
-    </div>
+    </section>
 
     <ImportHistoryTable
       :batches="batches.batches.value"
