@@ -27,6 +27,7 @@ export class FakeXMLHttpRequest {
   }
 
   open(): void {}
+  setRequestHeader(): void {}
 
   send(): void {}
 

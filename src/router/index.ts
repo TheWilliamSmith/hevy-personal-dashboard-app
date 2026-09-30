@@ -2,9 +2,12 @@ import {
   createRouter,
   createWebHistory,
   type LocationQuery,
+  type RouteLocationNormalized,
   type RouteLocationRaw,
   type RouteRecordRaw,
 } from 'vue-router';
+
+import { loadSession } from '@/lib/auth-session';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -53,4 +56,18 @@ export function legacyTabRedirect(query: LocationQuery): RouteLocationRaw | null
   return null;
 }
 
-router.beforeEach((to) => legacyTabRedirect(to.query) ?? true);
+const GUEST_ONLY = new Set(['sign-in', 'sign-up']);
+
+type RouteTarget = Pick<RouteLocationNormalized, 'meta' | 'fullPath'> & { name?: unknown };
+
+export function authRedirect(to: RouteTarget, signedIn: boolean): RouteLocationRaw | null {
+  if (signedIn) {
+    return typeof to.name === 'string' && GUEST_ONLY.has(to.name) ? { name: 'home' } : null;
+  }
+  if (to.meta.layout === 'auth') {
+    return null;
+  }
+  return { name: 'sign-in', query: to.fullPath === '/' ? {} : { redirect: to.fullPath } };
+}
+
+router.beforeEach((to) => legacyTabRedirect(to.query) ?? authRedirect(to, loadSession() !== null) ?? true);

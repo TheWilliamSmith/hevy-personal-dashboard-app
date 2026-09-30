@@ -1,6 +1,6 @@
 import { readonly, ref, type DeepReadonly, type Ref } from 'vue';
 
-import { apiPost, apiUrl, extractApiMessage, ApiError } from '@/lib/api';
+import { apiPost, apiUrl, authHeaders, extractApiMessage, ApiError } from '@/lib/api';
 import type { ImportError, ImportPreview, ImportResult, ImportStatus } from '@/types/imports';
 
 export const MAX_FILE_BYTES = 10 * 1024 * 1024;
@@ -140,6 +140,9 @@ export function useHevyImport(): UseHevyImport {
       xhr.addEventListener('abort', settle);
 
       xhr.open('POST', apiUrl('/imports/hevy/preview'));
+      for (const [name, value] of Object.entries(authHeaders())) {
+        xhr.setRequestHeader(name, value);
+      }
       xhr.responseType = 'text';
       xhr.send(payload);
     });

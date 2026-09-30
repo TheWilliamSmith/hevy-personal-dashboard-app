@@ -12,8 +12,8 @@ const FEATURES = [
 </script>
 
 <template>
-  <div class="grid min-h-dvh grid-cols-1 bg-zinc-950 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
-    <div class="flex flex-col px-6 py-6 sm:px-10">
+  <div class="grid h-dvh grid-cols-1 bg-zinc-950 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+    <div class="flex min-h-0 flex-col overflow-y-auto overscroll-contain px-6 py-6 sm:px-10">
       <RouterLink
         :to="{ name: 'home' }"
         class="flex w-fit items-center gap-2.5 rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400"

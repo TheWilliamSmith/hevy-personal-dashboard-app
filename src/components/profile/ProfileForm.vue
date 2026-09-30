@@ -4,6 +4,7 @@ import { computed, reactive, watch, type DeepReadonly } from 'vue';
 import SectionHeader from '@/components/ui/SectionHeader.vue';
 import SegmentedControl, { type SegmentedOption } from '@/components/ui/SegmentedControl.vue';
 import type { UserProfile, WeekStart, WeightUnit } from '@/types/profile';
+import { USERNAME_PATTERN } from '@/utils/profile';
 
 const props = defineProps<{ profile: DeepReadonly<UserProfile>; isSaving: boolean }>();
 
@@ -31,7 +32,7 @@ const isDirty = computed(() =>
   (Object.keys(draft) as Array<keyof UserProfile>).some((key) => draft[key] !== props.profile[key]),
 );
 
-const usernameValid = computed(() => /^[a-z0-9._]{3,30}$/.test(draft.username));
+const usernameValid = computed(() => USERNAME_PATTERN.test(draft.username));
 
 function reset(): void {
   Object.assign(draft, props.profile);

@@ -1,21 +1,26 @@
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue';
-import { RouterLink, useRouter } from 'vue-router';
+import { RouterLink, useRoute, useRouter } from 'vue-router';
 
+import AuthError from '@/components/auth/AuthError.vue';
 import AuthField from '@/components/auth/AuthField.vue';
 import AuthLayout from '@/components/auth/AuthLayout.vue';
 import OAuthButtons from '@/components/auth/OAuthButtons.vue';
 import { useAuth, type OAuthProvider } from '@/composables/useAuth';
-import { useToasts } from '@/composables/useToasts';
-import { isEmail } from '@/utils/auth';
+import { errorMessage, isEmail, safeRedirect } from '@/utils/auth';
 
+const route = useRoute();
 const router = useRouter();
 const auth = useAuth();
-const { push } = useToasts();
 
 const form = reactive({ email: '', password: '', remember: true });
 const touched = reactive({ email: false, password: false });
 const submitted = ref(false);
+const formError = ref<string | null>(null);
+
+function enterApp(): void {
+  void router.replace(safeRedirect(route.query.redirect) ?? { name: 'home' });
+}
 
 const errors = computed(() => ({
   email: (touched.email || submitted.value) && !isEmail(form.email) ? 'Enter a valid email address.' : null,
@@ -26,22 +31,32 @@ const busy = computed(() => auth.isSubmitting.value);
 
 async function submit(): Promise<void> {
   submitted.value = true;
+  formError.value = null;
   if (!isEmail(form.email) || !form.password) {
     return;
   }
-  await auth.signIn(form.email.trim(), form.password, form.remember);
-  push({ tone: 'success', title: 'Signed in', description: 'Demo mode: no account was checked.' });
-  void router.push({ name: 'home' });
+  try {
+    await auth.signIn(form.email.trim(), form.password, form.remember);
+    enterApp();
+  } catch (caught) {
+    formError.value = errorMessage(caught);
+  }
 }
 
 async function withProvider(provider: OAuthProvider): Promise<void> {
-  await auth.signInWith(provider);
-  void router.push({ name: 'home' });
+  formError.value = null;
+  try {
+    await auth.signInWith(provider);
+    enterApp();
+  } catch (caught) {
+    formError.value = errorMessage(caught);
+  }
 }
 </script>
 
 <template>
   <AuthLayout title="Welcome back" subtitle="Sign in to see your training dashboard.">
+    <AuthError :message="formError" />
     <OAuthButtons action="Continue" :pending="auth.pendingProvider.value" :disabled="busy" @select="withProvider" />
 
     <div class="flex items-center gap-3 text-xs text-zinc-600" role="separator">

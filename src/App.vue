@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { computed, defineAsyncComponent, onMounted, ref, watch } from 'vue';
-import { RouterView, useRoute } from 'vue-router';
+import { RouterView, useRoute, useRouter } from 'vue-router';
 
 import AppSidebar from '@/components/layout/AppSidebar.vue';
 import AppTopBar from '@/components/layout/AppTopBar.vue';
 import ToastStack from '@/components/ui/ToastStack.vue';
 import { useActiveTab } from '@/composables/useActiveTab';
+import { useAuth } from '@/composables/useAuth';
 import { useCelebrations } from '@/composables/useCelebrations';
 
 const CelebrationModal = defineAsyncComponent(
@@ -13,6 +14,8 @@ const CelebrationModal = defineAsyncComponent(
 );
 
 const route = useRoute();
+const router = useRouter();
+const auth = useAuth();
 const { tab } = useActiveTab();
 const celebrations = useCelebrations();
 
@@ -25,11 +28,21 @@ watch(
   () => content.value?.scrollTo({ top: 0 }),
 );
 
-onMounted(() => void celebrations.loadUnseen());
+async function checkSession(): Promise<void> {
+  await auth.restore();
+  if (!auth.isAuthenticated.value && !isAuthLayout.value) {
+    void router.replace({ name: 'sign-in', query: { redirect: route.fullPath } });
+  }
+}
+
+onMounted(() => {
+  void checkSession();
+  void celebrations.loadUnseen();
+});
 </script>
 
 <template>
-  <div v-if="isAuthLayout" class="h-dvh overflow-y-auto overscroll-contain">
+  <div v-if="isAuthLayout" class="h-dvh overflow-hidden">
     <RouterView />
     <ToastStack />
   </div>

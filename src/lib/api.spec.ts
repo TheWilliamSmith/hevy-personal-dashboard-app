@@ -55,6 +55,12 @@ describe('ApiError', () => {
     expect(error.message).toBe('oops');
     expect(error.status).toBe(404);
     expect(error.name).toBe('ApiError');
+    expect(error.body).toBeNull();
+  });
+
+  it('keeps the parsed error body', async () => {
+    vi.stubGlobal('fetch', vi.fn(async (..._args: unknown[]) => jsonResponse({ message: 'taken', field: 'email' }, 409)));
+    await expect(apiPost('/auth/sign-up', {})).rejects.toMatchObject({ body: { message: 'taken', field: 'email' } });
   });
 });
 

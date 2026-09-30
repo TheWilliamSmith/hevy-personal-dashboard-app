@@ -10,8 +10,10 @@ const props = withDefaults(
     autocomplete: string;
     error?: string | null;
     hint?: string;
+    prefix?: string;
+    maxlength?: number;
   }>(),
-  { type: 'text', error: null, hint: undefined },
+  { type: 'text', error: null, hint: undefined, prefix: undefined, maxlength: undefined },
 );
 
 const model = defineModel<string>({ required: true });
@@ -30,16 +32,23 @@ const describedBy = computed(() => (props.error || props.hint ? `${props.id}-hel
       <slot name="aside" />
     </div>
     <div class="relative">
+      <span
+        v-if="prefix"
+        class="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-sm text-zinc-500"
+        aria-hidden="true"
+      >{{ prefix }}</span>
       <input
         :id="id"
         v-model="model"
         :type="inputType"
         :autocomplete="autocomplete"
+        :maxlength="maxlength"
+        :autocapitalize="prefix ? 'off' : undefined"
         spellcheck="false"
         :aria-invalid="Boolean(error)"
         :aria-describedby="describedBy"
         class="w-full rounded-md border bg-zinc-950 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400"
-        :class="[error ? 'border-red-500/60' : 'border-zinc-700', type === 'password' ? 'pr-10' : '']"
+        :class="[error ? 'border-red-500/60' : 'border-zinc-700', type === 'password' ? 'pr-10' : '', prefix ? 'pl-7' : '']"
         @blur="emit('blur')"
       />
       <button

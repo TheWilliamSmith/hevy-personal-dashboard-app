@@ -1,5 +1,6 @@
-import { readonly, ref, type DeepReadonly, type Ref } from 'vue';
+import { readonly, ref, watch, type DeepReadonly, type Ref } from 'vue';
 
+import { useAuth } from '@/composables/useAuth';
 import type { UserProfile } from '@/types/profile';
 
 export interface ProfileStats {
@@ -32,6 +33,21 @@ const SAVE_DELAY_MS = 400;
 
 const profile = ref<UserProfile>({ ...FAKE_PROFILE });
 const isSaving = ref(false);
+
+watch(
+  useAuth().user,
+  (user) => {
+    if (user) {
+      profile.value = {
+        ...profile.value,
+        displayName: user.displayName,
+        username: user.username,
+        memberSince: user.createdAt.slice(0, 10),
+      };
+    }
+  },
+  { immediate: true },
+);
 
 export interface UseProfile {
   profile: DeepReadonly<Ref<UserProfile>>;

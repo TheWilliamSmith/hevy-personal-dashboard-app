@@ -6,6 +6,7 @@ import ProfileForm from '@/components/profile/ProfileForm.vue';
 import ProfileHeader from '@/components/profile/ProfileHeader.vue';
 import SectionHeader from '@/components/ui/SectionHeader.vue';
 import SegmentedControl, { type SegmentedOption } from '@/components/ui/SegmentedControl.vue';
+import { useAuth } from '@/composables/useAuth';
 import { useProfile } from '@/composables/useProfile';
 import { useToasts } from '@/composables/useToasts';
 import type { UserProfile } from '@/types/profile';
@@ -22,7 +23,13 @@ const SECTIONS: ReadonlyArray<SegmentedOption<Section>> = [
 const route = useRoute();
 const router = useRouter();
 const { profile, stats, isSaving, save } = useProfile();
+const auth = useAuth();
 const { push } = useToasts();
+
+function signOut(): void {
+  auth.signOut();
+  void router.replace({ name: 'sign-in' });
+}
 
 const section = computed<Section>(() => (route.query.section === 'data' ? 'data' : 'profile'));
 
@@ -54,7 +61,7 @@ async function onSave(next: UserProfile): Promise<void> {
           <SectionHeader title="Account" subtitle="Sign-in and security" />
           <div class="flex flex-wrap gap-2">
             <RouterLink :to="{ name: 'forgot-password' }" :class="[secondary, 'text-zinc-100']">Change password</RouterLink>
-            <RouterLink :to="{ name: 'sign-in' }" :class="[secondary, 'text-red-400 hover:text-red-300']">Sign out</RouterLink>
+            <button type="button" :class="[secondary, 'text-red-400 hover:text-red-300']" @click="signOut">Sign out</button>
           </div>
         </section>
       </div>

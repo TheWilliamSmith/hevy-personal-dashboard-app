@@ -1,6 +1,23 @@
 import { describe, expect, it } from 'vitest';
 
-import { isEmail, passwordProblem, passwordStrength } from '@/utils/auth';
+import { errorMessage, isEmail, passwordProblem, passwordStrength, safeRedirect } from '@/utils/auth';
+
+describe('safeRedirect', () => {
+  it('keeps an in-app path', () => {
+    expect(safeRedirect('/?tab=workouts')).toBe('/?tab=workouts');
+  });
+
+  it.each([undefined, null, '', 'https://evil.test', '//evil.test/x', ['/']])('rejects %s', (value) => {
+    expect(safeRedirect(value)).toBeNull();
+  });
+});
+
+describe('errorMessage', () => {
+  it('uses the error message, with a fallback', () => {
+    expect(errorMessage(new Error('Invalid email or password.'))).toBe('Invalid email or password.');
+    expect(errorMessage('boom')).toBe('Something went wrong. Try again.');
+  });
+});
 
 describe('isEmail', () => {
   it.each(['alex@example.com', ' alex.lifts+hevy@mail.co.uk '])('accepts %s', (value) => {

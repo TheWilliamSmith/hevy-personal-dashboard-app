@@ -17,6 +17,15 @@ export function passwordStrength(password: string): PasswordStrength {
   return variety >= 3 ? 3 : 2;
 }
 
+/** Only same-app paths: `//host` would leave the app. */
+export function safeRedirect(value: unknown): string | null {
+  return typeof value === 'string' && value.startsWith('/') && !value.startsWith('//') ? value : null;
+}
+
+export function errorMessage(caught: unknown): string {
+  return caught instanceof Error && caught.message ? caught.message : 'Something went wrong. Try again.';
+}
+
 export function passwordProblem(password: string): string | null {
   if (password.length < MIN_PASSWORD_LENGTH) {
     return `Use at least ${MIN_PASSWORD_LENGTH} characters.`;

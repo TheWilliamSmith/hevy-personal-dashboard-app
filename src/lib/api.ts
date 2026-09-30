@@ -1,3 +1,4 @@
+import { accessToken } from './auth-session';
 import { shouldBypassHttpCache } from './data-version';
 
 export const API_URL: string = import.meta.env.VITE_API_URL;
@@ -31,14 +32,28 @@ export function extractApiMessage(rawBody: string): string | null {
   }
 }
 
+function parseBody(rawBody: string): unknown {
+  try {
+    return rawBody ? (JSON.parse(rawBody) as unknown) : null;
+  } catch {
+    return null;
+  }
+}
+
 export class ApiError extends Error {
   constructor(
     message: string,
     readonly status: number | null,
+    readonly body: unknown = null,
   ) {
     super(message);
     this.name = 'ApiError';
   }
+}
+
+export function authHeaders(): Record<string, string> {
+  const token = accessToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
 export type QueryParams = Record<string, string | number | undefined>;
@@ -66,7 +81,7 @@ export async function apiGet<T>(
   const cache: RequestCache | undefined = shouldBypassHttpCache() ? 'reload' : undefined;
 
   try {
-    response = await fetch(apiUrl(path) + buildQuery(params), { signal, cache });
+    response = await fetch(apiUrl(path) + buildQuery(params), { headers: authHeaders(), signal, cache });
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') {
       throw error;
@@ -75,8 +90,7 @@ export async function apiGet<T>(
   }
 
   if (!response.ok) {
-    const body = await response.text();
-    throw new ApiError(messageForStatus(response.status, extractApiMessage(body)), response.status);
+    throw await readError(response);
   }
 
   return (await response.json()) as T;
@@ -100,7 +114,7 @@ function messageForStatus(status: number, apiMessage: string | null): string {
 
 async function readError(response: Response): Promise<ApiError> {
   const body = await response.text();
-  return new ApiError(messageForStatus(response.status, extractApiMessage(body)), response.status);
+  return new ApiError(messageForStatus(response.status, extractApiMessage(body)), response.status, parseBody(body));
 }
 
 export async function apiPost<T>(path: string, body: unknown, signal?: AbortSignal): Promise<T> {
@@ -109,7 +123,7 @@ export async function apiPost<T>(path: string, body: unknown, signal?: AbortSign
   try {
     response = await fetch(apiUrl(path), {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
       body: JSON.stringify(body),
       signal,
     });
@@ -135,7 +149,7 @@ export async function apiDelete<T>(
   let response: Response;
 
   try {
-    response = await fetch(apiUrl(path) + buildQuery(params), { method: 'DELETE', signal });
+    response = await fetch(apiUrl(path) + buildQuery(params), { method: 'DELETE', headers: authHeaders(), signal });
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') {
       throw error;
@@ -156,7 +170,7 @@ export async function apiPatch<T>(path: string, body: unknown, signal?: AbortSig
   try {
     response = await fetch(apiUrl(path), {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
       body: JSON.stringify(body),
       signal,
     });

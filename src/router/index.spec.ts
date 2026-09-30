@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest';
 
-import { legacyTabRedirect, router } from './index';
+import { authRedirect, legacyTabRedirect, router } from './index';
 
 describe('the app router', () => {
   it('registers the single home route plus a catch-all redirect', () => {
@@ -29,5 +29,32 @@ describe('the app router', () => {
 
   it('leaves every other tab alone', () => {
     expect(legacyTabRedirect({ tab: 'workouts' })).toBeNull();
+  });
+});
+
+describe('authRedirect', () => {
+  const at = (path: string) => router.resolve(path);
+
+  it('sends a signed-out visitor to sign-in, remembering where they were going', () => {
+    expect(authRedirect(at('/?tab=workouts'), false)).toEqual({
+      name: 'sign-in',
+      query: { redirect: '/?tab=workouts' },
+    });
+    expect(authRedirect(at('/'), false)).toEqual({ name: 'sign-in', query: {} });
+  });
+
+  it.each(['/sign-in', '/sign-up', '/forgot-password', '/reset-password'])(
+    'lets a signed-out visitor open %s',
+    (path) => {
+      expect(authRedirect(at(path), false)).toBeNull();
+    },
+  );
+
+  it.each(['/sign-in', '/sign-up'])('sends a signed-in user away from %s', (path) => {
+    expect(authRedirect(at(path), true)).toEqual({ name: 'home' });
+  });
+
+  it.each(['/?tab=settings', '/forgot-password'])('lets a signed-in user open %s', (path) => {
+    expect(authRedirect(at(path), true)).toBeNull();
   });
 });
