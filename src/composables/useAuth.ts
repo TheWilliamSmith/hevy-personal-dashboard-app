@@ -1,7 +1,7 @@
 import { computed, readonly, ref, type ComputedRef, type DeepReadonly, type Ref } from 'vue';
 
-import { ApiError, apiGet, apiPost } from '@/lib/api';
-import { clearSession, loadSession, saveSession } from '@/lib/auth-session';
+import { ApiError, apiGet, apiPatch, apiPost } from '@/lib/api';
+import { clearSession, isRememberedSession, loadSession, saveSession } from '@/lib/auth-session';
 import type { AuthSession, AuthUser } from '@/types/auth';
 
 export type OAuthProvider = 'google' | 'apple';
@@ -79,6 +79,10 @@ export interface UseAuth {
   signInWith: (provider: OAuthProvider) => Promise<void>;
   signOut: () => void;
   restore: () => Promise<void>;
+  /** Needs the current password; returns nothing, the new email shows up in `user`. */
+  changeEmail: (email: string, currentPassword: string) => Promise<void>;
+  /** Needs the current password. Other devices are signed out; this one gets a new session. */
+  changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
   requestPasswordReset: (email: string) => Promise<void>;
   /** False when the link is used, expired or unknown. Signs out on success: every session ends. */
   resetPassword: (token: string, password: string) => Promise<boolean>;
@@ -110,6 +114,20 @@ export function useAuth(): UseAuth {
     },
     signOut,
     restore,
+    changeEmail: (email, currentPassword) =>
+      submitting(async () => {
+        const updated = await apiPatch<AuthUser>('/auth/me/email', { email, currentPassword });
+        const session = loadSession();
+        if (session) {
+          saveSession({ ...session, user: updated }, isRememberedSession());
+        }
+        user.value = updated;
+      }),
+    changePassword: (currentPassword, newPassword) =>
+      submitting(async () => {
+        const remember = isRememberedSession();
+        start(await apiPatch<AuthSession>('/auth/me/password', { currentPassword, newPassword, remember }), remember);
+      }),
     requestPasswordReset: (email) =>
       submitting(async () => {
         await apiPost('/auth/password/forgot', { email });

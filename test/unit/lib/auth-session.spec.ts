@@ -78,4 +78,14 @@ describe('auth-session', () => {
     expect(loadSession(NOW)).toBeNull();
     expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
   });
+
+  it('tells whether the session is remembered', async () => {
+    const { isRememberedSession, saveSession } = await freshModule();
+
+    saveSession(session(), false);
+    expect(isRememberedSession()).toBe(false);
+
+    saveSession(session(), true);
+    expect(isRememberedSession()).toBe(true);
+  });
 });

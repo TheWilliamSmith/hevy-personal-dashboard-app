@@ -65,6 +65,15 @@ export function clearSession(): void {
   }
 }
 
+/** True when the current session lives in localStorage ("Keep me signed in"). */
+export function isRememberedSession(): boolean {
+  try {
+    return window.localStorage.getItem(STORAGE_KEY) !== null;
+  } catch {
+    return false;
+  }
+}
+
 export function accessToken(now = Date.now()): string | null {
   return loadSession(now)?.accessToken ?? null;
 }

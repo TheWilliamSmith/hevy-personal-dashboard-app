@@ -166,6 +166,55 @@ describe('useAuth', () => {
     await expect(auth.resetPassword('token', 'N3w-password!')).rejects.toMatchObject({ status: null });
   });
 
+  it('changes the email and keeps the session where it was stored', async () => {
+    localStorage.setItem('hevy-dashboard.session', JSON.stringify(session()));
+    const updated = { ...USER, email: 'new@example.com' };
+    const fetchMock = vi.fn(async (..._args: unknown[]) => jsonResponse(updated));
+    vi.stubGlobal('fetch', fetchMock);
+    const auth = await freshAuth();
+
+    await auth.changeEmail('new@example.com', 'Str0ng-pass');
+
+    expect(String(fetchMock.mock.calls[0]?.[0])).toBe('/api/auth/me/email');
+    expect(fetchMock.mock.calls[0]?.[1]).toMatchObject({ method: 'PATCH' });
+    expect(auth.user.value?.email).toBe('new@example.com');
+    expect(JSON.parse(localStorage.getItem('hevy-dashboard.session') ?? '{}').user.email).toBe('new@example.com');
+  });
+
+  it('changes the password and swaps in the new session', async () => {
+    sessionStorage.setItem('hevy-dashboard.session', JSON.stringify(session()));
+    const fresh = { ...session(), accessToken: 'token-2' };
+    const fetchMock = vi.fn(async (..._args: unknown[]) => jsonResponse(fresh));
+    vi.stubGlobal('fetch', fetchMock);
+    const auth = await freshAuth();
+
+    await auth.changePassword('Str0ng-pass', 'N3w-password!');
+
+    expect(JSON.parse(String((fetchMock.mock.calls[0]?.[1] as RequestInit).body))).toEqual({
+      currentPassword: 'Str0ng-pass',
+      newPassword: 'N3w-password!',
+      remember: false,
+    });
+    expect(JSON.parse(sessionStorage.getItem('hevy-dashboard.session') ?? '{}').accessToken).toBe('token-2');
+    expect(localStorage.getItem('hevy-dashboard.session')).toBeNull();
+  });
+
+  it('keeps the error body when the current password is wrong', async () => {
+    sessionStorage.setItem('hevy-dashboard.session', JSON.stringify(session()));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () =>
+        jsonResponse({ statusCode: 400, message: 'Your current password is incorrect.', field: 'currentPassword' }, 400),
+      ),
+    );
+    const auth = await freshAuth();
+
+    await expect(auth.changePassword('wrong', 'N3w-password!')).rejects.toMatchObject({
+      body: { field: 'currentPassword' },
+    });
+    expect(auth.isAuthenticated.value).toBe(true);
+  });
+
   it('refuses OAuth until a provider is wired', async () => {
     vi.useFakeTimers();
     const auth = await freshAuth();
