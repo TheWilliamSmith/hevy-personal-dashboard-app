@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Search } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 
 import type { ExerciseOption, WorkoutFilters } from '@/types/workouts';
@@ -28,70 +29,73 @@ watch(
 );
 
 const field =
-  'w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none';
+  'w-full rounded-md border border-zinc-800 bg-zinc-900 px-2.5 py-1.5 text-sm text-zinc-100 [color-scheme:dark] placeholder:text-zinc-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400';
+const label = 'mb-1 block text-xs text-zinc-400';
 </script>
 
 <template>
-  <form class="grid gap-3 rounded-xl border border-slate-200 bg-white p-4 sm:grid-cols-2 lg:grid-cols-5" @submit.prevent>
-    <div class="lg:col-span-2">
-      <label for="workout-search" class="mb-1 block text-xs font-medium text-slate-600">Search</label>
-      <input
-        id="workout-search"
-        v-model="searchTerm"
-        type="search"
-        placeholder="Workout title"
-        :class="field"
-        @input="emit('search', searchTerm)"
-      />
+  <form class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,2fr)_minmax(0,1.5fr)_repeat(2,minmax(0,1fr))_auto] lg:items-end" @submit.prevent>
+    <div>
+      <label for="workout-search" :class="label">Search</label>
+      <div class="relative">
+        <Search class="pointer-events-none absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 text-zinc-500" aria-hidden="true" />
+        <input
+          id="workout-search"
+          v-model="searchTerm"
+          type="search"
+          placeholder="Workout title"
+          :class="[field, 'pl-8']"
+          @input="emit('search', searchTerm)"
+        />
+      </div>
     </div>
 
     <div>
-      <label for="workout-exercise" class="mb-1 block text-xs font-medium text-slate-600">Exercise</label>
+      <label for="workout-exercise" :class="label">Exercise</label>
       <select
         id="workout-exercise"
-        :value="props.filters.exercise"
+        :value="filters.exercise"
         :class="field"
         @change="emit('exercise', ($event.target as HTMLSelectElement).value)"
       >
         <option value="">All exercises</option>
-        <option v-for="option in props.exercises" :key="option.name" :value="option.name">
+        <option v-for="option in exercises" :key="option.name" :value="option.name">
           {{ option.name }} ({{ option.workoutCount }})
         </option>
       </select>
     </div>
 
     <div>
-      <label for="workout-from" class="mb-1 block text-xs font-medium text-slate-600">From</label>
+      <label for="workout-from" :class="label">From</label>
       <input
         id="workout-from"
         type="date"
-        :value="props.filters.from"
-        :max="props.filters.to || undefined"
+        :value="filters.from"
+        :max="filters.to || undefined"
         :class="field"
-        @change="emit('dateRange', ($event.target as HTMLInputElement).value, props.filters.to)"
+        @change="emit('dateRange', ($event.target as HTMLInputElement).value, filters.to)"
       />
     </div>
 
     <div>
-      <label for="workout-to" class="mb-1 block text-xs font-medium text-slate-600">To</label>
+      <label for="workout-to" :class="label">To</label>
       <input
         id="workout-to"
         type="date"
-        :value="props.filters.to"
-        :min="props.filters.from || undefined"
+        :value="filters.to"
+        :min="filters.from || undefined"
         :class="field"
-        @change="emit('dateRange', props.filters.from, ($event.target as HTMLInputElement).value)"
+        @change="emit('dateRange', filters.from, ($event.target as HTMLInputElement).value)"
       />
     </div>
 
-    <div v-if="props.hasActiveFilters" class="sm:col-span-2 lg:col-span-5">
-      <button
-        type="button"
-        class="text-sm font-medium text-indigo-700 underline underline-offset-2 hover:text-indigo-900"
-        @click="emit('clear')"
-      >
-        Clear all filters
-      </button>
-    </div>
+    <button
+      v-if="hasActiveFilters"
+      type="button"
+      class="rounded-md border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs font-medium text-zinc-100 transition-colors hover:bg-zinc-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400 sm:justify-self-start lg:mb-0.5"
+      @click="emit('clear')"
+    >
+      Clear filters
+    </button>
   </form>
 </template>

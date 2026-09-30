@@ -3,9 +3,7 @@ import { computed } from 'vue';
 
 import type { WorkoutExerciseDetail } from '@/types/workouts';
 import { EMPTY, formatNumber, formatVolume, formatWeight } from '@/utils/format';
-import { bestSetIndex } from '@/utils/sets';
-
-import SetTypeBadge from './SetTypeBadge.vue';
+import { bestSetIndex, SET_TYPE_DOT_CLASSES, SET_TYPE_LABELS } from '@/utils/sets';
 
 const props = defineProps<{ exercise: WorkoutExerciseDetail }>();
 
@@ -18,35 +16,36 @@ function weightByReps(weightKg: number | null, reps: number | null): string {
   return `${formatWeight(weightKg)} × ${reps ?? EMPTY}`;
 }
 
-const cell = 'px-3 py-2 text-sm';
-const head = 'px-3 py-2 text-left text-xs font-semibold text-slate-600';
+const cell = 'px-2 py-2 text-sm';
+const head = 'px-2 py-2 text-left text-[11px] font-medium text-zinc-500';
 </script>
 
 <template>
-  <section class="rounded-xl border border-slate-200 bg-white">
-    <header class="flex flex-wrap items-center gap-2 border-b border-slate-200 px-4 py-3">
-      <h3 class="font-semibold text-slate-900">{{ props.exercise.name }}</h3>
-      <span
-        v-if="props.exercise.supersetId !== null"
-        class="rounded-full bg-sky-100 px-2 py-0.5 text-xs font-medium text-sky-800 ring-1 ring-sky-200 ring-inset"
-      >
-        Superset {{ props.exercise.supersetId }}
-      </span>
-      <p class="ml-auto text-xs text-slate-500">
-        {{ props.exercise.setCount }} sets
-        <span aria-hidden="true"> · </span>
-        {{ formatVolume(props.exercise.volumeKg) }}
+  <section class="flex flex-col gap-3">
+    <div class="flex items-start justify-between gap-4">
+      <div class="min-w-0">
+        <h3 class="flex flex-wrap items-center gap-2 text-sm font-medium text-zinc-100">
+          {{ exercise.name }}
+          <span
+            v-if="exercise.supersetId !== null"
+            class="flex items-center gap-1 text-[11px] font-normal text-sky-400"
+          >
+            <span class="h-1.5 w-1.5 rounded-full bg-sky-400" aria-hidden="true" />
+            Superset {{ exercise.supersetId }}
+          </span>
+        </h3>
+        <p v-if="exercise.notes" class="mt-0.5 text-xs text-zinc-400">{{ exercise.notes }}</p>
+      </div>
+      <p class="shrink-0 text-right">
+        <span class="text-sm font-semibold text-white tabular-nums">{{ formatVolume(exercise.volumeKg) }}</span>
+        <span class="block text-[11px] text-zinc-500">{{ exercise.setCount }} {{ exercise.setCount === 1 ? 'set' : 'sets' }}</span>
       </p>
-    </header>
-
-    <p v-if="props.exercise.notes" class="border-b border-slate-100 px-4 py-2 text-sm text-slate-600">
-      {{ props.exercise.notes }}
-    </p>
+    </div>
 
     <table class="w-full border-collapse">
-      <caption class="sr-only">Sets for {{ props.exercise.name }}</caption>
-      <thead class="bg-slate-50">
-        <tr>
+      <caption class="sr-only">Sets for {{ exercise.name }}</caption>
+      <thead>
+        <tr class="border-b border-zinc-800">
           <th scope="col" :class="head">Set</th>
           <th scope="col" :class="head">Type</th>
           <th scope="col" :class="head">Weight × reps</th>
@@ -56,21 +55,26 @@ const head = 'px-3 py-2 text-left text-xs font-semibold text-slate-600';
       </thead>
       <tbody>
         <tr
-          v-for="(set, index) in props.exercise.sets"
+          v-for="(set, index) in exercise.sets"
           :key="set.setIndex"
-          class="border-t border-slate-100"
-          :class="index === bestIndex ? 'bg-emerald-50' : ''"
+          class="border-b border-zinc-800/60 last:border-b-0"
+          :class="index === bestIndex ? 'bg-emerald-400/10' : ''"
         >
-          <th scope="row" :class="[cell, 'text-left font-medium text-slate-700']">
+          <th scope="row" :class="[cell, 'text-left font-normal text-zinc-400 tabular-nums']">
             {{ set.setIndex + 1 }}
-            <span v-if="index === bestIndex" class="ml-1 text-xs font-semibold text-emerald-700">
+            <span v-if="index === bestIndex" class="ml-1 text-[11px] font-medium text-emerald-400">
               Best<span class="sr-only"> set of this exercise</span>
             </span>
           </th>
-          <td :class="cell"><SetTypeBadge :type="set.setType" /></td>
-          <td :class="[cell, 'text-slate-800']">{{ weightByReps(set.weightKg, set.reps) }}</td>
-          <td :class="[cell, 'text-slate-800']">{{ formatVolume(set.volumeKg) }}</td>
-          <td :class="[cell, 'text-slate-800']">{{ formatNumber(set.rpe) }}</td>
+          <td :class="cell">
+            <span class="flex items-center gap-1.5 text-xs text-zinc-400">
+              <span class="h-1.5 w-1.5 rounded-full" :class="SET_TYPE_DOT_CLASSES[set.setType]" aria-hidden="true" />
+              {{ SET_TYPE_LABELS[set.setType] }}
+            </span>
+          </td>
+          <td :class="[cell, 'text-zinc-100 tabular-nums']">{{ weightByReps(set.weightKg, set.reps) }}</td>
+          <td :class="[cell, 'text-zinc-100 tabular-nums']">{{ formatVolume(set.volumeKg) }}</td>
+          <td :class="[cell, 'text-zinc-400 tabular-nums']">{{ formatNumber(set.rpe) }}</td>
         </tr>
       </tbody>
     </table>

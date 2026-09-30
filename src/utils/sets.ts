@@ -14,6 +14,13 @@ export const SET_TYPE_CLASSES: Readonly<Record<SetType, string>> = {
   DROP: 'bg-violet-100 text-violet-800 ring-violet-200',
 };
 
+export const SET_TYPE_DOT_CLASSES: Readonly<Record<SetType, string>> = {
+  NORMAL: 'bg-zinc-500',
+  WARMUP: 'bg-amber-400',
+  FAILURE: 'bg-red-400',
+  DROP: 'bg-violet-400',
+};
+
 export function bestSetIndex(sets: readonly ExerciseSet[], bestSet: BestSet | null): number | null {
   if (bestSet === null) {
     return null;
