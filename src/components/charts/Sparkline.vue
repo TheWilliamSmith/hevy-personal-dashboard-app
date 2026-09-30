@@ -73,7 +73,7 @@ const markerCoords = computed(() =>
   </svg>
   <span
     v-else
-    class="inline-block shrink-0 text-xs text-slate-300"
+    class="inline-block shrink-0 text-xs text-zinc-600"
     :style="{ width: `${props.width}px` }"
     role="img"
     :aria-label="props.label"

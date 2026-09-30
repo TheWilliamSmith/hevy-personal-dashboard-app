@@ -108,6 +108,8 @@ Pour un graphique, `BaseChart` (`src/components/dashboard/BaseChart.vue`) dans u
 - **Champ texte** : `rounded-md border border-zinc-700 bg-zinc-950 px-2 py-1.5 text-sm text-zinc-100 placeholder:text-zinc-600`.
 - **Case à cocher, slider** : `accent-blue-600`, libellé `text-xs text-zinc-400` avec la valeur en `font-medium text-zinc-100`.
 - **Popover** : `rounded-lg border border-zinc-800 bg-zinc-900 p-3 shadow-xl shadow-black/40`, fermé par Échap et par un clic à l'extérieur.
+- **Dialogue** : `BaseDialog` avec `tone="dark"` ; en-tête et pied séparés par `border-zinc-800`, action principale en bouton blanc, action destructrice en `bg-red-600 text-white`, avertissement dans un bloc d'erreur (`border-red-900/60 bg-red-950/40 text-red-200`).
+- **Filtre multiple** (muscles…) : boutons `rounded-md border px-2 py-1 text-xs` avec pastille de couleur ; sélectionné `border-zinc-600 bg-zinc-800 text-white`, sinon `border-zinc-800 text-zinc-400`.
 - **Panneau repliable** (réglages, éléments masqués) : ouvert par un bouton avec `aria-expanded`, chevron `ChevronRight` qui tourne de 90° une fois ouvert.
 - **Focus** : tout élément interactif a `focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400` (`outline-white` sur un bouton blanc).
 
@@ -123,7 +125,7 @@ Pour un graphique, `BaseChart` (`src/components/dashboard/BaseChart.vue`) dans u
 - **Ligne cliquable** (séance d'une liste) : toute la ligne est un `RouterLink` `rounded-md px-2 py-3 hover:bg-zinc-900`, chevron `text-zinc-600` à droite. Les colonnes de chiffres (valeur `text-sm text-zinc-100`, libellé `text-[11px] text-zinc-500`) n'apparaissent qu'à partir de `lg` ; sur mobile, un résumé d'une ligne les remplace.
 - **Tableau** : pas de fond d'en-tête ; en-têtes `text-[11px] font-medium text-zinc-500` sur `border-b border-zinc-800`, lignes séparées par `border-zinc-800/60`, chiffres `text-zinc-100 tabular-nums`. Ligne mise en avant (meilleure série) : `bg-emerald-400/10` et libellé `text-emerald-400`.
 - **Type de série** : pastille + libellé `text-xs text-zinc-400` (`SET_TYPE_DOT_CLASSES` : normal `zinc-500`, warm-up `amber-400`, failure `red-400`, drop `violet-400`).
-- **Filtres d'une liste** : ligne de champs au-dessus de la liste, dans la section (pas dans la barre du haut quand il y en a plus de deux). Champs de date avec `[color-scheme:dark]`.
+- **Filtres d'une liste** : ligne de champs au-dessus de la liste, dans la section (pas dans la barre du haut quand il y en a plus de deux). Champs de date avec `[color-scheme:dark]`. Une barre de filtres collante ne l'est qu'à partir de `lg` (`lg:sticky`), sinon elle mange l'écran mobile.
 - **Filtre par catégorie** : les compteurs eux-mêmes sont des boutons (`aria-pressed`), sélection en `bg-zinc-800`, les autres segments de la barre empilée passent à 30 % d'opacité.
 - **Variation** : `+18,4 %` en `text-emerald-400`, `-5,1 %` en `text-red-400`, `—` en `text-zinc-600` si pas de comparaison.
 - **ECharts** : palette `resolveTheme(true)` avec `splitLine: '#27272a'`, tooltip `#18181b` bordé `#3f3f46`. Pas de ligne d'axe, grille horizontale discrète, courbe `#3b82f6` de 2 px avec aire en dégradé bleu (35 % → 0 %). Pas de légende si une seule série.

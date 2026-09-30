@@ -1,18 +1,22 @@
 <script setup lang="ts">
+import { CalendarClock, ChevronLeft, Dumbbell, Hash, Layers, ListOrdered, Repeat, Scale, Weight } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
 
 import EditClassificationDialog from '@/components/exercises/EditClassificationDialog.vue';
 import ExerciseHistoryList from '@/components/exercises/ExerciseHistoryList.vue';
 import ExerciseProgressionChart from '@/components/exercises/ExerciseProgressionChart.vue';
-import ExerciseRecordsRow from '@/components/exercises/ExerciseRecordsRow.vue';
 import MergeExerciseDialog from '@/components/exercises/MergeExerciseDialog.vue';
+import PersonalRecords from '@/components/exercises/PersonalRecords.vue';
+import MetricGrid, { type MetricItem } from '@/components/ui/MetricGrid.vue';
+import SectionError from '@/components/ui/SectionError.vue';
 import { useExercise } from '@/composables/useExercise';
 import { useExercises } from '@/composables/useExercises';
 import { useToasts } from '@/composables/useToasts';
 import { EQUIPMENT_LABELS, KIND_LABELS, MUSCLE_LABELS, MUSCLE_STYLES } from '@/constants/muscles';
 import type { UpdateExercisePayload } from '@/types/exercises';
-import { EMPTY, formatInteger, formatVolume, formatWeight } from '@/utils/format';
+import { EMPTY, formatInteger, formatNumber, formatVolume, formatWeight } from '@/utils/format';
+import { formatDaysAgo } from '@/utils/progress';
 
 const route = useRoute();
 const { push } = useToasts();
@@ -45,13 +49,25 @@ const summary = computed(() => detail.value?.summary ?? null);
 
 const lastPerformed = computed(() => {
   const days = summary.value?.daysSinceLast;
-  if (days === null || days === undefined) {
-    return 'Never performed';
-  }
-  if (days === 0) {
-    return 'Last performed today';
-  }
-  return `Last performed ${days} day${days === 1 ? '' : 's'} ago`;
+  return days === null || days === undefined ? 'never' : formatDaysAgo(days);
+});
+
+const metrics = computed<MetricItem[]>(() => {
+  const value = summary.value;
+  return [
+    { label: 'Sessions', value: formatInteger(value?.sessions), icon: Hash },
+    { label: 'Sets', value: formatInteger(value?.totalSets), icon: Layers },
+    { label: 'Reps', value: formatInteger(value?.totalReps), icon: Repeat },
+    { label: 'Total volume', value: formatVolume(value?.totalVolumeKg), icon: Weight },
+    { label: 'Sets / session', value: formatNumber(value?.avgSetsPerSession), icon: ListOrdered },
+    { label: 'Reps / set', value: formatNumber(value?.avgRepsPerSet), icon: Dumbbell },
+    {
+      label: 'Avg weight',
+      value: value?.avgWeightKg === null || value?.avgWeightKg === undefined ? EMPTY : `${formatWeight(value.avgWeightKg)} kg`,
+      icon: Scale,
+    },
+    { label: 'Last performed', value: lastPerformed.value, icon: CalendarClock },
+  ];
 });
 
 async function onSave(payload: UpdateExercisePayload): Promise<void> {
@@ -75,136 +91,89 @@ async function onMerge(sourceExerciseId: string): Promise<void> {
     });
   }
 }
+
+const focus = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400';
 </script>
 
 <template>
-  <div>
-    <div class="px-4 pt-2 sm:px-6">
+  <div class="px-4 pb-10 sm:px-6">
+    <div class="flex flex-col gap-10 pt-6">
       <RouterLink
         :to="{ name: 'home', query: { tab: 'exercises' } }"
-        class="text-sm font-medium text-indigo-700 underline underline-offset-2 hover:text-indigo-900"
+        class="-ml-2 inline-flex w-fit items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-zinc-300 transition-colors hover:bg-zinc-900 hover:text-white"
+        :class="focus"
       >
-        ← Back to exercises
+        <ChevronLeft class="h-4 w-4" aria-hidden="true" />
+        All exercises
       </RouterLink>
-    </div>
 
-    <div v-if="isLoading" class="flex flex-col gap-4 px-4 py-4 sm:px-6" aria-busy="true">
-      <div class="h-8 w-72 animate-pulse rounded bg-slate-200" />
-      <div class="grid gap-3 sm:grid-cols-4">
-        <div v-for="tile in 4" :key="tile" class="h-24 animate-pulse rounded-xl bg-slate-100" />
+      <div v-if="isLoading && !detail" class="flex flex-col gap-6" aria-busy="true">
+        <div class="h-8 w-72 animate-pulse rounded bg-zinc-900" />
+        <div class="h-72 animate-pulse rounded-md bg-zinc-900" />
+        <div class="h-16 animate-pulse rounded-md bg-zinc-900" />
       </div>
-      <div class="h-80 animate-pulse rounded-xl bg-slate-100" />
-    </div>
 
-    <div
-      v-else-if="error"
-      class="mx-4 my-4 rounded-xl border border-red-200 bg-red-50 p-6 text-center sm:mx-6"
-      role="alert"
-    >
-      <p class="text-sm text-red-900">
-        {{ notFound ? 'This exercise does not exist.' : error }}
-      </p>
-      <button
-        v-if="!notFound"
-        type="button"
-        class="mt-3 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
-        @click="refresh"
-      >
-        Retry
-      </button>
-    </div>
+      <div v-else-if="error && notFound" class="flex flex-col items-center gap-2 py-16 text-center">
+        <p class="text-sm text-zinc-500">This exercise does not exist.</p>
+      </div>
 
-    <article v-else-if="detail && info && summary" class="flex flex-col gap-4 py-4">
-      <header class="flex flex-wrap items-start gap-x-6 gap-y-3 px-4 sm:px-6">
-        <div class="min-w-0 flex-1">
-          <h1 class="text-2xl font-semibold text-slate-900">{{ info.name }}</h1>
+      <SectionError v-else-if="error" :message="error" @retry="refresh" />
 
-          <div class="mt-2 flex flex-wrap items-center gap-1.5">
-            <span
-              class="rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset"
-              :class="MUSCLE_STYLES[info.muscleGroup].chip"
-            >
-              {{ MUSCLE_LABELS[info.muscleGroup] }}
-            </span>
-            <span
-              v-for="muscle in info.secondaryMuscles"
-              :key="muscle"
-              class="rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset"
-              :class="MUSCLE_STYLES[muscle].chip"
-            >
-              {{ MUSCLE_LABELS[muscle] }}
-            </span>
-            <span
-              class="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-700 ring-1 ring-slate-200 ring-inset"
-            >
-              {{ EQUIPMENT_LABELS[info.equipment] }}
-            </span>
-            <span
-              class="rounded-full bg-slate-900 px-2 py-0.5 text-[11px] font-medium text-white"
-            >
-              {{ KIND_LABELS[info.kind] }}
-            </span>
-            <span
-              v-if="info.isCustom"
-              class="rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-800 ring-1 ring-amber-200 ring-inset"
-            >
-              Custom
-            </span>
+      <template v-else-if="detail && info && summary">
+        <header class="flex flex-wrap items-start justify-between gap-4">
+          <div class="min-w-0">
+            <h2 class="text-2xl font-semibold tracking-tight text-white">{{ info.name }}</h2>
+            <p class="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-zinc-400">
+              <span class="flex items-center gap-1.5 text-zinc-200">
+                <span class="h-2 w-2 rounded-full" :style="{ backgroundColor: MUSCLE_STYLES[info.muscleGroup].hex }" aria-hidden="true" />
+                {{ MUSCLE_LABELS[info.muscleGroup] }}
+              </span>
+              <span v-for="muscle in info.secondaryMuscles" :key="muscle" class="flex items-center gap-1.5">
+                <span class="h-1.5 w-1.5 rounded-full" :style="{ backgroundColor: MUSCLE_STYLES[muscle].hex }" aria-hidden="true" />
+                {{ MUSCLE_LABELS[muscle] }}
+              </span>
+              <span>{{ EQUIPMENT_LABELS[info.equipment] }}</span>
+              <span>{{ KIND_LABELS[info.kind] }}</span>
+              <span v-if="info.isCustom" class="text-amber-400">Custom</span>
+            </p>
           </div>
 
-          <p class="mt-2 text-sm text-slate-500">{{ lastPerformed }}</p>
+          <div class="flex flex-wrap gap-2">
+            <button
+              type="button"
+              class="rounded-md border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs font-medium text-zinc-100 transition-colors hover:bg-zinc-800"
+              :class="focus"
+              @click="isEditing = true"
+            >
+              Edit classification
+            </button>
+            <button
+              type="button"
+              class="rounded-md border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs font-medium text-red-400 transition-colors hover:bg-zinc-800 hover:text-red-300"
+              :class="focus"
+              @click="isMerging = true"
+            >
+              Merge into this
+            </button>
+          </div>
+        </header>
+
+        <div class="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)] lg:gap-0">
+          <ExerciseProgressionChart class="lg:pr-8" :points="detail.progression" :kind="info.kind" />
+          <PersonalRecords class="border-zinc-800 lg:border-l lg:pl-8" :records="detail.records" :kind="info.kind" />
         </div>
 
-        <div class="flex flex-wrap gap-2">
-          <button
-            type="button"
-            class="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
-            @click="isEditing = true"
-          >
-            Edit classification
-          </button>
-          <button
-            type="button"
-            class="rounded-lg border border-red-200 px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-50"
-            @click="isMerging = true"
-          >
-            Merge into this
-          </button>
-        </div>
-      </header>
+        <MetricGrid :items="metrics" :is-loading="false" />
 
-      <ExerciseRecordsRow :records="detail.records" :kind="info.kind" />
-
-      <p class="flex flex-wrap gap-x-5 gap-y-1 px-4 text-xs text-slate-500 sm:px-6">
-        <span>{{ formatInteger(summary.sessions) }} sessions</span>
-        <span>{{ formatInteger(summary.totalSets) }} sets</span>
-        <span>{{ formatInteger(summary.totalReps) }} reps</span>
-        <span>{{ formatVolume(summary.totalVolumeKg) }} total</span>
-        <span>{{ summary.avgSetsPerSession }} sets/session</span>
-        <span>{{ summary.avgRepsPerSet }} reps/set</span>
-        <span>
-          {{ summary.avgWeightKg === null ? EMPTY : `${formatWeight(summary.avgWeightKg)} kg` }} avg
-        </span>
-      </p>
-
-      <div class="px-4 sm:px-6">
-        <ExerciseProgressionChart
-          :points="detail.progression"
-          :kind="info.kind"
-          :is-loading="false"
-          :error="null"
-          @retry="refresh"
+        <ExerciseHistoryList
+          :entries="detail.history.data"
+          :total="detail.history.meta.total"
+          :has-more="hasMoreHistory"
+          :is-loading-more="isLoadingMore"
+          @load-more="loadMoreHistory"
         />
-      </div>
-
-      <ExerciseHistoryList
-        :entries="detail.history.data"
-        :has-more="hasMoreHistory"
-        :is-loading-more="isLoadingMore"
-        :is-loading="false"
-        @load-more="loadMoreHistory"
-      />
-    </article>
+      </template>
+    </div>
 
     <EditClassificationDialog
       :exercise="info"

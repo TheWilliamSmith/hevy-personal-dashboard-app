@@ -43,7 +43,7 @@ watch(
       return;
     }
     muscleGroup.value = exercise.muscleGroup;
-    secondaries.value = [...exercise.secondaryMuscles];
+    secondaries.value = [...(exercise.secondaryMuscles ?? [])];
     equipment.value = exercise.equipment;
     kind.value = exercise.kind;
     aliasText.value = exercise.aliases.join(', ');
@@ -75,26 +75,27 @@ function save(): void {
 }
 
 const field =
-  'w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none';
+  'w-full rounded-md border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400';
 </script>
 
 <template>
   <BaseDialog
     :open="props.open"
     labelled-by="edit-classification-title"
+    tone="dark"
     :locked="props.isSaving"
     @close="emit('cancel')"
   >
-    <header class="border-b border-slate-200 px-5 py-4">
-      <h2 id="edit-classification-title" class="text-base font-semibold text-slate-900">
+    <header class="border-b border-zinc-800 px-5 py-4">
+      <h2 id="edit-classification-title" class="text-base font-semibold text-white">
         Edit classification
       </h2>
-      <p class="mt-0.5 truncate text-sm text-slate-500">{{ props.exercise?.name }}</p>
+      <p class="mt-0.5 truncate text-sm text-zinc-500">{{ props.exercise?.name }}</p>
     </header>
 
     <div class="min-h-0 flex-1 space-y-4 overflow-y-auto px-5 py-4">
       <div>
-        <label for="edit-muscle" class="mb-1 block text-xs font-medium text-slate-600">
+        <label for="edit-muscle" class="mb-1 block text-xs text-zinc-400">
           Primary muscle group
         </label>
         <select id="edit-muscle" v-model="muscleGroup" :class="field">
@@ -105,7 +106,7 @@ const field =
       </div>
 
       <fieldset>
-        <legend class="mb-1 text-xs font-medium text-slate-600">
+        <legend class="mb-1 text-xs text-zinc-400">
           Secondary muscles ({{ secondaries.length }}/{{ MAX_SECONDARIES }})
         </legend>
         <div class="flex flex-wrap gap-1.5">
@@ -113,16 +114,17 @@ const field =
             v-for="group in MUSCLE_ORDER"
             :key="group"
             type="button"
-            class="rounded-full px-2.5 py-1 text-xs font-medium ring-1 transition-colors ring-inset disabled:opacity-40"
+            class="flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs font-medium transition-colors disabled:opacity-40"
             :class="
               secondaries.includes(group)
-                ? MUSCLE_STYLES[group].chip + ' ring-2'
-                : 'bg-white text-slate-500 ring-slate-200 hover:bg-slate-50'
+                ? 'border-zinc-600 bg-zinc-800 text-white'
+                : 'border-zinc-800 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100'
             "
             :aria-pressed="secondaries.includes(group)"
             :disabled="group === muscleGroup"
             @click="toggleSecondary(group)"
           >
+            <span class="h-1.5 w-1.5 rounded-full" :style="{ backgroundColor: MUSCLE_STYLES[group].hex }" aria-hidden="true" />
             {{ MUSCLE_LABELS[group] }}
           </button>
         </div>
@@ -130,7 +132,7 @@ const field =
 
       <div class="grid gap-4 sm:grid-cols-2">
         <div>
-          <label for="edit-equipment" class="mb-1 block text-xs font-medium text-slate-600">
+          <label for="edit-equipment" class="mb-1 block text-xs text-zinc-400">
             Equipment
           </label>
           <select id="edit-equipment" v-model="equipment" :class="field">
@@ -141,7 +143,7 @@ const field =
         </div>
 
         <div>
-          <label for="edit-kind" class="mb-1 block text-xs font-medium text-slate-600">Kind</label>
+          <label for="edit-kind" class="mb-1 block text-xs text-zinc-400">Kind</label>
           <select id="edit-kind" v-model="kind" :class="field">
             <option v-for="item in KIND_ORDER" :key="item" :value="item">
               {{ KIND_LABELS[item] }}
@@ -151,24 +153,24 @@ const field =
       </div>
 
       <div>
-        <label for="edit-aliases" class="mb-1 block text-xs font-medium text-slate-600">
+        <label for="edit-aliases" class="mb-1 block text-xs text-zinc-400">
           Aliases (comma separated)
         </label>
         <input id="edit-aliases" v-model="aliasText" type="text" :class="field" />
-        <p class="mt-1 text-xs text-slate-500">
+        <p class="mt-1 text-xs text-zinc-500">
           Alternative names matched when importing, e.g. a French export label.
         </p>
       </div>
 
-      <p v-if="props.error" class="rounded-lg bg-red-50 p-3 text-sm text-red-900" role="alert">
+      <p v-if="props.error" class="rounded-md border border-red-900/60 bg-red-950/40 p-3 text-sm text-red-200" role="alert">
         {{ props.error }}
       </p>
     </div>
 
-    <footer class="flex items-center justify-end gap-3 border-t border-slate-200 px-5 py-4">
+    <footer class="flex items-center justify-end gap-3 border-t border-zinc-800 px-5 py-4">
       <button
         type="button"
-        class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-40"
+        class="rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm font-medium text-zinc-100 hover:bg-zinc-800 disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400"
         :disabled="props.isSaving"
         @click="emit('cancel')"
       >
@@ -176,14 +178,14 @@ const field =
       </button>
       <button
         type="button"
-        class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+        class="inline-flex items-center gap-2 rounded-md bg-white px-3 py-2 text-sm font-medium text-zinc-900 hover:bg-zinc-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:opacity-50"
         :disabled="props.isSaving"
         :aria-busy="props.isSaving"
         @click="save"
       >
         <span
           v-if="props.isSaving"
-          class="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white"
+          class="h-3.5 w-3.5 animate-spin rounded-full border-2 border-zinc-900/30 border-t-zinc-900"
           aria-hidden="true"
         />
         Save

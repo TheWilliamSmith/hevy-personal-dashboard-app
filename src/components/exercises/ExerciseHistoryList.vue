@@ -1,16 +1,18 @@
 <script setup lang="ts">
+import { ChevronRight } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { RouterLink } from 'vue-router';
 
-import SetTypeBadge from '@/components/workouts/SetTypeBadge.vue';
+import SectionHeader from '@/components/ui/SectionHeader.vue';
 import type { HistoryEntry } from '@/types/exercises';
 import { EMPTY, formatDate, formatNumber, formatVolume, formatWeight } from '@/utils/format';
+import { SET_TYPE_DOT_CLASSES, SET_TYPE_LABELS } from '@/utils/sets';
 
-const props = defineProps<{
+defineProps<{
   entries: HistoryEntry[];
+  total: number;
   hasMore: boolean;
   isLoadingMore: boolean;
-  isLoading: boolean;
 }>();
 
 const emit = defineEmits<{ loadMore: [] }>();
@@ -38,68 +40,71 @@ function bestSetSummary(entry: HistoryEntry): string {
   return `${formatWeight(weightKg)} kg × ${reps ?? EMPTY}`;
 }
 
-const head = 'px-3 py-2 text-left text-xs font-semibold text-slate-600';
-const cell = 'px-3 py-2 text-sm text-slate-800';
+const focus = 'focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-zinc-400';
+const head = 'px-2 py-2 text-left text-[11px] font-medium text-zinc-500';
+const cell = 'px-2 py-2 text-sm text-zinc-100 tabular-nums';
 </script>
 
 <template>
-  <section class="border-t border-slate-200 bg-white">
-    <header class="border-b border-slate-100 px-4 py-3">
-      <h2 class="text-sm font-semibold text-slate-900">Session history</h2>
-    </header>
+  <section class="flex flex-col gap-2">
+    <SectionHeader title="Session history" :subtitle="`${total} sessions · newest first`" />
 
-    <div v-if="props.isLoading" class="flex flex-col gap-2 p-4" aria-busy="true">
-      <div v-for="row in 4" :key="row" class="h-12 animate-pulse rounded bg-slate-100" />
-    </div>
-
-    <p v-else-if="props.entries.length === 0" class="p-10 text-center text-sm text-slate-500">
+    <p v-if="entries.length === 0" class="py-10 text-center text-sm text-zinc-500">
       No sessions recorded for this exercise.
     </p>
 
-    <ul v-else class="divide-y divide-slate-100">
-      <li v-for="entry in props.entries" :key="entry.workoutId">
+    <ul v-else>
+      <li v-for="entry in entries" :key="entry.workoutId" class="border-b border-zinc-800 last:border-b-0">
         <button
           type="button"
-          class="flex w-full flex-wrap items-baseline gap-x-4 gap-y-1 px-4 py-3 text-left hover:bg-slate-50"
+          class="grid w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1 rounded-md px-2 py-3 text-left transition-colors hover:bg-zinc-900 lg:grid-cols-[auto_minmax(0,1fr)_9rem_7rem]"
+          :class="focus"
           :aria-expanded="expanded.has(entry.workoutId)"
           :aria-controls="`session-${entry.workoutId}`"
           @click="toggle(entry.workoutId)"
         >
-          <span aria-hidden="true" class="text-xs text-slate-400">
-            {{ expanded.has(entry.workoutId) ? '▾' : '▸' }}
+          <ChevronRight
+            class="h-4 w-4 text-zinc-500 transition-transform"
+            :class="{ 'rotate-90': expanded.has(entry.workoutId) }"
+            aria-hidden="true"
+          />
+          <span class="min-w-0">
+            <span class="block truncate text-sm font-medium text-zinc-100">{{ entry.workoutTitle }}</span>
+            <time :datetime="entry.date" class="block text-[11px] text-zinc-500">{{ formatDate(entry.date) }}</time>
           </span>
-          <time :datetime="entry.date" class="text-sm font-medium text-slate-900">
-            {{ formatDate(entry.date) }}
-          </time>
-          <span class="min-w-0 flex-1 truncate text-sm text-slate-600">{{ entry.workoutTitle }}</span>
-          <span class="text-xs text-slate-500">Best {{ bestSetSummary(entry) }}</span>
-          <span class="text-xs font-medium text-slate-700">
-            {{ formatVolume(entry.sessionVolumeKg) }}
+          <span class="hidden flex-col lg:flex">
+            <span class="text-sm text-zinc-100 tabular-nums">{{ bestSetSummary(entry) }}</span>
+            <span class="text-[11px] text-zinc-500">Best set</span>
+          </span>
+          <span class="flex flex-col text-right lg:text-left">
+            <span class="text-sm text-zinc-100 tabular-nums">{{ formatVolume(entry.sessionVolumeKg) }}</span>
+            <span class="text-[11px] text-zinc-500">Volume</span>
           </span>
         </button>
 
-        <div v-if="expanded.has(entry.workoutId)" :id="`session-${entry.workoutId}`" class="px-4 pb-4">
-          <div class="mb-2 flex flex-wrap items-center gap-2">
+        <div
+          v-if="expanded.has(entry.workoutId)"
+          :id="`session-${entry.workoutId}`"
+          class="mb-3 ml-7 flex flex-col gap-2 rounded-md bg-zinc-900 px-4 py-3"
+        >
+          <p class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-zinc-400">
             <RouterLink
               :to="{ name: 'home', query: { tab: 'workouts', workout: entry.workoutId } }"
-              class="text-xs font-medium text-indigo-700 underline underline-offset-2"
+              class="font-medium text-zinc-200 underline decoration-zinc-600 underline-offset-2 hover:decoration-zinc-300"
             >
               Open workout
             </RouterLink>
-            <span
-              v-if="entry.supersetId !== null"
-              class="rounded-full bg-sky-100 px-2 py-0.5 text-[10px] font-medium text-sky-800 ring-1 ring-sky-200 ring-inset"
-            >
+            <span v-if="entry.supersetId !== null" class="flex items-center gap-1 text-sky-400">
+              <span class="h-1.5 w-1.5 rounded-full bg-sky-400" aria-hidden="true" />
               Superset {{ entry.supersetId }}
             </span>
-          </div>
-
-          <p v-if="entry.notes" class="mb-2 text-xs text-slate-600">{{ entry.notes }}</p>
+            <span v-if="entry.notes">{{ entry.notes }}</span>
+          </p>
 
           <table class="w-full border-collapse">
             <caption class="sr-only">Sets for {{ entry.workoutTitle }}</caption>
-            <thead class="bg-slate-50">
-              <tr>
+            <thead>
+              <tr class="border-b border-zinc-800">
                 <th scope="col" :class="head">Set</th>
                 <th scope="col" :class="head">Type</th>
                 <th scope="col" :class="head">Weight × reps</th>
@@ -112,25 +117,28 @@ const cell = 'px-3 py-2 text-sm text-slate-800';
               <tr
                 v-for="set in entry.sets"
                 :key="set.setIndex"
-                class="border-t border-slate-100"
-                :class="set.isPR ? 'bg-emerald-50' : ''"
+                class="border-b border-zinc-800/60 last:border-b-0"
+                :class="set.isPR ? 'bg-emerald-400/10' : ''"
               >
-                <th scope="row" :class="[cell, 'text-left font-medium']">
+                <th scope="row" :class="[cell, 'text-left font-normal text-zinc-400']">
                   {{ set.setIndex + 1 }}
-                  <span v-if="set.isPR" class="ml-1 text-xs font-semibold text-emerald-700">
+                  <span v-if="set.isPR" class="ml-1 text-[11px] font-medium text-emerald-400">
                     PR<span class="sr-only"> — personal record set</span>
                   </span>
                 </th>
-                <td :class="cell"><SetTypeBadge :type="set.setType" /></td>
+                <td :class="cell">
+                  <span class="flex items-center gap-1.5 text-xs text-zinc-400">
+                    <span class="h-1.5 w-1.5 rounded-full" :class="SET_TYPE_DOT_CLASSES[set.setType]" aria-hidden="true" />
+                    {{ SET_TYPE_LABELS[set.setType] }}
+                  </span>
+                </td>
                 <td :class="cell">
                   <template v-if="set.weightKg === null && set.reps === null">{{ EMPTY }}</template>
                   <template v-else>{{ formatWeight(set.weightKg) }} kg × {{ set.reps ?? EMPTY }}</template>
                 </td>
                 <td :class="cell">{{ set.volumeKg === null ? EMPTY : formatVolume(set.volumeKg) }}</td>
-                <td :class="cell">
-                  {{ set.est1RM === null ? EMPTY : `${formatWeight(set.est1RM)} kg` }}
-                </td>
-                <td :class="cell">{{ formatNumber(set.rpe) }}</td>
+                <td :class="cell">{{ set.est1RM === null ? EMPTY : `${formatWeight(set.est1RM)} kg` }}</td>
+                <td :class="[cell, 'text-zinc-400']">{{ formatNumber(set.rpe) }}</td>
               </tr>
             </tbody>
           </table>
@@ -138,16 +146,16 @@ const cell = 'px-3 py-2 text-sm text-slate-800';
       </li>
     </ul>
 
-    <div v-if="props.hasMore" class="border-t border-slate-100 p-3 text-center">
-      <button
-        type="button"
-        class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
-        :disabled="props.isLoadingMore"
-        :aria-busy="props.isLoadingMore"
-        @click="emit('loadMore')"
-      >
-        {{ props.isLoadingMore ? 'Loading…' : 'Load more' }}
-      </button>
-    </div>
+    <button
+      v-if="hasMore"
+      type="button"
+      class="self-center rounded-md border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs font-medium text-zinc-100 transition-colors hover:bg-zinc-800 disabled:opacity-50"
+      :class="focus"
+      :disabled="isLoadingMore"
+      :aria-busy="isLoadingMore"
+      @click="emit('loadMore')"
+    >
+      {{ isLoadingMore ? 'Loading…' : 'Load more sessions' }}
+    </button>
   </section>
 </template>

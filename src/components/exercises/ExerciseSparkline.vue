@@ -13,10 +13,10 @@ const props = withDefaults(
 );
 
 const TREND_COLORS: Readonly<Record<ExerciseTrend, string>> = {
-  up: '#16a34a',
-  down: '#dc2626',
-  flat: '#64748b',
-  insufficient_data: '#cbd5e1',
+  up: '#34d399',
+  down: '#f87171',
+  flat: '#a1a1aa',
+  insufficient_data: '#52525b',
 };
 
 const ARROWS: Readonly<Record<ExerciseTrend, string>> = {

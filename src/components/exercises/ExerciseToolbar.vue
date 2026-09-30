@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Search } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 
 import {
@@ -48,84 +49,80 @@ watch(
   },
 );
 
-const field =
-  'rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none';
+const focus = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400';
+const field = `rounded-md border border-zinc-800 bg-zinc-900 px-2.5 py-1.5 text-sm text-zinc-100 placeholder:text-zinc-600 ${focus}`;
+const label = 'text-xs text-zinc-400';
 </script>
 
 <template>
-  <div
-    class="sticky top-0 z-20 flex flex-col gap-3 border-y border-slate-200 bg-slate-50/95 px-4 py-3 backdrop-blur sm:px-6"
-  >
+  <div class="z-20 -mx-4 flex flex-col lg:sticky lg:top-0 gap-3 border-b border-zinc-800 bg-zinc-950/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6">
     <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
-      <div class="flex w-full min-w-0 items-center gap-2 sm:w-auto sm:flex-1">
+      <div class="relative w-full sm:w-auto sm:min-w-0 sm:flex-1">
         <label for="exercise-search" class="sr-only">Search exercises</label>
+        <Search class="pointer-events-none absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 text-zinc-500" aria-hidden="true" />
         <input
           id="exercise-search"
           v-model="searchTerm"
           type="search"
           placeholder="Search exercises…"
-          :class="[field, 'w-full sm:max-w-xs']"
+          :class="[field, 'w-full pl-8 sm:max-w-xs']"
           @input="emit('search', searchTerm)"
         />
       </div>
 
       <div class="flex items-center gap-2">
-        <label for="exercise-equipment" class="text-xs font-medium text-slate-600">Equipment</label>
+        <label for="exercise-equipment" :class="label">Equipment</label>
         <select
           id="exercise-equipment"
-          :value="props.filters.equipment"
+          :value="filters.equipment"
           :class="field"
           @change="emit('equipment', ($event.target as HTMLSelectElement).value as Equipment | '')"
         >
           <option value="">All</option>
-          <option v-for="item in EQUIPMENT_ORDER" :key="item" :value="item">
-            {{ EQUIPMENT_LABELS[item] }}
-          </option>
+          <option v-for="item in EQUIPMENT_ORDER" :key="item" :value="item">{{ EQUIPMENT_LABELS[item] }}</option>
         </select>
       </div>
 
       <div class="flex items-center gap-2">
-        <label for="exercise-kind" class="text-xs font-medium text-slate-600">Kind</label>
+        <label for="exercise-kind" :class="label">Kind</label>
         <select
           id="exercise-kind"
-          :value="props.filters.kind"
+          :value="filters.kind"
           :class="field"
           @change="emit('kind', ($event.target as HTMLSelectElement).value as ExerciseKind | '')"
         >
           <option value="">All</option>
-          <option v-for="item in KIND_ORDER" :key="item" :value="item">
-            {{ KIND_LABELS[item] }}
-          </option>
+          <option v-for="item in KIND_ORDER" :key="item" :value="item">{{ KIND_LABELS[item] }}</option>
         </select>
       </div>
 
       <div class="flex items-center gap-2">
-        <label for="exercise-sort" class="text-xs font-medium text-slate-600">Sort</label>
+        <label for="exercise-sort" :class="label">Sort</label>
         <select
           id="exercise-sort"
-          :value="props.filters.sortBy"
+          :value="filters.sortBy"
           :class="field"
           @change="emit('sortBy', ($event.target as HTMLSelectElement).value as ExerciseSortBy)"
         >
-          <option v-for="item in SORTS" :key="item.value" :value="item.value">
-            {{ item.label }}
-          </option>
+          <option v-for="item in SORTS" :key="item.value" :value="item.value">{{ item.label }}</option>
         </select>
       </div>
 
-      <label class="flex items-center gap-2 text-xs font-medium text-slate-600">
+      <label class="flex items-center gap-2 text-xs text-zinc-400">
         <input
           type="checkbox"
-          :checked="props.filters.hideNeverPerformed"
+          class="h-3.5 w-3.5 accent-blue-600"
+          :checked="filters.hideNeverPerformed"
           @change="emit('toggleHideNeverPerformed')"
         />
         Hide never performed
       </label>
 
       <button
-        v-if="props.hasActiveFilters"
+        v-if="hasActiveFilters"
         type="button"
-        class="text-xs font-medium text-indigo-700 underline underline-offset-2"
+        class="rounded-md border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs font-medium text-zinc-100 transition-colors hover:bg-zinc-800"
+        :class="focus"
         @click="emit('clear')"
       >
         Clear filters
@@ -137,15 +134,17 @@ const field =
         v-for="group in MUSCLE_ORDER"
         :key="group"
         type="button"
-        class="rounded-full px-2.5 py-1 text-xs font-medium ring-1 transition-colors ring-inset"
-        :class="
-          props.filters.muscleGroups.includes(group)
-            ? MUSCLE_STYLES[group].chip + ' ring-2'
-            : 'bg-white text-slate-500 ring-slate-200 hover:bg-slate-50'
-        "
-        :aria-pressed="props.filters.muscleGroups.includes(group)"
+        class="flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs font-medium transition-colors"
+        :class="[
+          focus,
+          filters.muscleGroups.includes(group)
+            ? 'border-zinc-600 bg-zinc-800 text-white'
+            : 'border-zinc-800 text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100',
+        ]"
+        :aria-pressed="filters.muscleGroups.includes(group)"
         @click="emit('toggleMuscle', group)"
       >
+        <span class="h-1.5 w-1.5 rounded-full" :style="{ backgroundColor: MUSCLE_STYLES[group].hex }" aria-hidden="true" />
         {{ MUSCLE_LABELS[group] }}
       </button>
     </div>
