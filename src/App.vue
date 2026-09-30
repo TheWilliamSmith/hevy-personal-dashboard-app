@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, defineAsyncComponent, onMounted } from 'vue';
-import { RouterView } from 'vue-router';
+import { computed, defineAsyncComponent, onMounted, ref, watch } from 'vue';
+import { RouterView, useRoute } from 'vue-router';
 
 import AppSidebar from '@/components/layout/AppSidebar.vue';
 import AppTopBar from '@/components/layout/AppTopBar.vue';
@@ -14,25 +14,36 @@ const CelebrationModal = defineAsyncComponent(
 
 const DARK_TABS: ReadonlySet<string> = new Set(['dashboard']);
 
+const route = useRoute();
 const { tab, isFullWidth } = useActiveTab();
 const dark = computed(() => DARK_TABS.has(tab.value));
 const celebrations = useCelebrations();
+
+const content = ref<HTMLElement | null>(null);
+
+watch(
+  () => [route.query.tab, route.query.workout, route.query.exercise],
+  () => content.value?.scrollTo({ top: 0 }),
+);
 
 onMounted(() => void celebrations.loadUnseen());
 </script>
 
 <template>
-  <div class="flex min-h-screen" :class="dark ? 'bg-zinc-950' : 'bg-slate-100'">
+  <div class="flex h-dvh overflow-hidden" :class="dark ? 'bg-zinc-950' : 'bg-slate-100'">
     <AppSidebar />
 
-    <div class="flex min-w-0 flex-1 flex-col">
+    <div class="flex min-h-0 min-w-0 flex-1 flex-col">
       <AppTopBar :dark="dark" />
 
       <main
         :id="`panel-${tab}`"
-        :class="dark ? 'w-full' : isFullWidth ? 'w-full py-4' : 'mx-auto w-full max-w-4xl p-6'"
+        ref="content"
+        class="min-h-0 flex-1 overflow-y-auto overscroll-contain"
       >
-        <RouterView />
+        <div :class="dark ? 'w-full' : isFullWidth ? 'w-full py-4' : 'mx-auto w-full max-w-4xl p-6'">
+          <RouterView />
+        </div>
       </main>
     </div>
 

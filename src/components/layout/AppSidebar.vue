@@ -69,7 +69,7 @@ const iconButton =
   />
 
   <aside
-    class="fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-zinc-800 bg-zinc-950 transition-[width,translate] duration-200 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0"
+    class="fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-zinc-800 bg-zinc-950 transition-[width,translate] duration-200 lg:static lg:h-full lg:translate-x-0"
     :class="[
       mobileOpen ? 'translate-x-0' : '-translate-x-full',
       collapsed ? 'lg:w-16' : 'lg:w-60',

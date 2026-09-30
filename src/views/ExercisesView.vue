@@ -132,7 +132,7 @@ function anchorId(group: string): string {
             class="scroll-mt-32"
           >
             <header
-              class="sticky top-[7.5rem] z-10 mb-3 flex flex-wrap items-baseline gap-x-3 border-b border-slate-200 bg-slate-100/95 py-2 backdrop-blur"
+              class="sticky top-24 z-10 mb-3 flex flex-wrap items-baseline gap-x-3 border-b border-slate-200 bg-slate-100/95 py-2 backdrop-blur"
             >
               <h2 class="flex items-center gap-2 text-sm font-semibold text-slate-900">
                 <span

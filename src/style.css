@@ -1,1 +1,14 @@
 @import 'tailwindcss';
+
+html,
+body,
+#app {
+  height: 100%;
+}
+
+html,
+body {
+  overflow: hidden;
+  overscroll-behavior: none;
+  background-color: var(--color-zinc-950);
+}

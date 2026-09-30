@@ -14,16 +14,6 @@ const routes: RouteRecordRaw[] = [
 export const router = createRouter({
   history: createWebHistory(),
   routes,
-  scrollBehavior: (to, from, saved) => {
-    if (saved) {
-      return saved;
-    }
-    const changedView =
-      to.query.tab !== from.query.tab ||
-      to.query.workout !== from.query.workout ||
-      to.query.exercise !== from.query.exercise;
-    return changedView ? { top: 0 } : false;
-  },
 });
 
 router.beforeEach((to) => {

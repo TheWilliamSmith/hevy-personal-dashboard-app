@@ -16,7 +16,7 @@ const title = computed(() => TABS.find((item) => item.name === tab.value)?.label
 
 <template>
   <header
-    class="sticky top-0 z-20 flex h-14 shrink-0 items-center gap-3 border-b px-4 sm:px-6"
+    class="relative z-20 flex h-14 shrink-0 items-center gap-3 border-b px-4 sm:px-6"
     :class="dark ? 'border-zinc-800 bg-zinc-950' : 'border-slate-200 bg-white'"
   >
     <button
