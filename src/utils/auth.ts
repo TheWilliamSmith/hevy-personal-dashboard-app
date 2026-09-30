@@ -17,7 +17,6 @@ export function passwordStrength(password: string): PasswordStrength {
   return variety >= 3 ? 3 : 2;
 }
 
-/** Only same-app paths: `//host` would leave the app. */
 export function safeRedirect(value: unknown): string | null {
   return typeof value === 'string' && value.startsWith('/') && !value.startsWith('//') ? value : null;
 }

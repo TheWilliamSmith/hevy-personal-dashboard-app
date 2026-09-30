@@ -18,7 +18,6 @@ export function isUsername(value: string): boolean {
   return USERNAME_PATTERN.test(normalizeUsername(value));
 }
 
-/** A starting handle from a display name: "Élodie Martin" becomes "elodie.martin". */
 export function suggestUsername(displayName: string): string {
   return displayName
     .normalize('NFD')

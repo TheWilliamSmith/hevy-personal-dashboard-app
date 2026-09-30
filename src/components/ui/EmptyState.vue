@@ -4,9 +4,7 @@ import { RouterLink } from 'vue-router';
 withDefaults(
   defineProps<{
     message: string;
-    /** Covers a positioned parent, e.g. a fixed-height chart area. */
     overlay?: boolean;
-    /** Adds the "Connect Hevy or import a CSV export" link. */
     importLink?: boolean;
   }>(),
   { overlay: false, importLink: false },

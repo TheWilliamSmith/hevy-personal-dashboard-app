@@ -64,11 +64,6 @@ export interface SectionLayout {
   singles: AchievementItem[];
 }
 
-/**
- * Splits a family's visible trophies into ladder cards (every tier of a
- * ladder, even the ones hidden by the current filter) and single trophies.
- * Unlocked trophies and ladders with an unlocked tier come first.
- */
 export function layoutSection(
   items: readonly AchievementItem[],
   tiers: ReadonlyMap<string, AchievementItem[]>,

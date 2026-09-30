@@ -23,10 +23,6 @@ function startOfUtcDay(date: Date): Date {
   return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
 }
 
-/**
- * Builds a GitHub-style grid: one column per week, Monday first, the last
- * column being the week of `today`. Days after `today` are flagged isFuture.
- */
 export function buildCalendarGrid(
   today: Date,
   weekCount: number,

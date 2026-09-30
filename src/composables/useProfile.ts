@@ -10,10 +10,6 @@ export interface ProfileStats {
   streakWeeks: number;
 }
 
-/*
- * Demo data until the profile endpoints exist: no API call is made, and a
- * save only lives in memory for the current session.
- */
 const FAKE_PROFILE: UserProfile = {
   displayName: 'Alex Martin',
   username: 'alex.lifts',

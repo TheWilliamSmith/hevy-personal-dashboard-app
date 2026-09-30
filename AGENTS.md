@@ -20,7 +20,7 @@ Avant de rendre la main : `pnpm typecheck` et `pnpm test` passent.
 ## Conventions
 
 - **Tests** : tout nouveau fichier de test va dans `test/` (par exemple `test/unit/utils/calendar.spec.ts`), jamais dans `src/`.
-- **Commentaires** : aucun commentaire qui répète le code. Un commentaire n'existe que s'il apporte une information introuvable ailleurs.
+- **Commentaires** : aucun commentaire dans le code (TS, Vue, CSS, config). Seules exceptions : les directives qui changent le comportement (`// @vitest-environment`, `/// <reference>`). Le nom des fonctions et des variables doit suffire.
 - **Organisation** : `src/views/` une vue par onglet ; `src/components/<domaine>/` les composants d'une page ; `src/components/ui/` les composants partagés ; logique pure dans `src/utils/`, accès aux données dans `src/composables/`.
 - **Textes** : interface en anglais ; dates et nombres formatés via `src/utils/format.ts`.
 - **Commits** : Conventional Commits en anglais, `type(scope): summary`.

@@ -18,7 +18,6 @@ const { push } = useToasts();
 type Pending = 'email' | 'password' | null;
 const pending = ref<Pending>(null);
 
-/** The API names the input it refuses in `field`; anything else goes to the form banner. */
 function fieldOf(caught: unknown): string | null {
   if (!(caught instanceof ApiError)) {
     return null;

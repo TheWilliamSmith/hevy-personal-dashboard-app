@@ -27,7 +27,6 @@ const { profile, stats, isSaving, save } = useProfile();
 const auth = useAuth();
 const { push } = useToasts();
 
-/** Full reload: composables keep the previous account's data in module state. */
 function signOut(): void {
   auth.signOut();
   window.location.assign(router.resolve({ name: 'sign-in' }).href);

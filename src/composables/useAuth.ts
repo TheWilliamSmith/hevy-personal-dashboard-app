@@ -13,10 +13,6 @@ export interface SignUpInput {
   password: string;
 }
 
-/*
- * Everything goes through the API except OAuth, which has no endpoint yet
- * and refuses with a clear message after a short pause.
- */
 const DEMO_DELAY_MS = 600;
 
 const user = ref<AuthUser | null>(loadSession()?.user ?? null);
@@ -36,7 +32,6 @@ function simulate<T>(result: T): Promise<T> {
   return submitting(() => new Promise<T>((resolve) => setTimeout(() => resolve(result), DEMO_DELAY_MS)));
 }
 
-/** A used, expired or unknown link; a rejected password comes back as a list of messages instead. */
 function isInvalidResetLink(caught: unknown): boolean {
   if (!(caught instanceof ApiError) || caught.status !== 400) {
     return false;
@@ -79,12 +74,9 @@ export interface UseAuth {
   signInWith: (provider: OAuthProvider) => Promise<void>;
   signOut: () => void;
   restore: () => Promise<void>;
-  /** Needs the current password; returns nothing, the new email shows up in `user`. */
   changeEmail: (email: string, currentPassword: string) => Promise<void>;
-  /** Needs the current password. Other devices are signed out; this one gets a new session. */
   changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
   requestPasswordReset: (email: string) => Promise<void>;
-  /** False when the link is used, expired or unknown. Signs out on success: every session ends. */
   resetPassword: (token: string, password: string) => Promise<boolean>;
 }
 

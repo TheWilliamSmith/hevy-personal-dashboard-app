@@ -93,7 +93,6 @@ const target = computed(() =>
       </div>
     </div>
 
-
     <div aria-hidden="true" class="flex flex-1 flex-col gap-2">
       <p v-if="unlocked && props.item.flavor" class="text-xs italic text-zinc-400">
         “{{ props.item.flavor }}”

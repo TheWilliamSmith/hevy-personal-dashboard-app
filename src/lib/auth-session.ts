@@ -2,11 +2,6 @@ import type { AuthSession } from '@/types/auth';
 
 const STORAGE_KEY = 'hevy-dashboard.session';
 
-/*
- * A remembered session goes to localStorage, any other one to sessionStorage
- * so it ends with the tab. Storage can be missing or throw (private mode,
- * blocked site data): the app then keeps the session in memory only.
- */
 let current: AuthSession | null = null;
 
 function storages(): Storage[] {
@@ -65,7 +60,6 @@ export function clearSession(): void {
   }
 }
 
-/** True when the current session lives in localStorage ("Keep me signed in"). */
 export function isRememberedSession(): boolean {
   try {
     return window.localStorage.getItem(STORAGE_KEY) !== null;
