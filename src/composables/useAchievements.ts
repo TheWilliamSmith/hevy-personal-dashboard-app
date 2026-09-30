@@ -16,7 +16,7 @@ import {
   isInProgress,
   isMasked,
   isNegative,
-  ladderSizes,
+  ladderTiers,
   orderWithLadders,
 } from '@/utils/achievements';
 
@@ -49,8 +49,9 @@ export interface UseAchievements {
   highlight: ComputedRef<AchievementItem | null>;
   family: ComputedRef<AchievementFamily | null>;
   show: ComputedRef<TrophyShow>;
+  families: ComputedRef<Array<Omit<FamilySection, 'items'>>>;
   sections: ComputedRef<FamilySection[]>;
-  ladders: ComputedRef<Map<string, number>>;
+  ladders: ComputedRef<Map<string, AchievementItem[]>>;
   visibleCount: ComputedRef<number>;
   setFamily: (family: AchievementFamily | null) => void;
   setShow: (show: TrophyShow) => void;
@@ -163,8 +164,13 @@ export function useAchievements(): UseAchievements {
     highlight,
     family,
     show,
+    families: computed(() =>
+      [...(catalog.value?.groups ?? [])]
+        .sort((a, b) => familyRank(a.family) - familyRank(b.family))
+        .map((group) => ({ family: group.family, total: group.total, unlocked: group.unlocked })),
+    ),
     sections,
-    ladders: computed(() => ladderSizes(allItems.value)),
+    ladders: computed(() => ladderTiers(allItems.value)),
     visibleCount: computed(() => sections.value.reduce((sum, section) => sum + section.items.length, 0)),
     setFamily: (next) => push({ family: next ?? undefined }),
     setShow: (next) => push({ show: next === 'all' ? undefined : next }),

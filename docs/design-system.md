@@ -5,7 +5,7 @@ Règles UI/UX de l'application. La référence est la page **Dashboard** (`src/v
 ## Principes
 
 - **Sombre, calme, dense en information.** Fond quasi noir, texte clair, une seule couleur d'accent (bleu). Aucune décoration gratuite : pas d'ombre, pas de dégradé de fond, pas d'illustration.
-- **Pas de cartes.** Le contenu est posé directement sur le fond. Les sections sont séparées par l'espace vertical et, entre deux colonnes, par une fine ligne verticale.
+- **Pas de cartes.** Le contenu est posé directement sur le fond. Seule exception : une collection d'objets à parcourir (trophées), en tuiles `rounded-lg border border-zinc-800 p-4`, fond `bg-zinc-900` quand l'objet est obtenu, transparent sinon, bordure teintée par la rareté (`RARITY_STYLES`). Un objet obtenu porte une coche `bg-emerald-400` ; un objet pas commencé est à 60 % d'opacité. Toutes les tuiles d'une grille ont la même taille. Une série à paliers (Bench press 60 → 100 → 140 kg) est une tuile comme les autres, qui affiche son étape (« Level 1 of 3 ») et l'objectif suivant avec sa progression ; un clic ouvre une fenêtre avec « Next step », son objectif et la liste de toutes les étapes (coche pour les obtenues, étape en cours surlignée, suivantes estompées avec un cadenas). Les sections sont séparées par l'espace vertical et, entre deux colonnes, par une fine ligne verticale.
 - **Les chiffres d'abord.** Chaque section met en avant une valeur principale en grand, le détail vient ensuite.
 - **Une page = un sujet.** Le titre de la page est dans la barre du haut, jamais répété dans le contenu.
 
@@ -30,6 +30,8 @@ Toujours les classes Tailwind ci-dessous, jamais de couleur en dur dans un templ
 | Attention | `bg-amber-500` |
 
 **Statuts de progression** (`STATUS_STYLES`, `src/constants/progress.ts`) : Regressing `red-400`, Plateau `amber-400`, Stale `zinc-400`, Progressing `emerald-400`, Needs more sessions `zinc-600`. Un statut s'affiche en pastille + texte de la même couleur, jamais en badge plein.
+
+**Raretés** (`RARITY_STYLES`, `src/constants/achievements.ts`) : Common `emerald-400`, Rare `blue-400`, Epic `purple-400`, Legendary `amber-400` ; pastille `dot`, texte `text`, badge plein `badge` pour l'icône d'un trophée obtenu.
 
 **Séries multiples** (ex. top 5 des muscles), dans cet ordre : `emerald-500`, `orange-400`, `teal-600`, `zinc-400`, `indigo-400`.
 

@@ -6,6 +6,7 @@ const props = defineProps<{
   labelledBy: string;
   locked?: boolean;
   tone?: 'light' | 'dark';
+  size?: 'md' | 'lg';
 }>();
 
 const emit = defineEmits<{ close: [] }>();
@@ -99,8 +100,11 @@ onBeforeUnmount(() => lockScroll(false));
         aria-modal="true"
         :aria-labelledby="props.labelledBy"
         tabindex="-1"
-        class="flex max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-t-2xl shadow-xl outline-none sm:rounded-2xl"
-        :class="props.tone === 'dark' ? 'border border-zinc-800 bg-zinc-900 text-zinc-100 shadow-black/60' : 'bg-white'"
+        class="flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-2xl shadow-xl outline-none sm:rounded-2xl"
+        :class="[
+          props.size === 'md' ? 'max-w-lg' : 'max-w-3xl',
+          props.tone === 'dark' ? 'border border-zinc-800 bg-zinc-900 text-zinc-100 shadow-black/60' : 'bg-white',
+        ]"
         @keydown="onKeydown"
       >
         <slot />

@@ -51,7 +51,7 @@ const confettiColors = computed(() =>
         class="mx-auto mt-4 max-w-xs text-left"
         :class="reducedMotion ? '' : 'celebration-pop'"
       >
-        <TrophyCard :item="current" :ladder-size="0" featured />
+        <TrophyCard :item="current" featured />
       </div>
 
       <p v-if="negative" class="mt-4 text-sm text-amber-800">

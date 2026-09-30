@@ -8,6 +8,7 @@ export interface RarityStyle {
   badge: string;
   card: string;
   text: string;
+  dot: string;
 }
 
 export const RARITY_STYLES: Readonly<Record<Rarity, RarityStyle>> = {
@@ -15,36 +16,40 @@ export const RARITY_STYLES: Readonly<Record<Rarity, RarityStyle>> = {
     label: 'Common',
     hex: '#10b981',
     badge: 'bg-emerald-500 text-white',
-    card: 'border-emerald-300 bg-emerald-50',
-    text: 'text-emerald-700',
+    card: 'border-emerald-500/30 bg-zinc-900',
+    text: 'text-emerald-400',
+    dot: 'bg-emerald-400',
   },
   RARE: {
     label: 'Rare',
     hex: '#3b82f6',
     badge: 'bg-blue-500 text-white',
-    card: 'border-blue-300 bg-blue-50',
-    text: 'text-blue-700',
+    card: 'border-blue-500/30 bg-zinc-900',
+    text: 'text-blue-400',
+    dot: 'bg-blue-400',
   },
   EPIC: {
     label: 'Epic',
     hex: '#a855f7',
     badge: 'bg-purple-500 text-white',
-    card: 'border-purple-300 bg-purple-50',
-    text: 'text-purple-700',
+    card: 'border-purple-500/30 bg-zinc-900',
+    text: 'text-purple-400',
+    dot: 'bg-purple-400',
   },
   LEGENDARY: {
     label: 'Legendary',
     hex: '#f59e0b',
     badge: 'bg-gradient-to-br from-yellow-400 to-orange-500 text-white',
-    card: 'border-orange-300 bg-gradient-to-br from-yellow-50 to-orange-100',
-    text: 'text-orange-700',
+    card: 'border-amber-500/50 bg-gradient-to-br from-amber-500/10 to-zinc-900',
+    text: 'text-amber-400',
+    dot: 'bg-amber-400',
   },
 };
 
 export const NEGATIVE_STYLE = {
-  badge: 'bg-amber-50 text-amber-700 ring-1 ring-amber-300',
-  card: 'border-dashed border-amber-400 bg-white',
-  text: 'text-amber-700',
+  badge: 'bg-amber-500/10 text-amber-400 ring-1 ring-amber-500/40',
+  card: 'border-dashed border-amber-500/50 bg-transparent',
+  text: 'text-amber-400',
 } as const;
 
 export const FAMILY_ORDER: readonly AchievementFamily[] = [
@@ -67,4 +72,16 @@ export const FAMILY_LABELS: Readonly<Record<AchievementFamily, string>> = {
   VARIETY: 'Variety',
   MILESTONE: 'Milestone',
   ODDITY: 'Oddity',
+};
+
+export const LADDER_LABELS: Readonly<Record<string, string>> = {
+  WORKOUT: 'Workouts logged',
+  VOLUME: 'Total volume',
+  BENCH: 'Bench press',
+  SQUAT: 'Squat',
+  DEADLIFT: 'Deadlift',
+  TIME: 'Time under the bar',
+  STREAK: 'Weekly streak',
+  CARDIO: 'Cardio distance',
+  EXPLORER: 'Exercises tried',
 };

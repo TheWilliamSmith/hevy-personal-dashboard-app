@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Check } from 'lucide-vue-next';
 import { computed } from 'vue';
 import { RouterLink } from 'vue-router';
 
@@ -17,7 +18,6 @@ import AchievementIcon from './AchievementIcon.vue';
 
 const props = defineProps<{
   item: AchievementItem;
-  ladderSize: number;
   featured?: boolean;
 }>();
 
@@ -32,12 +32,12 @@ const rarity = computed(() => RARITY_STYLES[props.item.rarity]);
 const frame = computed(() => {
   if (negative.value) return NEGATIVE_STYLE.card;
   if (unlocked.value) return rarity.value.card;
-  return started.value ? 'border-slate-300 bg-white' : 'border-slate-200 bg-slate-50';
+  return started.value ? 'border-zinc-800 bg-transparent' : 'border-zinc-800/60 bg-transparent opacity-60';
 });
 
 const badge = computed(() => {
   if (negative.value) return NEGATIVE_STYLE.badge;
-  return unlocked.value ? rarity.value.badge : 'bg-slate-100 text-slate-400';
+  return unlocked.value ? rarity.value.badge : 'bg-zinc-800 text-zinc-500';
 });
 
 const label = computed(() => describeAchievement(props.item));
@@ -54,10 +54,10 @@ const target = computed(() =>
     :is="target ? RouterLink : 'article'"
     :to="target ?? undefined"
     :aria-current-value="target ? 'false' : undefined"
-    class="trophy-tile relative flex h-full flex-col gap-2 overflow-hidden rounded-2xl border p-4 transition-shadow"
+    class="trophy-tile relative flex h-full flex-col gap-2 overflow-hidden rounded-lg border p-4 transition-colors"
     :class="[
       frame,
-      target ? 'hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600' : '',
+      target ? 'hover:border-zinc-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400' : '',
       legendary ? 'trophy-legendary' : '',
       props.featured ? 'p-6' : '',
     ]"
@@ -66,16 +66,23 @@ const target = computed(() =>
 
     <div class="flex items-start gap-3" aria-hidden="true">
       <span
-        class="flex shrink-0 items-center justify-center rounded-xl"
+        class="flex shrink-0 items-center justify-center rounded-md"
         :class="[badge, props.featured ? 'h-16 w-16' : 'h-11 w-11', unlocked ? '' : 'grayscale']"
       >
         <AchievementIcon :name="props.item.icon" :size="props.featured ? 32 : 22" />
       </span>
 
-      <div class="min-w-0 flex-1">
+      <span
+        v-if="unlocked && !negative"
+        class="absolute top-3 right-3 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-400 text-zinc-950"
+      >
+        <Check class="h-3 w-3" :stroke-width="3" />
+      </span>
+
+      <div class="min-w-0 flex-1 pr-5">
         <p
           class="font-semibold leading-tight"
-          :class="[props.featured ? 'text-lg' : 'text-sm', unlocked ? 'text-slate-900' : 'text-slate-600']"
+          :class="[props.featured ? 'text-lg' : 'text-sm', unlocked ? 'text-zinc-100' : 'text-zinc-400']"
         >
           {{ props.item.name }}
         </p>
@@ -86,46 +93,32 @@ const target = computed(() =>
       </div>
     </div>
 
-    <div v-if="props.ladderSize > 1 && props.item.tier" class="flex gap-1" aria-hidden="true">
-      <span
-        v-for="rung in props.ladderSize"
-        :key="rung"
-        class="h-1.5 flex-1 rounded-full"
-        :class="
-          rung < props.item.tier
-            ? 'bg-slate-300'
-            : rung === props.item.tier
-              ? unlocked ? 'bg-slate-800' : 'bg-slate-500'
-              : 'bg-slate-100'
-        "
-      />
-    </div>
 
     <div aria-hidden="true" class="flex flex-1 flex-col gap-2">
-      <p v-if="unlocked && props.item.flavor" class="text-xs italic text-slate-600">
+      <p v-if="unlocked && props.item.flavor" class="text-xs italic text-zinc-400">
         “{{ props.item.flavor }}”
       </p>
-      <p v-else class="text-xs text-slate-600">{{ props.item.description }}</p>
+      <p v-else class="text-xs text-zinc-500">{{ props.item.description }}</p>
 
       <div v-if="!unlocked && props.item.progress" class="mt-auto">
         <div class="flex items-baseline justify-between gap-2 text-[11px]">
-          <span class="font-medium tabular-nums" :class="started ? 'text-slate-800' : 'text-slate-400'">
+          <span class="font-medium tabular-nums" :class="started ? 'text-zinc-100' : 'text-zinc-500'">
             {{ formatProgress(props.item) }}
           </span>
-          <span class="tabular-nums text-slate-400">{{ Math.floor(percent) }} %</span>
+          <span class="tabular-nums text-zinc-500">{{ Math.floor(percent) }} %</span>
         </div>
-        <div class="mt-1 h-2 overflow-hidden rounded-full bg-slate-100">
+        <div class="mt-1 h-1.5 overflow-hidden rounded-full bg-zinc-800">
           <div
             class="h-full rounded-full"
-            :class="negative ? 'bg-amber-400' : percent >= 75 ? 'bg-emerald-500' : 'bg-indigo-500'"
+            :class="negative ? 'bg-amber-400' : percent >= 75 ? 'bg-emerald-400' : 'bg-blue-500'"
             :style="{ width: `${percent}%` }"
           />
         </div>
       </div>
 
-      <p v-if="unlocked && props.item.unlockedAt" class="mt-auto text-[11px] text-slate-500">
+      <p v-if="unlocked && props.item.unlockedAt" class="mt-auto text-[11px] text-zinc-500">
         {{ negative ? 'Triggered' : 'Unlocked' }} {{ formatDay(props.item.unlockedAt) }}
-        <span v-if="target" class="font-medium text-indigo-700"> · View workout</span>
+        <span v-if="target" class="font-medium text-zinc-300"> · View workout</span>
       </p>
     </div>
   </component>
@@ -145,8 +138,8 @@ const target = computed(() =>
   background: linear-gradient(
     115deg,
     transparent 30%,
-    rgb(255 255 255 / 0.55) 45%,
-    rgb(251 191 36 / 0.25) 50%,
+    rgb(255 255 255 / 0.12) 45%,
+    rgb(251 191 36 / 0.18) 50%,
     transparent 65%
   );
   transform: translateX(-100%);

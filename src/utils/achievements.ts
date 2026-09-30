@@ -31,15 +31,71 @@ export function orderWithLadders(items: readonly AchievementItem[]): Achievement
   });
 }
 
-export function ladderSizes(items: readonly AchievementItem[]): Map<string, number> {
-  const sizes = new Map<string, number>();
+export function ladderTiers(items: readonly AchievementItem[]): Map<string, AchievementItem[]> {
+  const tiers = new Map<string, AchievementItem[]>();
   for (const item of items) {
     if (item.tier !== null) {
       const key = ladderKey(item);
-      sizes.set(key, Math.max(sizes.get(key) ?? 0, item.tier));
+      tiers.set(key, [...(tiers.get(key) ?? []), item]);
     }
   }
-  return sizes;
+  for (const list of tiers.values()) {
+    list.sort((a, b) => (a.tier ?? 0) - (b.tier ?? 0));
+  }
+  return tiers;
+}
+
+export interface LadderProgress {
+  unlockedCount: number;
+  current: AchievementItem | null;
+  top: AchievementItem | null;
+}
+
+export function ladderProgress(tiers: readonly AchievementItem[]): LadderProgress {
+  return {
+    unlockedCount: tiers.filter((tier) => tier.unlocked).length,
+    current: tiers.find((tier) => !tier.unlocked) ?? null,
+    top: [...tiers].reverse().find((tier) => tier.unlocked) ?? null,
+  };
+}
+
+export interface SectionLayout {
+  ladders: Array<{ key: string; tiers: AchievementItem[] }>;
+  singles: AchievementItem[];
+}
+
+/**
+ * Splits a family's visible trophies into ladder cards (every tier of a
+ * ladder, even the ones hidden by the current filter) and single trophies.
+ * Unlocked trophies and ladders with an unlocked tier come first.
+ */
+export function layoutSection(
+  items: readonly AchievementItem[],
+  tiers: ReadonlyMap<string, AchievementItem[]>,
+): SectionLayout {
+  const ladders: SectionLayout['ladders'] = [];
+  const seen = new Set<string>();
+  const singles: AchievementItem[] = [];
+
+  for (const item of items) {
+    if (item.tier === null) {
+      singles.push(item);
+      continue;
+    }
+    const key = ladderKey(item);
+    if (!seen.has(key)) {
+      seen.add(key);
+      ladders.push({ key, tiers: tiers.get(key) ?? [item] });
+    }
+  }
+
+  const unlockedTiers = (ladder: { tiers: AchievementItem[] }) =>
+    ladder.tiers.filter((tier) => tier.unlocked).length;
+
+  return {
+    ladders: ladders.sort((a, b) => Number(unlockedTiers(b) > 0) - Number(unlockedTiers(a) > 0)),
+    singles: singles.sort((a, b) => Number(b.unlocked) - Number(a.unlocked)),
+  };
 }
 
 interface UnitRule {

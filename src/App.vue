@@ -12,7 +12,7 @@ const CelebrationModal = defineAsyncComponent(
   () => import('@/components/achievements/CelebrationModal.vue'),
 );
 
-const DARK_TABS: ReadonlySet<string> = new Set(['dashboard', 'body', 'progress', 'workouts', 'exercises']);
+const DARK_TABS: ReadonlySet<string> = new Set(['dashboard', 'body', 'progress', 'workouts', 'exercises', 'trophies']);
 
 const route = useRoute();
 const { tab, isFullWidth } = useActiveTab();

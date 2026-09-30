@@ -8,7 +8,9 @@ import {
   isInProgress,
   isMasked,
   ladderKey,
-  ladderSizes,
+  ladderProgress,
+  ladderTiers,
+  layoutSection,
   orderWithLadders,
   progressPercent,
 } from './achievements';
@@ -38,9 +40,46 @@ describe('ladders', () => {
     expect(ordered.map((entry) => entry.code)).toEqual(['BENCH_60', 'BENCH_100', 'BENCH_140', 'PR_10']);
   });
 
-  it('knows how many pips each ladder has', () => {
-    const sizes = ladderSizes([item({ code: 'BENCH_60', tier: 1 }), item({ code: 'BENCH_140', tier: 3 })]);
-    expect(sizes.get('BENCH')).toBe(3);
+  it('groups every tier of a ladder, lowest first', () => {
+    const tiers = ladderTiers([
+      item({ code: 'BENCH_140', tier: 3 }),
+      item({ code: 'PR_10' }),
+      item({ code: 'BENCH_60', tier: 1 }),
+    ]);
+    expect(tiers.get('BENCH')?.map((entry) => entry.code)).toEqual(['BENCH_60', 'BENCH_140']);
+    expect(tiers.has('PR_10')).toBe(false);
+  });
+
+  it('finds the reached tier and the next goal of a ladder', () => {
+    const tiers = [
+      item({ code: 'BENCH_60', tier: 1, unlocked: true }),
+      item({ code: 'BENCH_100', tier: 2 }),
+      item({ code: 'BENCH_140', tier: 3 }),
+    ];
+
+    const progress = ladderProgress(tiers);
+
+    expect(progress.unlockedCount).toBe(1);
+    expect(progress.top?.code).toBe('BENCH_60');
+    expect(progress.current?.code).toBe('BENCH_100');
+    expect(ladderProgress(tiers.map((tier) => ({ ...tier, unlocked: true }))).current).toBeNull();
+  });
+
+  it('lays a section out as whole ladders plus singles, unlocked first', () => {
+    const all = [
+      item({ code: 'BENCH_60', tier: 1 }),
+      item({ code: 'BENCH_100', tier: 2 }),
+      item({ code: 'STREAK_4W', tier: 1, unlocked: true }),
+      item({ code: 'PR_10' }),
+      item({ code: 'PR_TRIPLE', unlocked: true }),
+    ];
+    const visible = all.filter((entry) => entry.code !== 'BENCH_100');
+
+    const layout = layoutSection(visible, ladderTiers(all));
+
+    expect(layout.ladders.map((ladder) => ladder.key)).toEqual(['STREAK', 'BENCH']);
+    expect(layout.ladders[1]?.tiers.map((tier) => tier.code)).toEqual(['BENCH_60', 'BENCH_100']);
+    expect(layout.singles.map((single) => single.code)).toEqual(['PR_TRIPLE', 'PR_10']);
   });
 });
 
