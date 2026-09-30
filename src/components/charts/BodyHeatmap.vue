@@ -247,19 +247,21 @@ function describe(group: MuscleGroup): string {
 
 <style scoped>
 .body-heatmap {
-  --bh-base: #ffffff;
-  --bh-outline: #1e293b;
-  --bh-line: #94a3b8;
-  --bh-l0: #ffffff;
-  --bh-l1: #dbe9fe;
-  --bh-l2: #a9caf9;
-  --bh-l3: #6da5f0;
-  --bh-l4: #3b7ad9;
-  --bh-l5: #2052ad;
-  --bh-l6: #10306e;
-  --bh-text: #475569;
-  --bh-tooltip-bg: #0f172a;
-  --bh-tooltip-fg: #f8fafc;
+  --bh-base: #18181b;
+  --bh-outline: #52525b;
+  --bh-line: #3f3f46;
+  --bh-l0: #334155;
+  --bh-l1: #1e3a8a;
+  --bh-l2: #1e40af;
+  --bh-l3: #1d4ed8;
+  --bh-l4: #2563eb;
+  --bh-l5: #3b82f6;
+  --bh-l6: #60a5fa;
+  --bh-text: #a1a1aa;
+  --bh-border: #3f3f46;
+  --bh-active: #ffffff;
+  --bh-tooltip-bg: #18181b;
+  --bh-tooltip-fg: #f4f4f5;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -302,7 +304,7 @@ function describe(group: MuscleGroup): string {
 
 .body-heatmap__muscle.is-active path,
 .body-heatmap__muscle:focus-visible path {
-  stroke: #f59e0b;
+  stroke: var(--bh-active);
   stroke-width: 1.6;
 }
 
@@ -330,13 +332,14 @@ function describe(group: MuscleGroup): string {
   gap: 1px;
   padding: 6px 10px;
   border-radius: 8px;
+  border: 1px solid var(--bh-border);
   background: var(--bh-tooltip-bg);
   color: var(--bh-tooltip-fg);
   font-size: 12px;
   line-height: 1.35;
   white-space: nowrap;
   pointer-events: none;
-  box-shadow: 0 6px 16px rgb(0 0 0 / 0.18);
+  box-shadow: 0 6px 16px rgb(0 0 0 / 0.4);
 }
 .body-heatmap__share { opacity: 0.7; }
 
@@ -356,7 +359,7 @@ function describe(group: MuscleGroup): string {
   display: inline-block;
   width: 14px;
   height: 14px;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--bh-border);
   border-radius: 3px;
 }
 .body-heatmap__legend i[data-level='0'] { background: var(--bh-l0); }
@@ -373,7 +376,7 @@ function describe(group: MuscleGroup): string {
   align-items: center;
   gap: 6px;
   padding: 3px 8px;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--bh-border);
   border-radius: 999px;
   background: transparent;
   color: inherit;

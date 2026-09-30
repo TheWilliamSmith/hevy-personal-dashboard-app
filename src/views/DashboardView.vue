@@ -3,7 +3,7 @@ import { computed } from 'vue';
 
 import KeyMetrics from '@/components/home/KeyMetrics.vue';
 import MuscleFocusCard from '@/components/home/MuscleFocusCard.vue';
-import RangeSwitch from '@/components/home/RangeSwitch.vue';
+import RangeSwitch from '@/components/ui/RangeSwitch.vue';
 import TrainingCalendar from '@/components/home/TrainingCalendar.vue';
 import TrophySpotlight from '@/components/home/TrophySpotlight.vue';
 import VolumeTrendCard from '@/components/home/VolumeTrendCard.vue';

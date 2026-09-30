@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
-import SectionError from '@/components/home/SectionError.vue';
-import SectionHeader from '@/components/home/SectionHeader.vue';
+import SectionError from '@/components/ui/SectionError.vue';
+import SectionHeader from '@/components/ui/SectionHeader.vue';
 import { MUSCLE_LABELS, MUSCLE_ORDER } from '@/constants/muscles';
 import type { MuscleHeatmap } from '@/types/stats';
 import { formatInteger } from '@/utils/format';

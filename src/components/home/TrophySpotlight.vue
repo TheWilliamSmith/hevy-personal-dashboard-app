@@ -2,8 +2,8 @@
 import { computed } from 'vue';
 import { RouterLink } from 'vue-router';
 
-import SectionError from '@/components/home/SectionError.vue';
-import SectionHeader from '@/components/home/SectionHeader.vue';
+import SectionError from '@/components/ui/SectionError.vue';
+import SectionHeader from '@/components/ui/SectionHeader.vue';
 import type { AchievementsSummary } from '@/types/achievements';
 import { formatDay, formatInteger } from '@/utils/format';
 

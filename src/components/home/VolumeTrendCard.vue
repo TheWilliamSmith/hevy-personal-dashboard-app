@@ -3,8 +3,8 @@ import type { EChartsOption } from 'echarts';
 import { computed } from 'vue';
 
 import BaseChart from '@/components/dashboard/BaseChart.vue';
-import SectionError from '@/components/home/SectionError.vue';
-import SectionHeader from '@/components/home/SectionHeader.vue';
+import SectionError from '@/components/ui/SectionError.vue';
+import SectionHeader from '@/components/ui/SectionHeader.vue';
 import { baseOption, categoryAxis, formatAxisValue, resolveTheme, valueAxis } from '@/charts/theme';
 import type { Granularity, TimeseriesPoint } from '@/types/stats';
 import { formatBucket, formatInteger, formatVolume } from '@/utils/format';

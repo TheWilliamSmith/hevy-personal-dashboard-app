@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue';
 
-import SectionError from '@/components/home/SectionError.vue';
-import SectionHeader from '@/components/home/SectionHeader.vue';
+import SectionError from '@/components/ui/SectionError.vue';
+import SectionHeader from '@/components/ui/SectionHeader.vue';
 import type { CalendarDay } from '@/types/stats';
 import { buildCalendarGrid, type CalendarCell } from '@/utils/calendar';
 import { formatInteger } from '@/utils/format';
