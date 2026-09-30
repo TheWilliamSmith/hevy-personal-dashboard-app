@@ -6,6 +6,10 @@ Front Vue 3 du Hevy Personal Dashboard. Il consomme l'API `hevy-personal-dashboa
 
 **Avant toute modification d'interface, lire [docs/design-system.md](docs/design-system.md) et le respecter.** La page Dashboard (`src/views/DashboardView.vue`) est la référence visuelle.
 
+## Tickets
+
+**Le travail à faire vit dans Linear. Avant de commencer ou de rendre un ticket, lire [docs/tickets.md](docs/tickets.md) et le respecter** : statuts, périmètre, commentaire de fin, référence dans le commit. Aucun TODO dans le code.
+
 ## Commandes
 
 | Commande | Usage |
