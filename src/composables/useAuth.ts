@@ -14,12 +14,10 @@ export interface SignUpInput {
 }
 
 /*
- * Sign-in, sign-up and the current user go through the API. OAuth and the
- * password reset have no endpoint yet: OAuth refuses with a clear message,
- * and the reset flow stays a demo that never touches a real account.
+ * Everything goes through the API except OAuth, which has no endpoint yet
+ * and refuses with a clear message after a short pause.
  */
 const DEMO_DELAY_MS = 600;
-const EXPIRED_TOKEN = 'expired';
 
 const user = ref<AuthUser | null>(loadSession()?.user ?? null);
 const isSubmitting = ref(false);
@@ -36,6 +34,15 @@ async function submitting<T>(work: () => Promise<T>): Promise<T> {
 
 function simulate<T>(result: T): Promise<T> {
   return submitting(() => new Promise<T>((resolve) => setTimeout(() => resolve(result), DEMO_DELAY_MS)));
+}
+
+/** A used, expired or unknown link; a rejected password comes back as a list of messages instead. */
+function isInvalidResetLink(caught: unknown): boolean {
+  if (!(caught instanceof ApiError) || caught.status !== 400) {
+    return false;
+  }
+  const { message } = (caught.body ?? {}) as { message?: unknown };
+  return typeof message === 'string';
 }
 
 function start(session: AuthSession, remember: boolean): void {
@@ -73,6 +80,7 @@ export interface UseAuth {
   signOut: () => void;
   restore: () => Promise<void>;
   requestPasswordReset: (email: string) => Promise<void>;
+  /** False when the link is used, expired or unknown. Signs out on success: every session ends. */
   resetPassword: (token: string, password: string) => Promise<boolean>;
 }
 
@@ -102,7 +110,22 @@ export function useAuth(): UseAuth {
     },
     signOut,
     restore,
-    requestPasswordReset: () => simulate(undefined),
-    resetPassword: (token) => simulate(token !== EXPIRED_TOKEN),
+    requestPasswordReset: (email) =>
+      submitting(async () => {
+        await apiPost('/auth/password/forgot', { email });
+      }),
+    resetPassword: (token, password) =>
+      submitting(async () => {
+        try {
+          await apiPost('/auth/password/reset', { token, password });
+        } catch (caught) {
+          if (isInvalidResetLink(caught)) {
+            return false;
+          }
+          throw caught;
+        }
+        signOut();
+        return true;
+      }),
   };
 }

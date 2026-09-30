@@ -3,10 +3,11 @@ import { ChevronLeft, MailCheck } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
 
+import AuthError from '@/components/auth/AuthError.vue';
 import AuthField from '@/components/auth/AuthField.vue';
 import AuthLayout from '@/components/auth/AuthLayout.vue';
 import { useAuth } from '@/composables/useAuth';
-import { isEmail } from '@/utils/auth';
+import { errorMessage, isEmail } from '@/utils/auth';
 
 const route = useRoute();
 const auth = useAuth();
@@ -14,16 +15,22 @@ const auth = useAuth();
 const email = ref(typeof route.query.email === 'string' ? route.query.email : '');
 const touched = ref(false);
 const sentTo = ref<string | null>(null);
+const formError = ref<string | null>(null);
 
 const error = computed(() => (touched.value && !isEmail(email.value) ? 'Enter a valid email address.' : null));
 
 async function submit(): Promise<void> {
   touched.value = true;
+  formError.value = null;
   if (!isEmail(email.value)) {
     return;
   }
-  await auth.requestPasswordReset(email.value.trim());
-  sentTo.value = email.value.trim();
+  try {
+    await auth.requestPasswordReset(email.value.trim());
+    sentTo.value = email.value.trim();
+  } catch (caught) {
+    formError.value = errorMessage(caught);
+  }
 }
 </script>
 
@@ -48,15 +55,10 @@ async function submit(): Promise<void> {
         >
           try another address</button>.
       </p>
-      <RouterLink
-        :to="{ name: 'reset-password', query: { token: 'demo' } }"
-        class="text-xs font-medium text-zinc-500 underline decoration-zinc-700 underline-offset-2 hover:text-zinc-300"
-      >
-        Open the demo reset link
-      </RouterLink>
     </div>
 
     <form v-else class="flex flex-col gap-4" novalidate @submit.prevent="submit">
+      <AuthError :message="formError" />
       <AuthField
         id="forgot-email"
         v-model="email"

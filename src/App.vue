@@ -35,10 +35,17 @@ async function checkSession(): Promise<void> {
   }
 }
 
-onMounted(() => {
-  void checkSession();
-  void celebrations.loadUnseen();
-});
+watch(
+  auth.isAuthenticated,
+  (signedIn) => {
+    if (signedIn) {
+      void celebrations.loadUnseen();
+    }
+  },
+  { immediate: true },
+);
+
+onMounted(() => void checkSession());
 </script>
 
 <template>

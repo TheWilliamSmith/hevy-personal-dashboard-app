@@ -123,6 +123,49 @@ describe('useAuth', () => {
     expect(sessionStorage.getItem('hevy-dashboard.session')).toBeNull();
   });
 
+  it('asks the API for a reset link', async () => {
+    const fetchMock = vi.fn(async (..._args: unknown[]) => jsonResponse({ message: 'sent' }, 202));
+    vi.stubGlobal('fetch', fetchMock);
+    const auth = await freshAuth();
+
+    await auth.requestPasswordReset('alex@example.com');
+
+    expect(String(fetchMock.mock.calls[0]?.[0])).toBe('/api/auth/password/forgot');
+    expect(JSON.parse(String((fetchMock.mock.calls[0]?.[1] as RequestInit).body))).toEqual({ email: 'alex@example.com' });
+  });
+
+  it('resets the password and signs out, since every session ended', async () => {
+    sessionStorage.setItem('hevy-dashboard.session', JSON.stringify(session()));
+    const fetchMock = vi.fn(async (..._args: unknown[]) => jsonResponse({ message: 'Password updated.' }));
+    vi.stubGlobal('fetch', fetchMock);
+    const auth = await freshAuth();
+
+    await expect(auth.resetPassword('token-abc', 'N3w-password!')).resolves.toBe(true);
+
+    expect(String(fetchMock.mock.calls[0]?.[0])).toBe('/api/auth/password/reset');
+    expect(JSON.parse(String((fetchMock.mock.calls[0]?.[1] as RequestInit).body))).toEqual({
+      token: 'token-abc',
+      password: 'N3w-password!',
+    });
+    expect(auth.isAuthenticated.value).toBe(false);
+  });
+
+  it('reports a used or expired link as false', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => jsonResponse({ statusCode: 400, message: 'This reset link is invalid or has expired.' }, 400)));
+    const auth = await freshAuth();
+
+    await expect(auth.resetPassword('used', 'N3w-password!')).resolves.toBe(false);
+  });
+
+  it('throws when the password itself is refused or the API is down', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => jsonResponse({ statusCode: 400, message: ['password must mix at least 3 of: ...'] }, 400)));
+    const auth = await freshAuth();
+    await expect(auth.resetPassword('token', 'password')).rejects.toMatchObject({ status: 400 });
+
+    vi.stubGlobal('fetch', vi.fn(async () => { throw new TypeError('network down'); }));
+    await expect(auth.resetPassword('token', 'N3w-password!')).rejects.toMatchObject({ status: null });
+  });
+
   it('refuses OAuth until a provider is wired', async () => {
     vi.useFakeTimers();
     const auth = await freshAuth();

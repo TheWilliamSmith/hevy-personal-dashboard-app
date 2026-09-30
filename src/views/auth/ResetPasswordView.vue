@@ -3,11 +3,12 @@ import { CircleCheck, TriangleAlert } from 'lucide-vue-next';
 import { computed, reactive, ref } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
 
+import AuthError from '@/components/auth/AuthError.vue';
 import AuthField from '@/components/auth/AuthField.vue';
 import AuthLayout from '@/components/auth/AuthLayout.vue';
 import PasswordStrengthMeter from '@/components/auth/PasswordStrengthMeter.vue';
 import { useAuth } from '@/composables/useAuth';
-import { passwordProblem } from '@/utils/auth';
+import { errorMessage, passwordProblem } from '@/utils/auth';
 
 type Stage = 'form' | 'done' | 'invalid';
 
@@ -19,6 +20,7 @@ const token = computed(() => (typeof route.query.token === 'string' ? route.quer
 const form = reactive({ password: '', confirm: '' });
 const touched = reactive({ password: false, confirm: false });
 const submitted = ref(false);
+const formError = ref<string | null>(null);
 const stage = ref<Stage>(token.value ? 'form' : 'invalid');
 
 const errors = computed(() => ({
@@ -29,10 +31,15 @@ const errors = computed(() => ({
 
 async function submit(): Promise<void> {
   submitted.value = true;
+  formError.value = null;
   if (passwordProblem(form.password) !== null || form.confirm !== form.password) {
     return;
   }
-  stage.value = (await auth.resetPassword(token.value, form.password)) ? 'done' : 'invalid';
+  try {
+    stage.value = (await auth.resetPassword(token.value, form.password)) ? 'done' : 'invalid';
+  } catch (caught) {
+    formError.value = errorMessage(caught);
+  }
 }
 
 const TITLES: Record<Stage, { title: string; subtitle: string }> = {
@@ -48,6 +55,7 @@ const primary =
 <template>
   <AuthLayout :title="TITLES[stage].title" :subtitle="TITLES[stage].subtitle">
     <form v-if="stage === 'form'" class="flex flex-col gap-4" novalidate @submit.prevent="submit">
+      <AuthError :message="formError" />
       <AuthField
         id="reset-password"
         v-model="form.password"
@@ -87,7 +95,7 @@ const primary =
     <div v-else-if="stage === 'done'" class="flex flex-col gap-4">
       <div class="flex items-start gap-3 rounded-md border border-emerald-500/30 bg-emerald-500/10 p-4" role="status">
         <CircleCheck class="mt-0.5 h-5 w-5 shrink-0 text-emerald-400" aria-hidden="true" />
-        <p class="text-sm text-zinc-200">You were signed out everywhere else. Sign in again with your new password.</p>
+        <p class="text-sm text-zinc-200">Every device was signed out. Sign in again with your new password.</p>
       </div>
       <RouterLink :to="{ name: 'sign-in' }" :class="primary">Go to sign in</RouterLink>
     </div>
