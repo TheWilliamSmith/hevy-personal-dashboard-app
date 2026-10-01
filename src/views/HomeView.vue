@@ -15,6 +15,8 @@ const GoalsPanel = defineAsyncComponent(() => import('@/views/GoalsView.vue'));
 const TrophiesPanel = defineAsyncComponent(() => import('@/views/TrophyRoomView.vue'));
 const ExercisesPanel = defineAsyncComponent(() => import('@/views/ExercisesView.vue'));
 const ExerciseDetailPanel = defineAsyncComponent(() => import('@/views/ExerciseDetailView.vue'));
+const FriendsPanel = defineAsyncComponent(() => import('@/views/FriendsView.vue'));
+const UserPagePanel = defineAsyncComponent(() => import('@/views/UserPageView.vue'));
 
 const route = useRoute();
 const { tab } = useActiveTab();
@@ -26,6 +28,8 @@ const workoutId = computed(() =>
 const compareId = computed(() =>
   typeof route.query.compare === 'string' ? route.query.compare : '',
 );
+
+const username = computed(() => (typeof route.query.user === 'string' ? route.query.user : ''));
 
 const exerciseSlug = computed(() =>
   typeof route.query.exercise === 'string' ? route.query.exercise : '',
@@ -53,6 +57,9 @@ const panel = computed(() => {
     }
     return compareId.value ? WorkoutComparePanel : WorkoutDetailPanel;
   }
+  if (tab.value === 'friends') {
+    return username.value ? UserPagePanel : FriendsPanel;
+  }
   if (tab.value === 'exercises') {
     return exerciseSlug.value ? ExerciseDetailPanel : ExercisesPanel;
   }
@@ -61,5 +68,5 @@ const panel = computed(() => {
 </script>
 
 <template>
-  <component :is="panel" :key="`${tab}-${workoutId}-${compareId}-${exerciseSlug}`" />
+  <component :is="panel" :key="`${tab}-${workoutId}-${compareId}-${exerciseSlug}-${username}`" />
 </template>

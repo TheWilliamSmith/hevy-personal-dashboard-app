@@ -12,6 +12,7 @@ import {
   Target,
   TrendingUp,
   Trophy,
+  Users,
   X,
 } from 'lucide-vue-next';
 import { computed, onBeforeUnmount, onMounted, watch, type Component } from 'vue';
@@ -31,6 +32,7 @@ const ICONS: Readonly<Record<TabName, Component>> = {
   trophies: Trophy,
   workouts: Dumbbell,
   exercises: ListChecks,
+  friends: Users,
   settings: Settings,
 };
 

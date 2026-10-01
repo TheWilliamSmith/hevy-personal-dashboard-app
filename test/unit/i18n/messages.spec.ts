@@ -3,6 +3,7 @@ import { join } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
+import { setLocale, t } from '@/i18n';
 import { en } from '@/i18n/locales/en';
 import { fr } from '@/i18n/locales/fr';
 
@@ -48,6 +49,22 @@ describe('translations', () => {
   it('has no empty message', () => {
     const empty = [...english, ...french].filter(([, text]) => text.trim() === '').map(([key]) => key);
     expect(empty).toEqual([]);
+  });
+
+  it('compiles every message in both languages', () => {
+    const broken: string[] = [];
+    for (const [language, messages] of [['en', english], ['fr', french]] as const) {
+      setLocale(language);
+      for (const key of messages.keys()) {
+        try {
+          t(key, {}, 1);
+        } catch {
+          broken.push(`${language}:${key}`);
+        }
+      }
+    }
+    setLocale('en');
+    expect(broken).toEqual([]);
   });
 
   it('keeps the same placeholders in both languages', () => {

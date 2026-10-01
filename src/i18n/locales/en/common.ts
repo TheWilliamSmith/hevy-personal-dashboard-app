@@ -24,6 +24,7 @@ export const nav = {
   trophies: 'Trophies',
   workouts: 'Workouts',
   exercises: 'Exercises',
+  friends: 'Friends',
   settings: 'Settings',
   mainNavigation: 'Main navigation',
   expandSidebar: 'Expand sidebar',

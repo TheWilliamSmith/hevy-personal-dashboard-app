@@ -27,6 +27,7 @@ export const nav: Messages<typeof en.nav> = {
   trophies: 'Trophées',
   workouts: 'Séances',
   exercises: 'Exercices',
+  friends: 'Amis',
   settings: 'Paramètres',
   mainNavigation: 'Navigation principale',
   expandSidebar: 'Déplier la barre latérale',

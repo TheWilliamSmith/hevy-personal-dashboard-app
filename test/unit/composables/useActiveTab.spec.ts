@@ -5,7 +5,7 @@ import { flushPromises, withRouter } from '../../support/router-harness';
 import { TABS, useActiveTab } from '@/composables/useActiveTab';
 
 describe('tab definitions', () => {
-  it('exposes the eight tabs, dashboard first', () => {
+  it('exposes the nine tabs, dashboard first', () => {
     expect(TABS.map((tab) => tab.name)).toEqual([
       'dashboard',
       'body',
@@ -14,6 +14,7 @@ describe('tab definitions', () => {
       'trophies',
       'workouts',
       'exercises',
+      'friends',
       'settings',
     ]);
   });

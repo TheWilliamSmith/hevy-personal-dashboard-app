@@ -10,6 +10,7 @@ export type TabName =
   | 'trophies'
   | 'workouts'
   | 'exercises'
+  | 'friends'
   | 'settings';
 
 export const TABS: ReadonlyArray<{ name: TabName; label: string }> = [
@@ -56,6 +57,12 @@ export const TABS: ReadonlyArray<{ name: TabName; label: string }> = [
     },
   },
   {
+    name: 'friends',
+    get label() {
+      return t('nav.friends');
+    },
+  },
+  {
     name: 'settings',
     get label() {
       return t('nav.settings');
@@ -72,6 +79,7 @@ function isTab(value: unknown): value is TabName {
     value === 'trophies' ||
     value === 'workouts' ||
     value === 'exercises' ||
+    value === 'friends' ||
     value === 'settings'
   );
 }

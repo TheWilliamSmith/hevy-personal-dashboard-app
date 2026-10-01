@@ -5,6 +5,7 @@ import * as common from './common';
 import * as dashboard from './dashboard';
 import * as data from './data';
 import * as exercises from './exercises';
+import * as friends from './friends';
 import * as goals from './goals';
 import * as imports from './imports';
 import * as messages from './messages';
@@ -21,6 +22,7 @@ export const en = {
   ...dashboard,
   ...data,
   ...exercises,
+  ...friends,
   ...goals,
   ...imports,
   ...messages,
