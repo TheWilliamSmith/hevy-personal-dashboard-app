@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import { flushPromises, withRouter } from '@/test/router-harness';
+import { flushPromises, withRouter } from '../../support/router-harness';
 
-import { TABS, useActiveTab } from './useActiveTab';
+import { TABS, useActiveTab } from '@/composables/useActiveTab';
 
 describe('tab definitions', () => {
   it('exposes the eight tabs, dashboard first', () => {

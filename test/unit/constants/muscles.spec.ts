@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { MUSCLE_LABELS, MUSCLE_ORDER, MUSCLE_STYLES, muscleRank } from './muscles';
+import { MUSCLE_LABELS, MUSCLE_ORDER, MUSCLE_STYLES, muscleRank } from '@/constants/muscles';
 
 describe('muscle constants', () => {
   it('covers every muscle group with a label and a style', () => {

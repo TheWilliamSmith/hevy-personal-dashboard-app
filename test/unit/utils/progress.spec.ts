@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { EMPTY } from './format';
+import { EMPTY } from '@/utils/format';
 import {
   formatDaysAgo,
   formatGapToBest,
@@ -8,7 +8,7 @@ import {
   formatSlope,
   formatWeeksAgo,
   gapToBestPct,
-} from './progress';
+} from '@/utils/progress';
 
 describe('formatMetricValue', () => {
   it('renders each metric in its own unit', () => {

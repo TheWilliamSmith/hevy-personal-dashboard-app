@@ -9,7 +9,7 @@ import {
   formatMetric,
   resolveTheme,
   valueAxis,
-} from './theme';
+} from '@/charts/theme';
 
 describe('resolveTheme', () => {
   it('returns the light palette by default', () => {

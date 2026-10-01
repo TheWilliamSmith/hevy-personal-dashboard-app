@@ -1,8 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { flushPromises, jsonResponse, withRouter } from '@/test/router-harness';
+import { flushPromises, jsonResponse, withRouter } from '../../support/router-harness';
 
-import { hasActiveFilters, useWorkouts } from './useWorkouts';
+import { hasActiveFilters, useWorkouts } from '@/composables/useWorkouts';
 
 afterEach(() => {
   vi.unstubAllGlobals();

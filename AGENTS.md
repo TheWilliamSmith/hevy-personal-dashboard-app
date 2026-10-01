@@ -23,7 +23,7 @@ Avant de rendre la main : `pnpm typecheck` et `pnpm test` passent.
 
 ## Conventions
 
-- **Tests** : tout nouveau fichier de test va dans `test/` (par exemple `test/unit/utils/calendar.spec.ts`), jamais dans `src/`.
+- **Tests** : tous les tests vivent dans `test/` : `test/unit/` reprend l'arborescence de `src/` (par exemple `test/unit/utils/calendar.spec.ts`), `test/support/` contient les helpers (`router-harness`, `fake-xhr`). Jamais de test dans `src/`. Les specs sont vérifiés par `pnpm typecheck` (`tsconfig.test.json`).
 - **Commentaires** : aucun commentaire dans le code (TS, Vue, CSS, config). Seules exceptions : les directives qui changent le comportement (`// @vitest-environment`, `/// <reference>`). Le nom des fonctions et des variables doit suffire.
 - **Organisation** : `src/views/` une vue par onglet ; `src/components/<domaine>/` les composants d'une page ; `src/components/ui/` les composants partagés ; logique pure dans `src/utils/`, accès aux données dans `src/composables/`.
 - **Textes** : interface en anglais ; dates et nombres formatés via `src/utils/format.ts`.

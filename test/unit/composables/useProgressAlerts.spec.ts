@@ -1,9 +1,9 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { flushPromises, jsonResponse, withRouter } from '@/test/router-harness';
+import { flushPromises, jsonResponse, withRouter } from '../../support/router-harness';
 import type { ProgressItem } from '@/types/progress';
 
-import { useProgressAlerts } from './useProgressAlerts';
+import { useProgressAlerts } from '@/composables/useProgressAlerts';
 
 afterEach(() => {
   vi.unstubAllGlobals();

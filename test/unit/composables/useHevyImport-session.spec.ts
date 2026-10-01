@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { FakeXMLHttpRequest } from '@/test/fake-xhr';
+import { FakeXMLHttpRequest } from '../../support/fake-xhr';
 
 beforeEach(() => {
   FakeXMLHttpRequest.instances.length = 0;

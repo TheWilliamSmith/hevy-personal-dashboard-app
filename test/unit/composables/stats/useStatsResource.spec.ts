@@ -3,9 +3,9 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { invalidateWorkoutData } from '@/lib/data-version';
 import { ApiError } from '@/lib/api';
-import { flushPromises } from '@/test/router-harness';
+import { flushPromises } from '../../../support/router-harness';
 
-import { useStatsResource } from './useStatsResource';
+import { useStatsResource } from '@/composables/stats/useStatsResource';
 
 afterEach(() => vi.unstubAllGlobals());
 

@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { secureRandom } from './random';
+import { secureRandom } from '@/utils/random';
 
 describe('secureRandom', () => {
   afterEach(() => {

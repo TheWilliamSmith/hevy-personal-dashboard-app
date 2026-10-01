@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import { flushPromises, withRouter } from '@/test/router-harness';
+import { flushPromises, withRouter } from '../../../support/router-harness';
 
-import { useDashboardFilters } from './useDashboardFilters';
+import { useDashboardFilters } from '@/composables/stats/useDashboardFilters';
 
 describe('useDashboardFilters', () => {
   it('defaults to a 30 day range and a daily granularity', async () => {

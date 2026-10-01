@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest';
 
-import { authRedirect, legacyTabRedirect, router } from './index';
+import { authRedirect, legacyTabRedirect, router } from '@/router/index';
 
 describe('the app router', () => {
   it('registers the single home route plus a catch-all redirect', () => {

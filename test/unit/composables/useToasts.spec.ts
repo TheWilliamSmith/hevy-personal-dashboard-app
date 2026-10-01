@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { useToasts } from './useToasts';
+import { useToasts } from '@/composables/useToasts';
 
 describe('useToasts', () => {
   it('pushes a toast and assigns it an incrementing id', () => {

@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { invalidateWorkoutData } from '@/lib/data-version';
 
-import { ApiError, apiDelete, apiGet, apiPatch, apiPost, apiUrl, extractApiMessage } from './api';
+import { ApiError, apiDelete, apiGet, apiPatch, apiPost, apiUrl, extractApiMessage } from '@/lib/api';
 
 afterEach(() => vi.unstubAllGlobals());
 

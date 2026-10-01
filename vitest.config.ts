@@ -7,7 +7,7 @@ export default defineConfig({
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },
   test: {
-    include: ['src/**/*.spec.ts', 'test/**/*.spec.ts'],
+    include: ['test/**/*.spec.ts'],
     environment: 'node',
     env: { VITE_API_URL: '/api' },
     coverage: {
@@ -15,7 +15,7 @@ export default defineConfig({
       reporter: ['text', 'html', 'lcov'],
       reportsDirectory: 'coverage',
       include: ['src/**/*.ts'],
-      exclude: ['src/**/*.spec.ts', 'src/types/**', 'src/main.ts', 'src/test/**'],
+      exclude: ['src/types/**', 'src/main.ts'],
     },
   },
 });

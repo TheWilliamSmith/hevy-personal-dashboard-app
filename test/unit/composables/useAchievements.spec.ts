@@ -1,9 +1,9 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { flushPromises, jsonResponse, withRouter } from '@/test/router-harness';
+import { flushPromises, jsonResponse, withRouter } from '../../support/router-harness';
 import type { AchievementItem } from '@/types/achievements';
 
-import { useAchievements } from './useAchievements';
+import { useAchievements } from '@/composables/useAchievements';
 
 afterEach(() => vi.unstubAllGlobals());
 

@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { jsonResponse } from '@/test/router-harness';
+import { jsonResponse } from '../../support/router-harness';
 import type { AuthSession } from '@/types/auth';
 
 const USER = {
@@ -34,7 +34,7 @@ afterEach(() => {
 
 describe('useAuth', () => {
   it('signs in, stores the session and sends the token afterwards', async () => {
-    const fetchMock = vi.fn(async (url: string) =>
+    const fetchMock = vi.fn(async (url: string, _init?: RequestInit) =>
       String(url).endsWith('/auth/sign-in') ? jsonResponse(session()) : jsonResponse(USER),
     );
     vi.stubGlobal('fetch', fetchMock);

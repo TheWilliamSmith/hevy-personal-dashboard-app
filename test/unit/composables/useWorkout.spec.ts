@@ -1,9 +1,9 @@
 import { effectScope } from 'vue';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { flushPromises, jsonResponse } from '@/test/router-harness';
+import { flushPromises, jsonResponse } from '../../support/router-harness';
 
-import { useWorkout } from './useWorkout';
+import { useWorkout } from '@/composables/useWorkout';
 
 afterEach(() => vi.unstubAllGlobals());
 

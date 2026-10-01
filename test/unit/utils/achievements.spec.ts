@@ -13,7 +13,7 @@ import {
   layoutSection,
   orderWithLadders,
   progressPercent,
-} from './achievements';
+} from '@/utils/achievements';
 
 function item(overrides: Partial<AchievementItem>): AchievementItem {
   return {

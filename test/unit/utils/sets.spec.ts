@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { BestSet, ExerciseSet, SetType } from '@/types/workouts';
 
-import { bestSetIndex } from './sets';
+import { bestSetIndex } from '@/utils/sets';
 
 function set(overrides: Partial<ExerciseSet> = {}): ExerciseSet {
   return {

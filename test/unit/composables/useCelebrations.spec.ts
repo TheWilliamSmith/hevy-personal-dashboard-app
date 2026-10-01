@@ -4,7 +4,7 @@ import type { AchievementItem } from '@/types/achievements';
 
 async function freshQueue() {
   vi.resetModules();
-  const { useCelebrations } = await import('./useCelebrations');
+  const { useCelebrations } = await import('@/composables/useCelebrations');
   return useCelebrations();
 }
 

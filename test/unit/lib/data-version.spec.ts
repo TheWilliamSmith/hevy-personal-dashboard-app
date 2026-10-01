@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { dataVersion, invalidateWorkoutData, shouldBypassHttpCache } from './data-version';
+import { dataVersion, invalidateWorkoutData, shouldBypassHttpCache } from '@/lib/data-version';
 
 describe('data invalidation', () => {
   it('does not bypass the HTTP cache until something is invalidated', () => {

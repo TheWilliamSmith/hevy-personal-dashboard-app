@@ -15,7 +15,7 @@ import {
   formatWeight,
   percentChange,
   toNumber,
-} from './format';
+} from '@/utils/format';
 
 describe('formatDate', () => {
   it('formats an ISO string in fr-FR', () => {

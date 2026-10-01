@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { FakeXMLHttpRequest } from '@/test/fake-xhr';
+import { FakeXMLHttpRequest } from '../../support/fake-xhr';
 
-import { MAX_FILE_BYTES, useHevyImport } from './useHevyImport';
+import { MAX_FILE_BYTES, useHevyImport } from '@/composables/useHevyImport';
 
 describe('client-side upload limits', () => {
   it('matches the API MAX_CSV_BYTES of 10 MB', () => {

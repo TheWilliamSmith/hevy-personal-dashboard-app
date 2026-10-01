@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { flushPromises, jsonResponse } from '@/test/router-harness';
+import { flushPromises, jsonResponse } from '../../support/router-harness';
 import type { ProfileResponse } from '@/types/profile';
 
 const USER = { id: 'u1', email: 'alex@example.com', username: 'alex.lifts', displayName: 'Alex', createdAt: '2026-01-01T00:00:00Z' };

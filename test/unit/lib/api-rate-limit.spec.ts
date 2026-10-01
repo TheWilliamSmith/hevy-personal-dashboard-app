@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { apiPost } from '@/lib/api';
-import { jsonResponse } from '@/test/router-harness';
+import { jsonResponse } from '../../support/router-harness';
 
 afterEach(() => vi.unstubAllGlobals());
 

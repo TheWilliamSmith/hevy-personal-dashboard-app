@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { jsonResponse } from '@/test/router-harness';
+import { jsonResponse } from '../../support/router-harness';
 import type { AuthSession } from '@/types/auth';
 
 const STORAGE_KEY = 'hevy-dashboard.session';

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { linearTrend } from './trendline';
+import { linearTrend } from '@/charts/trendline';
 
 describe('linearTrend', () => {
   it('fits a perfect line exactly', () => {

@@ -95,7 +95,7 @@ Au premier lancement, la base est vide. Ouvrir **Settings → Data** (bloc profi
 | `pnpm run build` | vérification de types (`vue-tsc`) puis build de production dans `dist/` |
 | `pnpm run preview` | sert le build de `dist/` localement |
 | `pnpm run typecheck` | vérification de types seule |
-| `pnpm test` | tests unitaires Vitest (`src/**/*.spec.ts`) |
+| `pnpm test` | tests unitaires Vitest (`test/**/*.spec.ts`) |
 | `pnpm run test:watch` | tests en mode watch |
 | `pnpm run test:coverage` | tests + rapport de couverture dans `coverage/` |
 

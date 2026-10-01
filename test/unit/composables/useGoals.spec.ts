@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { useGoals } from '@/composables/useGoals';
-import { flushPromises, jsonResponse } from '@/test/router-harness';
+import { flushPromises, jsonResponse } from '../../support/router-harness';
 import type { Goal } from '@/types/goals';
 
 function goal(id: string, overrides: Partial<Goal> = {}): Goal {
