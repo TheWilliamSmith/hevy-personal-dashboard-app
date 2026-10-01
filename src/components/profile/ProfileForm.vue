@@ -6,7 +6,7 @@ import SegmentedControl, { type SegmentedOption } from '@/components/ui/Segmente
 import type { UserProfile, WeekStart, WeightUnit } from '@/types/profile';
 import { USERNAME_PATTERN } from '@/utils/profile';
 
-const props = defineProps<{ profile: DeepReadonly<UserProfile>; isSaving: boolean }>();
+const props = defineProps<{ profile: DeepReadonly<UserProfile>; isSaving: boolean; usernameError?: string | null }>();
 
 const emit = defineEmits<{ save: [profile: UserProfile] }>();
 
@@ -33,6 +33,9 @@ const isDirty = computed(() =>
 );
 
 const usernameValid = computed(() => USERNAME_PATTERN.test(draft.username));
+const visibleUsernameError = computed(() =>
+  props.usernameError && draft.username !== props.profile.username ? props.usernameError : null,
+);
 
 function reset(): void {
   Object.assign(draft, props.profile);
@@ -63,7 +66,7 @@ const label = 'mb-1 block text-xs text-zinc-400';
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <label for="profile-name" :class="label">Display name</label>
-            <input id="profile-name" v-model="draft.displayName" type="text" maxlength="60" :class="field" />
+            <input id="profile-name" v-model="draft.displayName" type="text" maxlength="80" :class="field" />
           </div>
           <div>
             <label for="profile-username" :class="label">Username</label>
@@ -76,13 +79,17 @@ const label = 'mb-1 block text-xs text-zinc-400';
                 maxlength="30"
                 autocomplete="off"
                 spellcheck="false"
-                :aria-invalid="!usernameValid"
+                :aria-invalid="!usernameValid || Boolean(visibleUsernameError)"
                 aria-describedby="profile-username-hint"
                 :class="[field, 'pl-7']"
               />
             </div>
-            <p id="profile-username-hint" class="mt-1 text-xs" :class="usernameValid ? 'text-zinc-500' : 'text-red-400'">
-              3 to 30 characters: lowercase letters, digits, dots and underscores.
+            <p
+              id="profile-username-hint"
+              class="mt-1 text-xs"
+              :class="usernameValid && !visibleUsernameError ? 'text-zinc-500' : 'text-red-400'"
+            >
+              {{ visibleUsernameError ?? '3 to 30 characters: lowercase letters, digits, dots and underscores.' }}
             </p>
           </div>
         </div>
@@ -95,7 +102,7 @@ const label = 'mb-1 block text-xs text-zinc-400';
 
         <div class="sm:max-w-xs">
           <label for="profile-location" :class="label">Location</label>
-          <input id="profile-location" v-model="draft.location" type="text" maxlength="60" :class="field" />
+          <input id="profile-location" v-model="draft.location" type="text" maxlength="80" :class="field" />
         </div>
       </section>
 
@@ -120,7 +127,7 @@ const label = 'mb-1 block text-xs text-zinc-400';
               :value="draft.bodyweightKg ?? ''"
               type="number"
               min="20"
-              max="300"
+              max="400"
               step="0.1"
               :class="field"
               @input="draft.bodyweightKg = toNumber(($event.target as HTMLInputElement).value)"

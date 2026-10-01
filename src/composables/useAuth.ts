@@ -45,6 +45,14 @@ function start(session: AuthSession, remember: boolean): void {
   user.value = session.user;
 }
 
+function rememberUser(next: AuthUser): void {
+  const session = loadSession();
+  if (session) {
+    saveSession({ ...session, user: next }, isRememberedSession());
+  }
+  user.value = next;
+}
+
 function signOut(): void {
   clearSession();
   user.value = null;
@@ -75,6 +83,7 @@ export interface UseAuth {
   signOut: () => void;
   restore: () => Promise<void>;
   changeEmail: (email: string, currentPassword: string) => Promise<void>;
+  updateUser: (changes: Partial<Pick<AuthUser, 'displayName' | 'username'>>) => void;
   changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
   requestPasswordReset: (email: string) => Promise<void>;
   resetPassword: (token: string, password: string) => Promise<boolean>;
@@ -108,13 +117,13 @@ export function useAuth(): UseAuth {
     restore,
     changeEmail: (email, currentPassword) =>
       submitting(async () => {
-        const updated = await apiPatch<AuthUser>('/auth/me/email', { email, currentPassword });
-        const session = loadSession();
-        if (session) {
-          saveSession({ ...session, user: updated }, isRememberedSession());
-        }
-        user.value = updated;
+        rememberUser(await apiPatch<AuthUser>('/auth/me/email', { email, currentPassword }));
       }),
+    updateUser: (changes) => {
+      if (user.value) {
+        rememberUser({ ...user.value, ...changes });
+      }
+    },
     changePassword: (currentPassword, newPassword) =>
       submitting(async () => {
         const remember = isRememberedSession();

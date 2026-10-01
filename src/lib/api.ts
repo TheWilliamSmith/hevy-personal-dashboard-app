@@ -103,7 +103,8 @@ interface RequestOptions {
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const auth = authHeaders();
   const headers: Record<string, string> = { ...auth };
-  if (options.body !== undefined) {
+  const isForm = options.body instanceof FormData;
+  if (options.body !== undefined && !isForm) {
     headers['Content-Type'] = 'application/json';
   }
 
@@ -112,7 +113,7 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
     response = await fetch(apiUrl(path) + buildQuery(options.params ?? {}), {
       method: options.method,
       headers,
-      body: options.body === undefined ? undefined : JSON.stringify(options.body),
+      body: options.body === undefined ? undefined : isForm ? (options.body as FormData) : JSON.stringify(options.body),
       signal: options.signal,
       cache: options.cache,
     });
@@ -138,6 +139,10 @@ export function apiGet<T>(path: string, params: QueryParams = {}, signal?: Abort
 
 export function apiPost<T>(path: string, body: unknown, signal?: AbortSignal): Promise<T> {
   return request<T>(path, { method: 'POST', body, signal });
+}
+
+export function apiUpload<T>(path: string, form: FormData, signal?: AbortSignal): Promise<T> {
+  return request<T>(path, { method: 'POST', body: form, signal });
 }
 
 export function apiPatch<T>(path: string, body: unknown, signal?: AbortSignal): Promise<T> {

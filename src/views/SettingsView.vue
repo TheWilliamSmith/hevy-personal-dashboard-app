@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import { computed, defineAsyncComponent } from 'vue';
+import { computed, defineAsyncComponent, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 import AccountSecurity from '@/components/profile/AccountSecurity.vue';
 import ProfileForm from '@/components/profile/ProfileForm.vue';
 import ProfileHeader from '@/components/profile/ProfileHeader.vue';
+import SectionError from '@/components/ui/SectionError.vue';
 import SegmentedControl, { type SegmentedOption } from '@/components/ui/SegmentedControl.vue';
 import { useAuth } from '@/composables/useAuth';
 import { useProfile } from '@/composables/useProfile';
 import { useToasts } from '@/composables/useToasts';
+import { ApiError } from '@/lib/api';
 import type { UserProfile } from '@/types/profile';
 
 const DataPanel = defineAsyncComponent(() => import('@/views/DataView.vue'));
@@ -23,7 +25,9 @@ const SECTIONS: ReadonlyArray<SegmentedOption<Section>> = [
 
 const route = useRoute();
 const router = useRouter();
-const { profile, stats, isSaving, save } = useProfile();
+const profileState = useProfile();
+const { profile, stats, isSaving } = profileState;
+const usernameError = ref<string | null>(null);
 const auth = useAuth();
 const { push } = useToasts();
 
@@ -40,9 +44,50 @@ function setSection(next: Section): void {
   void router.replace({ name: 'home', query: { tab: 'settings', ...(next === 'profile' ? {} : { section: next }) } });
 }
 
+function messageOf(caught: unknown): string {
+  return caught instanceof ApiError ? caught.message : 'Something went wrong. Try again.';
+}
+
 async function onSave(next: UserProfile): Promise<void> {
-  await save(next);
-  push({ tone: 'success', title: 'Profile saved', description: 'Demo mode: changes last until you reload the page.' });
+  usernameError.value = null;
+  try {
+    await profileState.save({
+      displayName: next.displayName,
+      username: next.username,
+      bio: next.bio,
+      location: next.location,
+      weightUnit: next.weightUnit,
+      weekStart: next.weekStart,
+      bodyweightKg: next.bodyweightKg,
+      heightCm: next.heightCm,
+    });
+    push({ tone: 'success', title: 'Profile saved' });
+  } catch (caught) {
+    const field = caught instanceof ApiError ? (caught.body as { field?: unknown } | null)?.field : null;
+    if (field === 'username') {
+      usernameError.value = messageOf(caught);
+      return;
+    }
+    push({ tone: 'error', title: 'Could not save your profile', description: messageOf(caught) });
+  }
+}
+
+async function onUpload(file: File): Promise<void> {
+  try {
+    await profileState.uploadAvatar(file);
+    push({ tone: 'success', title: 'Profile picture updated' });
+  } catch (caught) {
+    push({ tone: 'error', title: 'Could not update the picture', description: messageOf(caught) });
+  }
+}
+
+async function onRemoveAvatar(): Promise<void> {
+  try {
+    await profileState.removeAvatar();
+    push({ tone: 'success', title: 'Profile picture removed' });
+  } catch (caught) {
+    push({ tone: 'error', title: 'Could not remove the picture', description: messageOf(caught) });
+  }
 }
 </script>
 
@@ -54,8 +99,23 @@ async function onSave(next: UserProfile): Promise<void> {
 
     <div v-if="section === 'profile'" class="px-4 pb-10 sm:px-6">
       <div class="flex flex-col gap-10 pt-6">
-        <ProfileHeader :profile="profile" :stats="stats" />
-        <ProfileForm :profile="profile" :is-saving="isSaving" @save="onSave" />
+        <SectionError v-if="profileState.error.value" :message="profileState.error.value" @retry="profileState.load" />
+        <template v-if="profile">
+          <ProfileHeader
+            :profile="profile"
+            :stats="stats"
+            :is-saving="isSaving"
+            @upload="onUpload"
+            @remove="onRemoveAvatar"
+          />
+          <ProfileForm
+            :key="profileState.hasLoaded.value ? 'loaded' : 'pending'"
+            :profile="profile"
+            :is-saving="isSaving || !profileState.hasLoaded.value"
+            :username-error="usernameError"
+            @save="onSave"
+          />
+        </template>
       </div>
     </div>
 

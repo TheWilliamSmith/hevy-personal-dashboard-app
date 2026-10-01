@@ -128,6 +128,7 @@ const iconButton =
 
     <div class="shrink-0 border-t border-zinc-800 p-3">
       <RouterLink
+        v-if="profile"
         :to="linkTo('settings')"
         class="flex items-center gap-3 rounded-md p-1.5 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400"
         :class="[tab === 'settings' ? 'bg-zinc-800' : 'hover:bg-zinc-900', { 'lg:justify-center': collapsed }]"
