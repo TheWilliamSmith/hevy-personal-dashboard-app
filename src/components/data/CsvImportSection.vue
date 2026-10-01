@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { computed, ref } from 'vue';
 
 import DeleteBatchDialog from '@/components/imports/DeleteBatchDialog.vue';
@@ -53,18 +54,22 @@ async function onConfirm(): Promise<void> {
   if (result.divergedFromPreview) {
     push({
       tone: 'warning',
-      title: 'Imported, but the preview was out of date',
-      description:
-        `Your data changed between the preview and the import, so the final numbers differ: ` +
-        `${formatInteger(result.workoutsCreated)} workouts and ${formatInteger(result.setsCreated)} sets created.`,
+      title: t('data.csv.diverged'),
+      description: t('data.csv.divergedDescription', {
+        workouts: formatInteger(result.workoutsCreated),
+        sets: formatInteger(result.setsCreated),
+      }),
     });
     return;
   }
 
   push({
     tone: 'success',
-    title: `Imported ${formatInteger(result.workoutsCreated)} workouts`,
-    description: `${formatInteger(result.setsCreated)} sets created, ${formatInteger(result.workoutsSkipped)} already present.`,
+    title: t('data.csv.imported', { count: formatInteger(result.workoutsCreated) }),
+    description: t('data.csv.importedDescription', {
+      sets: formatInteger(result.setsCreated),
+      skipped: formatInteger(result.workoutsSkipped),
+    }),
   });
 }
 
@@ -88,10 +93,13 @@ async function onDeleteConfirmed(deleteWorkouts: boolean): Promise<void> {
 
   push({
     tone: 'success',
-    title: deleteWorkouts ? 'Import and workouts deleted' : 'Import record deleted',
+    title: deleteWorkouts ? t('data.csv.deletedAll') : t('data.csv.deletedRecord'),
     description: deleteWorkouts
-      ? `${formatInteger(rolled.workoutsDeleted)} workouts and ${formatInteger(rolled.setsDeleted)} sets removed.`
-      : `${formatInteger(rolled.workoutsKept)} workouts kept.`,
+      ? t('data.csv.deletedAllDescription', {
+          workouts: formatInteger(rolled.workoutsDeleted),
+          sets: formatInteger(rolled.setsDeleted),
+        })
+      : t('data.csv.deletedRecordDescription', { count: formatInteger(rolled.workoutsKept) }),
   });
 }
 </script>
@@ -99,11 +107,9 @@ async function onDeleteConfirmed(deleteWorkouts: boolean): Promise<void> {
 <template>
   <div class="flex flex-col gap-10">
     <section class="flex flex-col gap-4">
-      <SectionHeader title="CSV import" subtitle="Import a Hevy export by hand" />
+      <SectionHeader :title="t('data.csv.title')" :subtitle="t('data.csv.subtitle')" />
       <p class="max-w-prose text-sm text-zinc-400">
-        Use this for a one-off import, or to keep your data current by hand if your Hevy
-        subscription lapses and the connection stops syncing. A preview shows what will be added
-        before anything is written.
+        {{ t('data.csv.intro') }}
       </p>
       <HevyImportButton
         ref="importButton"

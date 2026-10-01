@@ -1,3 +1,4 @@
+import { t } from '@/i18n';
 import { computed, readonly, ref, type ComputedRef, type DeepReadonly, type Ref } from 'vue';
 
 import { ApiError, apiDelete, apiGet, apiPost } from '@/lib/api';
@@ -35,22 +36,22 @@ function stopPolling(): void {
 
 function connectErrorFor(caught: unknown): ConnectHevyError {
   if (!(caught instanceof ApiError)) {
-    return { kind: 'unknown', message: 'Something went wrong.' };
+    return { kind: 'unknown', message: t('errors.generic') };
   }
   if (caught.status === null) {
-    return { kind: 'network', message: 'Could not reach the server. Check your connection.' };
+    return { kind: 'network', message: t('errors.network') };
   }
   if (caught.status === 401 || caught.status === 403) {
-    return { kind: 'rejected', message: 'Hevy rejected this key. Check it and try again.' };
+    return { kind: 'rejected', message: t('errors.hevyRejected') };
   }
   if (caught.status === 402) {
     return {
       kind: 'not-pro',
-      message: 'This account is not on Hevy Pro. The Hevy API requires a Pro subscription.',
+      message: t('errors.hevyNotPro'),
     };
   }
   if (caught.status === 400 || caught.status === 422) {
-    return { kind: 'invalid-format', message: 'That key is not in the expected format.' };
+    return { kind: 'invalid-format', message: t('errors.hevyKeyFormat') };
   }
   return { kind: 'unknown', message: caught.message };
 }
@@ -63,7 +64,7 @@ async function fetchConnection(): Promise<void> {
     const response = await apiGet<HevyConnectionState>('/hevy/connection');
     state.value = response;
   } catch (caught) {
-    loadError.value = caught instanceof ApiError ? caught.message : 'Something went wrong.';
+    loadError.value = caught instanceof ApiError ? caught.message : t('errors.generic');
   } finally {
     isLoading.value = false;
   }
@@ -83,7 +84,7 @@ async function pollRun(id: string): Promise<void> {
     }
   } catch (caught) {
     stopPolling();
-    syncError.value = caught instanceof ApiError ? caught.message : 'Something went wrong.';
+    syncError.value = caught instanceof ApiError ? caught.message : t('errors.generic');
   }
 }
 
@@ -106,7 +107,7 @@ async function attachToRunningRun(): Promise<void> {
     }
     syncError.value = 'A sync is already running, but it could not be found. Try again in a moment.';
   } catch (caught) {
-    syncError.value = caught instanceof ApiError ? caught.message : 'Something went wrong.';
+    syncError.value = caught instanceof ApiError ? caught.message : t('errors.generic');
   }
 }
 
@@ -137,7 +138,7 @@ async function disconnect(): Promise<boolean> {
     state.value = { connected: false };
     return true;
   } catch (caught) {
-    disconnectError.value = caught instanceof ApiError ? caught.message : 'Something went wrong.';
+    disconnectError.value = caught instanceof ApiError ? caught.message : t('errors.generic');
     return false;
   } finally {
     isDisconnecting.value = false;
@@ -156,7 +157,7 @@ async function sync(full: boolean): Promise<void> {
       await attachToRunningRun();
       return;
     }
-    syncError.value = caught instanceof ApiError ? caught.message : 'Something went wrong.';
+    syncError.value = caught instanceof ApiError ? caught.message : t('errors.generic');
   }
 }
 

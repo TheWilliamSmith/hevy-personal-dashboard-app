@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { ChevronLeft, ChevronRight } from 'lucide-vue-next';
 
 import type { PaginationMeta } from '@/types/workouts';
@@ -14,11 +15,11 @@ const button =
   <nav class="flex items-center justify-between gap-4" :aria-label="label">
     <button type="button" :class="button" :disabled="meta.page <= 1" @click="emit('change', meta.page - 1)">
       <ChevronLeft class="h-4 w-4" aria-hidden="true" />
-      Previous
+      {{ t('common.previous') }}
     </button>
 
     <p class="text-xs text-zinc-400 tabular-nums">
-      Page {{ meta.page }} of {{ meta.totalPages }}
+      {{ t('common.pageOf', { page: meta.page, total: meta.totalPages }) }}
       <span class="text-zinc-500">· {{ meta.total }} {{ unit }}</span>
     </p>
 
@@ -28,7 +29,7 @@ const button =
       :disabled="meta.page >= meta.totalPages"
       @click="emit('change', meta.page + 1)"
     >
-      Next
+      {{ t('common.next') }}
       <ChevronRight class="h-4 w-4" aria-hidden="true" />
     </button>
   </nav>

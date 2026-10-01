@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
+import { setLocale } from '@/i18n';
 import { EMPTY } from '@/utils/format';
 import {
   formatDaysAgo,
@@ -10,10 +11,13 @@ import {
   gapToBestPct,
 } from '@/utils/progress';
 
+beforeEach(() => setLocale('fr'));
+afterEach(() => setLocale('en'));
+
 describe('formatMetricValue', () => {
   it('renders each metric in its own unit', () => {
     expect(formatMetricValue('est1RM', 87.5)).toBe('87,5 kg');
-    expect(formatMetricValue('totalReps', 24)).toBe('24 reps');
+    expect(formatMetricValue('totalReps', 24)).toBe('24 rép.');
     expect(formatMetricValue('distancePerMinute', 0.183)).toBe('0,183 km/min');
     expect(formatMetricValue('longestHoldSeconds', 90)).toBe('1:30');
     expect(formatMetricValue('longestHoldSeconds', 45)).toBe('45 s');
@@ -26,9 +30,9 @@ describe('formatMetricValue', () => {
 
 describe('formatSlope', () => {
   it('signs the slope', () => {
-    expect(formatSlope(1.2)).toBe('+1,2 %/week');
-    expect(formatSlope(-0.8)).toBe('-0,8 %/week');
-    expect(formatSlope(0)).toBe('+0 %/week');
+    expect(formatSlope(1.2)).toBe('+1,2 %/sem.');
+    expect(formatSlope(-0.8)).toBe('-0,8 %/sem.');
+    expect(formatSlope(0)).toBe('+0 %/sem.');
   });
 
   it('renders a missing slope as an em dash', () => {
@@ -38,27 +42,35 @@ describe('formatSlope', () => {
 
 describe('formatGapToBest', () => {
   it('rounds the gap and says so when at best', () => {
-    expect(formatGapToBest(-4.2)).toBe('-4 % vs best');
-    expect(formatGapToBest(0)).toBe('at best');
-    expect(formatGapToBest(-0.3)).toBe('at best');
+    expect(formatGapToBest(-4.2)).toBe('-4 % vs meilleur');
+    expect(formatGapToBest(0)).toBe('au meilleur');
+    expect(formatGapToBest(-0.3)).toBe('au meilleur');
   });
 });
 
 describe('relative time', () => {
   it('reads naturally for days', () => {
-    expect(formatDaysAgo(0)).toBe('today');
-    expect(formatDaysAgo(1)).toBe('yesterday');
-    expect(formatDaysAgo(5)).toBe('5 days ago');
+    expect(formatDaysAgo(0)).toBe('aujourd’hui');
+    expect(formatDaysAgo(1)).toBe('hier');
+    expect(formatDaysAgo(5)).toBe('il y a 5 jours');
   });
 
   it('switches to weeks after two weeks', () => {
-    expect(formatDaysAgo(21)).toBe('3 weeks ago');
+    expect(formatDaysAgo(21)).toBe('il y a 3 semaines');
   });
 
   it('singularises one week', () => {
+    expect(formatWeeksAgo(1)).toBe('il y a 1 semaine');
+    expect(formatWeeksAgo(9)).toBe('il y a 9 semaines');
+    expect(formatWeeksAgo(0)).toBe('cette semaine');
+  });
+
+  it('speaks English once the locale is switched', () => {
+    setLocale('en');
+    expect(formatDaysAgo(1)).toBe('yesterday');
     expect(formatWeeksAgo(1)).toBe('1 week ago');
     expect(formatWeeksAgo(9)).toBe('9 weeks ago');
-    expect(formatWeeksAgo(0)).toBe('this week');
+    expect(formatSlope(1.2)).toBe('+1.2 %/week');
   });
 
   it('renders null as an em dash', () => {

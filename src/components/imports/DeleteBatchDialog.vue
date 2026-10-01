@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { computed, ref, watch } from 'vue';
 
 import BaseDialog from '@/components/ui/BaseDialog.vue';
@@ -45,22 +46,31 @@ const workoutsAtRisk = computed(() => props.batch?.workoutsStillPresent ?? 0);
     @close="emit('cancel')"
   >
     <header class="border-b border-zinc-800 px-5 py-4">
-      <h2 id="delete-batch-title" class="text-base font-semibold text-white">Delete import</h2>
+      <h2 id="delete-batch-title" class="text-base font-semibold text-white">{{ t('imports.delete.title') }}</h2>
       <p class="mt-0.5 truncate text-sm text-zinc-500">{{ props.batch?.fileName }}</p>
     </header>
 
     <div class="min-h-0 flex-1 overflow-y-auto px-5 py-4">
-      <p v-if="deleteWorkouts && workoutsAtRisk > 0" class="rounded-md border border-red-900/60 bg-red-950/40 px-3 py-2 text-sm text-red-200">
-        This will permanently delete
-        <strong>{{ formatInteger(workoutsAtRisk) }} workouts</strong>
-        and <strong>{{ formatInteger(setsAtRisk) }} sets</strong>. This cannot be undone.
-      </p>
+      <i18n-t
+        v-if="deleteWorkouts && workoutsAtRisk > 0"
+        keypath="imports.delete.warning"
+        tag="p"
+        scope="global"
+        class="rounded-md border border-red-900/60 bg-red-950/40 px-3 py-2 text-sm text-red-200"
+      >
+        <template #workouts>
+          <strong>{{ t('imports.delete.workouts', { count: formatInteger(workoutsAtRisk) }) }}</strong>
+        </template>
+        <template #sets>
+          <strong>{{ t('imports.delete.sets', { count: formatInteger(setsAtRisk) }) }}</strong>
+        </template>
+      </i18n-t>
       <p v-else class="text-sm text-zinc-300">
-        This removes the import record only. The workouts it created stay in your data.
+        {{ t('imports.delete.recordOnly') }}
       </p>
 
       <fieldset class="mt-4">
-        <legend class="text-xs text-zinc-400">What should happen</legend>
+        <legend class="text-xs text-zinc-400">{{ t('imports.delete.what') }}</legend>
 
         <label class="mt-2 flex items-start gap-2 text-sm text-zinc-100">
           <input
@@ -71,9 +81,9 @@ const workoutsAtRisk = computed(() => props.batch?.workoutsStillPresent ?? 0);
             class="mt-1 accent-red-500"
           />
           <span>
-            Delete the import and its workouts
+            {{ t('imports.delete.deleteAll') }}
             <span class="block text-xs text-zinc-500">
-              Removes {{ formatInteger(workoutsAtRisk) }} workouts and their sets.
+              {{ t('imports.delete.deleteAllHint', { count: formatInteger(workoutsAtRisk) }) }}
             </span>
           </span>
         </label>
@@ -87,18 +97,20 @@ const workoutsAtRisk = computed(() => props.batch?.workoutsStillPresent ?? 0);
             class="mt-1 accent-red-500"
           />
           <span>
-            Delete only the import record, keep the workouts
+            {{ t('imports.delete.deleteRecord') }}
             <span class="block text-xs text-zinc-500">
-              The workouts stay but are no longer attributed to any import.
+              {{ t('imports.delete.deleteRecordHint') }}
             </span>
           </span>
         </label>
       </fieldset>
 
       <div v-if="needsTypedName" class="mt-4">
-        <label for="confirm-file-name" class="block text-xs text-zinc-400">
-          Type <span class="font-mono text-zinc-100">{{ props.batch?.fileName }}</span> to confirm
-        </label>
+        <i18n-t keypath="imports.delete.typeToConfirm" tag="label" scope="global" for="confirm-file-name" class="block text-xs text-zinc-400">
+          <template #name>
+            <span class="font-mono text-zinc-100">{{ props.batch?.fileName }}</span>
+          </template>
+        </i18n-t>
         <input
           id="confirm-file-name"
           v-model="typedName"
@@ -121,7 +133,7 @@ const workoutsAtRisk = computed(() => props.batch?.workoutsStillPresent ?? 0);
         :disabled="props.isDeleting"
         @click="emit('cancel')"
       >
-        Cancel
+        {{ t('common.cancel') }}
       </button>
       <button
         type="button"
@@ -135,7 +147,7 @@ const workoutsAtRisk = computed(() => props.batch?.workoutsStillPresent ?? 0);
           class="h-3.5 w-3.5 animate-spin rounded-full border-2 border-current/30 border-t-current"
           aria-hidden="true"
         />
-        {{ deleteWorkouts ? 'Delete workouts' : 'Delete record' }}
+        {{ deleteWorkouts ? t('imports.delete.deleteWorkouts') : t('imports.delete.deleteRecordButton') }}
       </button>
     </footer>
   </BaseDialog>

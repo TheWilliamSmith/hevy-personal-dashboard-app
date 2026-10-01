@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
+import { setLocale } from '@/i18n';
 import {
   EMPTY,
   formatBucket,
@@ -11,11 +12,15 @@ import {
   formatNumber,
   formatPace,
   formatPercent,
+  formatRelativeTime,
   formatVolume,
   formatWeight,
   percentChange,
   toNumber,
 } from '@/utils/format';
+
+beforeEach(() => setLocale('fr'));
+afterEach(() => setLocale('en'));
 
 describe('formatDate', () => {
   it('formats an ISO string in fr-FR', () => {
@@ -222,5 +227,30 @@ describe('formatBucket', () => {
 
   it('renders an invalid bucket as an em dash', () => {
     expect(formatBucket('not-a-date', 'day')).toBe(EMPTY);
+  });
+});
+
+describe('in English', () => {
+  beforeEach(() => setLocale('en'));
+
+  it('formats numbers with English separators', () => {
+    expect(formatVolume(14530.5)).toBe('14,530.5 kg');
+    expect(formatNumber('7.5')).toBe('7.5');
+    expect(formatPercent(18.44)).toBe('+18.4 %');
+  });
+
+  it('formats dates in English', () => {
+    expect(formatDay('2026-09-10T15:03:00.000Z')).toBe('10 Sept 2026');
+  });
+
+  it('says how long ago in English', () => {
+    expect(formatRelativeTime(new Date(Date.now() - 3 * 60 * 1000))).toBe('3 minutes ago');
+    expect(formatRelativeTime(new Date(Date.now() - 60 * 60 * 1000))).toBe('1 hour ago');
+  });
+
+  it('switches to French with the locale', () => {
+    setLocale('fr');
+    expect(formatVolume(14530.5)).toBe('14 530,5 kg');
+    expect(formatRelativeTime(new Date(Date.now() - 3 * 60 * 1000))).toBe('il y a 3 minutes');
   });
 });

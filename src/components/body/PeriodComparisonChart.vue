@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import type { EChartsOption } from 'echarts';
 import { computed } from 'vue';
 
@@ -35,8 +36,8 @@ const option = computed<EChartsOption>(() => ({
       }
       return [
         `<strong>${MUSCLE_LABELS[muscle]}</strong>`,
-        `This period: ${props.format(props.heatmap.values[muscle])}`,
-        `Previous: ${props.format(props.heatmap.previous[muscle])}`,
+        t('body.thisPeriodValue', { value: props.format(props.heatmap.values[muscle]) }),
+        t('body.previousValue', { value: props.format(props.heatmap.previous[muscle]) }),
       ].join('<br/>');
     },
   },
@@ -56,7 +57,7 @@ const option = computed<EChartsOption>(() => ({
   },
   series: [
     {
-      name: 'Previous period',
+      name: t('body.previousPeriod'),
       type: 'bar',
       barGap: '20%',
       barMaxWidth: 8,
@@ -64,7 +65,7 @@ const option = computed<EChartsOption>(() => ({
       data: rows.value.map((muscle) => props.heatmap.previous[muscle]),
     },
     {
-      name: 'This period',
+      name: t('body.thisPeriod'),
       type: 'bar',
       barMaxWidth: 8,
       itemStyle: { color: CURRENT_COLOR, borderRadius: 4 },
@@ -79,15 +80,15 @@ const option = computed<EChartsOption>(() => ({
     <div class="flex items-center gap-4 text-xs text-zinc-400" aria-hidden="true">
       <span class="flex items-center gap-1.5">
         <span class="h-2.5 w-2.5 rounded-[3px] bg-blue-500" />
-        This period
+        {{ t('body.thisPeriod') }}
       </span>
       <span class="flex items-center gap-1.5">
         <span class="h-2.5 w-2.5 rounded-[3px] bg-zinc-600" />
-        Previous period
+        {{ t('body.previousPeriod') }}
       </span>
     </div>
     <div class="relative min-h-0 flex-1">
-      <BaseChart :option="option" :aria-label="`${muscles.length} muscle groups, this period against the previous one`" />
+      <BaseChart :option="option" :aria-label="t('body.comparisonLabel', { count: muscles.length })" />
     </div>
   </div>
 </template>

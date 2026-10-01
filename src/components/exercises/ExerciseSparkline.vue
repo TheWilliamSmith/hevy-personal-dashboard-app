@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import Sparkline from '@/components/charts/Sparkline.vue';
 import type { ExerciseTrend } from '@/types/exercises';
 
@@ -27,10 +28,10 @@ const ARROWS: Readonly<Record<ExerciseTrend, string>> = {
 };
 
 const TREND_LABELS: Readonly<Record<ExerciseTrend, string>> = {
-  up: 'Trending up',
-  down: 'Trending down',
-  flat: 'Flat',
-  insufficient_data: 'Not enough sessions to show a trend',
+  up: 'exercises.trendUp',
+  down: 'exercises.trendDown',
+  flat: 'exercises.trendFlat',
+  insufficient_data: 'exercises.trendNone',
 };
 </script>
 
@@ -41,12 +42,12 @@ const TREND_LABELS: Readonly<Record<ExerciseTrend, string>> = {
       :color="TREND_COLORS[props.trend]"
       :width="props.width"
       :height="props.height"
-      :label="`${TREND_LABELS[props.trend]}, last ${props.points.length} sessions`"
+      :label="t('exercises.trendLabel', { trend: t(TREND_LABELS[props.trend]), count: props.points.length })"
     />
     <span
       class="text-xs"
       :style="{ color: TREND_COLORS[props.trend] }"
-      :title="TREND_LABELS[props.trend]"
+      :title="t(TREND_LABELS[props.trend])"
       aria-hidden="true"
     >
       {{ ARROWS[props.trend] }}

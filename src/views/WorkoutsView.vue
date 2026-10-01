@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -51,15 +52,14 @@ const backQuery = computed<Record<string, string>>(() => {
 
 const listSubtitle = computed(() => {
   if (!meta.value) {
-    return 'Newest first';
+    return t('workouts.newestFirst');
   }
-  const scope = hasActiveFilters.value ? 'matching the filters' : 'in total';
-  return `${meta.value.total} workouts ${scope} · newest first`;
+  return t(hasActiveFilters.value ? 'workouts.listMatching' : 'workouts.listTotal', { count: meta.value.total });
 });
 
 const statusMessage = computed(() => {
   if (isLoading.value) {
-    return 'Loading workouts…';
+    return t('workouts.loading');
   }
   if (error.value) {
     return error.value;
@@ -67,7 +67,7 @@ const statusMessage = computed(() => {
   if (!meta.value) {
     return '';
   }
-  return `Page ${meta.value.page} of ${meta.value.totalPages}, ${meta.value.total} workouts`;
+  return t('workouts.status', { page: meta.value.page, total: meta.value.totalPages, count: meta.value.total });
 });
 
 function openWorkout(id: string): void {
@@ -95,7 +95,7 @@ function openWorkout(id: string): void {
       </div>
 
       <section class="flex flex-col gap-5">
-        <SectionHeader title="All workouts" :subtitle="listSubtitle" />
+        <SectionHeader :title="t('workouts.all')" :subtitle="listSubtitle" />
 
         <WorkoutFiltersBar
           :filters="filters"
@@ -116,16 +116,16 @@ function openWorkout(id: string): void {
 
           <SectionError v-else-if="error" :message="error" @retry="retry" />
 
-          <EmptyState v-else-if="workouts.length === 0 && hasActiveFilters" message="No workouts match these filters.">
+          <EmptyState v-else-if="workouts.length === 0 && hasActiveFilters" :message="t('workouts.noMatch')">
             <button
               type="button"
               class="text-sm font-medium text-zinc-200 underline decoration-zinc-600 underline-offset-2"
               @click="clearFilters"
             >
-              Clear filters
+              {{ t('common.clearFilters') }}
             </button>
           </EmptyState>
-          <EmptyState v-else-if="workouts.length === 0" import-link message="No workouts yet." />
+          <EmptyState v-else-if="workouts.length === 0" import-link :message="t('workouts.none')" />
 
           <ul v-else :class="{ 'opacity-60 transition-opacity': isLoading }">
             <WorkoutRow v-for="workout in workouts" :key="workout.id" :workout="workout" :back-query="backQuery" />
@@ -135,8 +135,8 @@ function openWorkout(id: string): void {
         <Pagination
           v-if="meta && meta.totalPages > 1 && !error"
           :meta="meta"
-          label="Workouts pagination"
-          unit="workouts"
+          :label="t('workouts.pagination')"
+          :unit="t('workouts.unit')"
           @change="goToPage"
         />
       </section>

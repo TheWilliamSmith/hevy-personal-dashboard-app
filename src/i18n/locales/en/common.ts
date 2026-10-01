@@ -1,0 +1,76 @@
+export const common = {
+  appName: 'Hevy Dashboard',
+  retry: 'Retry',
+  cancel: 'Cancel',
+  close: 'Close',
+  save: 'Save',
+  delete: 'Delete',
+  edit: 'Edit',
+  previous: 'Previous',
+  next: 'Next',
+  pageOf: 'Page {page} of {total}',
+  dismissNotification: 'Dismiss notification',
+  connectOrImport: 'Connect Hevy or import a CSV export',
+  somethingWrong: 'Something went wrong. Try again.',
+  clearFilters: 'Clear filters',
+  loading: 'Loading…',
+};
+
+export const nav = {
+  dashboard: 'Dashboard',
+  body: 'Body',
+  progress: 'Progress',
+  goals: 'Goals',
+  trophies: 'Trophies',
+  workouts: 'Workouts',
+  exercises: 'Exercises',
+  settings: 'Settings',
+  mainNavigation: 'Main navigation',
+  expandSidebar: 'Expand sidebar',
+  collapseSidebar: 'Collapse sidebar',
+  closeMenu: 'Close menu',
+  openMenu: 'Open menu',
+  profileAndSettings: 'Profile and settings',
+};
+
+export const ranges = {
+  period: 'Period',
+  '30d': '30 days',
+  '3m': '3 months',
+  '6m': '6 months',
+  '1y': '1 year',
+  all: 'All',
+  short30d: '30D',
+  short3m: '3M',
+  short6m: '6M',
+  short1y: '1Y',
+  shortAll: 'All',
+  day: 'Day',
+  week: 'Week',
+  month: 'Month',
+  last: 'Last {range}',
+  allTime: 'All time',
+};
+
+export const format = {
+  justNow: 'just now',
+  minutesAgo: '{count} minute ago | {count} minutes ago',
+  hoursAgo: '{count} hour ago | {count} hours ago',
+  daysAgo: '{count} day ago | {count} days ago',
+  signedPercent: '{sign}{value} %',
+};
+
+export const sync = {
+  hevy: 'Hevy',
+  connectHevy: 'Connect Hevy',
+  hevyConnected: 'Hevy connected',
+  checking: 'Checking the connection…',
+  pitch: 'Sync your workouts automatically with your Hevy Pro API key.',
+  inProgress: 'Sync in progress…',
+  needsAttention: 'Last sync needs attention.',
+  syncedAgo: 'Synced {when}.',
+  neverSynced: 'Never synced yet.',
+  syncing: 'Syncing…',
+  syncNow: 'Sync now',
+  connect: 'Connect',
+};

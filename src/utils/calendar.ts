@@ -1,3 +1,5 @@
+import { dateFormat } from './format';
+
 export interface CalendarCell {
   date: string;
   workouts: number;
@@ -12,8 +14,6 @@ export interface CalendarGrid {
 }
 
 const DAY_MS = 24 * 60 * 60 * 1000;
-
-const MONTH_FORMATTER = new Intl.DateTimeFormat('en-US', { month: 'short', timeZone: 'UTC' });
 
 function isoDay(date: Date): string {
   return date.toISOString().slice(0, 10);
@@ -51,12 +51,12 @@ export function buildCalendarGrid(
     const monday = new Date(firstMonday.getTime() + week * 7 * DAY_MS);
     const previousMonday = new Date(monday.getTime() - 7 * DAY_MS);
     if (week > 0 && monday.getUTCMonth() !== previousMonday.getUTCMonth()) {
-      monthLabels.push({ week, label: MONTH_FORMATTER.format(monday) });
+      monthLabels.push({ week, label: dateFormat({ month: 'short', timeZone: 'UTC' }).format(monday) });
     }
   }
 
   if ((monthLabels[0]?.week ?? weekCount) >= 3) {
-    monthLabels.unshift({ week: 0, label: MONTH_FORMATTER.format(firstMonday) });
+    monthLabels.unshift({ week: 0, label: dateFormat({ month: 'short', timeZone: 'UTC' }).format(firstMonday) });
   }
 
   return { weeks, monthLabels, from: isoDay(firstMonday), to: isoDay(end) };

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { computed } from 'vue';
 import { RouterLink } from 'vue-router';
 
@@ -21,14 +22,14 @@ const needingAttention = computed(() =>
 
 function detail(item: ProgressItem): string {
   return item.status === 'STALE'
-    ? `last done ${formatDaysAgo(item.daysSinceLast)}`
+    ? t('progress.attention.lastDone', { when: formatDaysAgo(item.daysSinceLast) })
     : formatSlope(item.slopePctPerWeek);
 }
 </script>
 
 <template>
   <section class="flex h-full flex-col gap-4">
-    <SectionHeader title="Needs attention" subtitle="Regressing, on a plateau or not done lately" />
+    <SectionHeader :title="t('progress.attention.title')" :subtitle="t('progress.attention.subtitle')" />
 
     <div>
       <p
@@ -38,11 +39,11 @@ function detail(item: ProgressItem): string {
         {{ formatInteger(needingAttention) }}
       </p>
       <p class="mt-2 max-w-xs text-sm text-zinc-400">
-        <template v-if="needingAttention === 0 && total > 0">Every assessed exercise is moving or waiting for data.</template>
+        <template v-if="needingAttention === 0 && total > 0">{{ t('progress.attention.allGood') }}</template>
         <template v-else-if="total > 0">
-          {{ formatInteger(needingAttention) }} of {{ formatInteger(total) }} assessed exercises need a closer look.
+          {{ t('progress.attention.summary', { count: formatInteger(needingAttention), total: formatInteger(total) }) }}
         </template>
-        <template v-else>No exercise assessed yet.</template>
+        <template v-else>{{ t('progress.attention.none') }}</template>
       </p>
     </div>
 

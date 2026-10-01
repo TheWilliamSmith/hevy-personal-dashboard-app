@@ -1,3 +1,4 @@
+import { t } from '@/i18n';
 import { computed, onScopeDispose, reactive, ref, watch, type ComputedRef, type Ref } from 'vue';
 import { useRoute, useRouter, type LocationQuery } from 'vue-router';
 
@@ -193,7 +194,7 @@ export function useProgressAlerts(): UseProgressAlerts {
       if (signal.aborted) {
         return;
       }
-      error.value = caught instanceof ApiError ? caught.message : 'Something went wrong.';
+      error.value = caught instanceof ApiError ? caught.message : t('errors.generic');
     } finally {
       if (!signal.aborted) {
         isLoading.value = false;
@@ -302,7 +303,7 @@ export function useProgressAlerts(): UseProgressAlerts {
       return true;
     } catch (caught) {
       response.value = snapshot;
-      muteError.value = caught instanceof ApiError ? caught.message : 'Could not mute.';
+      muteError.value = caught instanceof ApiError ? caught.message : t('errors.mute');
       return false;
     } finally {
       mutingId.value = null;
@@ -329,7 +330,7 @@ export function useProgressAlerts(): UseProgressAlerts {
       return true;
     } catch (caught) {
       response.value = snapshot;
-      muteError.value = caught instanceof ApiError ? caught.message : 'Could not unmute.';
+      muteError.value = caught instanceof ApiError ? caught.message : t('errors.unmute');
       return false;
     } finally {
       mutingId.value = null;

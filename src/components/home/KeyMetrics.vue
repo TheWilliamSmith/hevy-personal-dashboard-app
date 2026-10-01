@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import {
   CalendarCheck,
   Clock,
@@ -30,30 +31,30 @@ const emit = defineEmits<{ retry: [] }>();
 const metrics = computed<MetricItem[]>(() => {
   const stats = props.overview;
   return [
-    { label: 'Workouts', value: formatInteger(stats?.totalWorkouts), icon: Dumbbell },
-    { label: 'Total volume', value: formatVolume(stats?.totalVolumeKg), icon: Weight },
-    { label: 'Sets', value: formatInteger(stats?.totalSets), icon: Layers },
-    { label: 'Reps', value: formatInteger(stats?.totalReps), icon: Repeat },
-    { label: 'Time trained', value: formatDuration(stats?.totalDurationSec), icon: Clock },
-    { label: 'Avg session', value: formatDuration(stats?.avgDurationSec), icon: Timer },
+    { label: t('dashboard.workouts'), value: formatInteger(stats?.totalWorkouts), icon: Dumbbell },
+    { label: t('dashboard.totalVolume'), value: formatVolume(stats?.totalVolumeKg), icon: Weight },
+    { label: t('dashboard.sets'), value: formatInteger(stats?.totalSets), icon: Layers },
+    { label: t('dashboard.reps'), value: formatInteger(stats?.totalReps), icon: Repeat },
+    { label: t('dashboard.timeTrained'), value: formatDuration(stats?.totalDurationSec), icon: Clock },
+    { label: t('dashboard.avgSession'), value: formatDuration(stats?.avgDurationSec), icon: Timer },
     {
-      label: 'Weekly streak',
-      value: stats ? `${formatInteger(stats.currentStreakWeeks)} wk` : formatInteger(null),
+      label: t('dashboard.weeklyStreak'),
+      value: stats ? t('dashboard.streakWeeks', { count: formatInteger(stats.currentStreakWeeks) }) : formatInteger(null),
       icon: Flame,
     },
-    { label: 'Workouts / week', value: formatNumber(stats?.workoutsPerWeekAvg), icon: CalendarCheck },
+    { label: t('dashboard.workoutsPerWeek'), value: formatNumber(stats?.workoutsPerWeekAvg), icon: CalendarCheck },
   ];
 });
 </script>
 
 <template>
   <section class="flex flex-col gap-5">
-    <SectionHeader title="Key metrics" :subtitle="rangeLabel">
+    <SectionHeader :title="t('dashboard.keyMetrics')" :subtitle="rangeLabel">
       <RouterLink
         :to="{ name: 'home', query: { tab: 'workouts' } }"
         class="rounded-md border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs font-medium text-zinc-100 transition-colors hover:bg-zinc-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400"
       >
-        All workouts
+        {{ t('dashboard.allWorkouts') }}
       </RouterLink>
     </SectionHeader>
 

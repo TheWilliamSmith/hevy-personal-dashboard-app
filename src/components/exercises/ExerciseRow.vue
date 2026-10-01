@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { ChevronRight } from 'lucide-vue-next';
 import { computed } from 'vue';
 import { RouterLink } from 'vue-router';
@@ -15,18 +16,18 @@ const neverPerformed = computed(() => props.exercise.sessions === 0);
 
 const lastPerformed = computed(() => {
   const iso = props.exercise.lastPerformedAt;
-  return iso ? formatDaysAgo((Date.now() - Date.parse(iso)) / 86_400_000) : 'Never performed';
+  return iso ? formatDaysAgo((Date.now() - Date.parse(iso)) / 86_400_000) : t('exercises.neverPerformed');
 });
 
 const best = computed(() => {
   const exercise = props.exercise;
   if (exercise.kind === 'CARDIO') {
-    return { label: 'Distance', value: exercise.totalDistanceKm === null ? EMPTY : formatDistanceKm(exercise.totalDistanceKm) };
+    return { label: t('exercises.distance'), value: exercise.totalDistanceKm === null ? EMPTY : formatDistanceKm(exercise.totalDistanceKm) };
   }
   if (exercise.kind === 'BODYWEIGHT_HOLD') {
-    return { label: 'Hold', value: exercise.totalDurationSec === null ? EMPTY : formatDuration(exercise.totalDurationSec) };
+    return { label: t('exercises.hold'), value: exercise.totalDurationSec === null ? EMPTY : formatDuration(exercise.totalDurationSec) };
   }
-  return { label: 'Max', value: exercise.maxWeightKg === null ? EMPTY : `${formatWeight(exercise.maxWeightKg)} kg` };
+  return { label: t('exercises.max'), value: exercise.maxWeightKg === null ? EMPTY : `${formatWeight(exercise.maxWeightKg)} kg` };
 });
 
 const meta = computed(() =>
@@ -37,12 +38,12 @@ const meta = computed(() =>
 );
 
 const sessionsLabel = computed(
-  () => `${formatInteger(props.exercise.sessions)} ${props.exercise.sessions === 1 ? 'session' : 'sessions'}`,
+  () => t('exercises.sessionCount', { count: formatInteger(props.exercise.sessions) }, props.exercise.sessions),
 );
 
 const stats = computed(() => [
-  { label: 'Sessions', value: formatInteger(props.exercise.sessions) },
-  { label: 'Sets', value: formatInteger(props.exercise.totalSets) },
+  { label: t('exercises.sessions'), value: formatInteger(props.exercise.sessions) },
+  { label: t('exercises.sets'), value: formatInteger(props.exercise.totalSets) },
   best.value,
 ]);
 </script>
@@ -56,7 +57,7 @@ const stats = computed(() => [
       <span class="min-w-0">
         <span class="flex items-center gap-2">
           <span class="truncate text-sm font-medium text-zinc-100">{{ exercise.name }}</span>
-          <span v-if="exercise.isCustom" class="shrink-0 text-[11px] text-amber-400">Custom</span>
+          <span v-if="exercise.isCustom" class="shrink-0 text-[11px] text-amber-400">{{ t('exercises.custom') }}</span>
         </span>
         <span class="block truncate text-[11px] text-zinc-500">{{ meta }}</span>
       </span>
@@ -80,7 +81,7 @@ const stats = computed(() => [
 
       <span class="flex items-center gap-3">
         <span class="text-xs text-zinc-400 tabular-nums lg:hidden">
-          {{ neverPerformed ? 'Never performed' : `${sessionsLabel} · ${best.value}` }}
+          {{ neverPerformed ? t('exercises.neverPerformed') : `${sessionsLabel} · ${best.value}` }}
         </span>
         <ChevronRight class="h-4 w-4 text-zinc-600" aria-hidden="true" />
       </span>

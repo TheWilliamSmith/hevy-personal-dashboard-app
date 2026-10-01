@@ -1,6 +1,7 @@
+import { t } from '@/i18n';
 import type { MetricUsed, ProgressItem } from '@/types/progress';
 
-import { EMPTY, formatWeight, toNumber } from './format';
+import { EMPTY, formatDecimal, formatWeight, toNumber } from './format';
 
 export function formatMetricValue(metric: MetricUsed, value: number | null | undefined): string {
   const amount = toNumber(value);
@@ -12,9 +13,9 @@ export function formatMetricValue(metric: MetricUsed, value: number | null | und
     case 'est1RM':
       return `${formatWeight(amount)} kg`;
     case 'totalReps':
-      return `${Math.round(amount)} reps`;
+      return t('progressText.reps', { count: Math.round(amount) });
     case 'distancePerMinute':
-      return `${amount.toLocaleString('fr-FR', { maximumFractionDigits: 3 })} km/min`;
+      return `${formatDecimal(amount, 3)} km/min`;
     case 'longestHoldSeconds':
       return formatHold(amount);
   }
@@ -25,8 +26,7 @@ export function formatSlope(slope: number | null | undefined): string {
   if (amount === null) {
     return EMPTY;
   }
-  const rendered = Math.abs(amount).toLocaleString('fr-FR', { maximumFractionDigits: 1 });
-  return `${amount >= 0 ? '+' : '-'}${rendered} %/week`;
+  return t('progressText.perWeek', { value: `${amount >= 0 ? '+' : '-'}${formatDecimal(Math.abs(amount), 1)}` });
 }
 
 export function formatGapToBest(gap: number | null | undefined): string {
@@ -35,7 +35,9 @@ export function formatGapToBest(gap: number | null | undefined): string {
     return EMPTY;
   }
   const rounded = Math.round(amount);
-  return rounded === 0 ? 'at best' : `${rounded > 0 ? '+' : '-'}${Math.abs(rounded)} % vs best`;
+  return rounded === 0
+    ? t('progressText.atBest')
+    : t('progressText.vsBest', { value: `${rounded > 0 ? '+' : '-'}${Math.abs(rounded)}` });
 }
 
 export function formatDaysAgo(days: number | null | undefined): string {
@@ -44,9 +46,9 @@ export function formatDaysAgo(days: number | null | undefined): string {
     return EMPTY;
   }
   const whole = Math.floor(amount);
-  if (whole === 0) return 'today';
-  if (whole === 1) return 'yesterday';
-  if (whole < 14) return `${whole} days ago`;
+  if (whole === 0) return t('progressText.today');
+  if (whole === 1) return t('progressText.yesterday');
+  if (whole < 14) return t('progressText.daysAgo', { count: whole });
   return formatWeeksAgo(whole / 7);
 }
 
@@ -56,8 +58,8 @@ export function formatWeeksAgo(weeks: number | null | undefined): string {
     return EMPTY;
   }
   const whole = Math.floor(amount);
-  if (whole === 0) return 'this week';
-  return `${whole} week${whole === 1 ? '' : 's'} ago`;
+  if (whole === 0) return t('progressText.thisWeek');
+  return t('progressText.weeksAgo', { count: whole }, whole);
 }
 
 export function formatHold(seconds: number | null | undefined): string {

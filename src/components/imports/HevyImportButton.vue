@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { Upload } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
@@ -16,7 +17,7 @@ const openPickerButton = ref<HTMLButtonElement | null>(null);
 const isDragging = ref(false);
 
 const label = computed(() =>
-  props.isBusy ? `Analysing… ${props.progress}%` : 'Choose a CSV file',
+  props.isBusy ? t('imports.button.analysing', { progress: props.progress }) : t('imports.button.choose'),
 );
 
 function clearInput(): void {
@@ -62,13 +63,13 @@ defineExpose({ focus: () => openPickerButton.value?.focus() });
         ref="input"
         type="file"
         accept=".csv,text/csv"
-        aria-label="Hevy CSV export file"
+        :aria-label="t('imports.button.fileLabel')"
         class="hidden"
         @change="onChange"
       />
 
       <Upload class="h-6 w-6 text-zinc-500" aria-hidden="true" />
-      <p class="text-sm text-zinc-400">Drop your Hevy CSV export here, or</p>
+      <p class="text-sm text-zinc-400">{{ t('imports.button.drop') }}</p>
 
       <button
         ref="openPickerButton"
@@ -87,7 +88,7 @@ defineExpose({ focus: () => openPickerButton.value?.focus() });
         v-if="isBusy"
         class="h-1.5 w-full max-w-sm overflow-hidden rounded-full bg-zinc-800"
         role="progressbar"
-        aria-label="Upload progress"
+        :aria-label="t('imports.button.progress')"
         :aria-valuenow="progress"
         aria-valuemin="0"
         aria-valuemax="100"
@@ -107,7 +108,7 @@ defineExpose({ focus: () => openPickerButton.value?.focus() });
         class="shrink-0 rounded-md border border-red-800 px-2 py-1 text-xs font-medium text-red-100 hover:bg-red-900/50"
         @click="emit('dismissError')"
       >
-        Try again
+        {{ t('imports.button.tryAgain') }}
       </button>
     </div>
   </section>

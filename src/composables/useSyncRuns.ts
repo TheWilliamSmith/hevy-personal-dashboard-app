@@ -1,3 +1,4 @@
+import { t } from '@/i18n';
 import { onScopeDispose, ref, type Ref } from 'vue';
 
 import { ApiError, apiGet } from '@/lib/api';
@@ -52,7 +53,7 @@ export function useSyncRuns(): UseSyncRuns {
       }
       runs.value = [];
       meta.value = null;
-      error.value = caught instanceof ApiError ? caught.message : 'Something went wrong.';
+      error.value = caught instanceof ApiError ? caught.message : t('errors.generic');
     } finally {
       if (!signal.aborted) {
         isLoading.value = false;

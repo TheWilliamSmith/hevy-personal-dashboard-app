@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import SectionHeader from '@/components/ui/SectionHeader.vue';
 import { FAMILY_LABELS } from '@/constants/achievements';
 import type { AchievementFamily } from '@/types/achievements';
@@ -13,18 +14,18 @@ const emit = defineEmits<{ select: [family: AchievementFamily | null] }>();
 
 <template>
   <section class="flex flex-col gap-4">
-    <SectionHeader title="Families" subtitle="Unlocked per family · click one to filter the trophies">
+    <SectionHeader :title="t('trophies.families')" :subtitle="t('trophies.familiesSubtitle')">
       <button
         v-if="active"
         type="button"
         class="rounded-md px-2 py-1 text-xs font-medium text-zinc-400 hover:text-zinc-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400"
         @click="emit('select', null)"
       >
-        Show all
+        {{ t('trophies.showEverything') }}
       </button>
     </SectionHeader>
 
-    <div class="grid grid-cols-2 gap-1 sm:grid-cols-4 xl:grid-cols-8" role="group" aria-label="Filter by family">
+    <div class="grid grid-cols-2 gap-1 sm:grid-cols-4 xl:grid-cols-8" role="group" :aria-label="t('trophies.filterFamily')">
       <button
         v-for="entry in families"
         :key="entry.family"

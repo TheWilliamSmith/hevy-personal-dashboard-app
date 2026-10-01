@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 defineProps<{ message: string }>();
 const emit = defineEmits<{ retry: [] }>();
 </script>
@@ -11,7 +12,7 @@ const emit = defineEmits<{ retry: [] }>();
       class="rounded-md border border-red-800 px-2 py-1 text-xs font-medium text-red-100 hover:bg-red-900/50"
       @click="emit('retry')"
     >
-      Retry
+      {{ t('common.retry') }}
     </button>
   </div>
 </template>

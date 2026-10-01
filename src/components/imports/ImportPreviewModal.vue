@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { computed, onBeforeUnmount, ref, watch, type DeepReadonly } from 'vue';
 
 import BaseDialog from '@/components/ui/BaseDialog.vue';
@@ -105,20 +106,19 @@ const tile = 'flex flex-col gap-0.5 px-4 py-3';
   >
     <header class="border-b border-zinc-800 px-5 py-4">
       <h2 id="import-preview-title" class="text-base font-semibold text-white">
-        Review import
+        {{ t('imports.preview.title') }}
       </h2>
       <p class="mt-0.5 truncate text-sm text-zinc-500">
         {{ props.preview?.fileName }}
         <span aria-hidden="true"> · </span>
-        {{ formatInteger(props.preview?.rowsParsed ?? 0) }} rows parsed
+        {{ t('imports.preview.rowsParsed', { count: formatInteger(props.preview?.rowsParsed ?? 0) }) }}
       </p>
 
       <p
         v-if="props.preview?.alreadyImportedFile"
         class="mt-3 rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm text-amber-200"
       >
-        You already imported this exact file. Confirming again will only add workouts that are
-        still missing.
+        {{ t('imports.preview.alreadyImported') }}
       </p>
     </header>
 
@@ -137,26 +137,26 @@ const tile = 'flex flex-col gap-0.5 px-4 py-3';
             class="shrink-0 text-xs font-medium text-amber-300 underline underline-offset-2"
             @click="dismissedWarnings = true"
           >
-            Dismiss
+            {{ t('imports.preview.dismiss') }}
           </button>
         </div>
       </div>
 
       <dl class="grid grid-cols-3 border-b border-zinc-800">
         <div :class="tile">
-          <dt class="text-xs text-zinc-500">New workouts</dt>
+          <dt class="text-xs text-zinc-500">{{ t('imports.preview.newWorkouts') }}</dt>
           <dd class="text-2xl font-semibold text-white tabular-nums">
             {{ formatInteger(summary?.newWorkouts ?? 0) }}
           </dd>
         </div>
         <div :class="tile">
-          <dt class="text-xs text-zinc-500">Already present</dt>
+          <dt class="text-xs text-zinc-500">{{ t('imports.preview.alreadyPresent') }}</dt>
           <dd class="text-2xl font-semibold text-zinc-500 tabular-nums">
             {{ formatInteger(summary?.existingWorkouts ?? 0) }}
           </dd>
         </div>
         <div :class="tile">
-          <dt class="text-xs text-zinc-500">New sets</dt>
+          <dt class="text-xs text-zinc-500">{{ t('imports.preview.newSets') }}</dt>
           <dd class="text-2xl font-semibold text-white tabular-nums">
             {{ formatInteger(summary?.newSets ?? 0) }}
           </dd>
@@ -164,7 +164,7 @@ const tile = 'flex flex-col gap-0.5 px-4 py-3';
       </dl>
 
       <p v-if="nothingToImport" class="px-5 py-4 text-sm text-zinc-400">
-        Nothing to import — every workout in this file is already in your data.
+        {{ t('imports.preview.nothing') }}
       </p>
 
       <section v-if="newWorkouts.length > 0" class="border-b border-zinc-800">
@@ -176,7 +176,7 @@ const tile = 'flex flex-col gap-0.5 px-4 py-3';
             @click="showNew = !showNew"
           >
             <span aria-hidden="true" class="text-xs">{{ showNew ? '▾' : '▸' }}</span>
-            New workouts ({{ formatInteger(newWorkouts.length) }})
+            {{ t('imports.preview.newWorkoutsCount', { count: formatInteger(newWorkouts.length) }) }}
           </button>
         </h3>
 
@@ -195,8 +195,8 @@ const tile = 'flex flex-col gap-0.5 px-4 py-3';
               </div>
               <p class="mt-1 flex flex-wrap gap-x-4 text-xs text-zinc-400">
                 <span>{{ formatDuration(workout.durationSec) }}</span>
-                <span>{{ workout.exerciseCount }} exercises</span>
-                <span>{{ workout.setCount }} sets</span>
+                <span>{{ t('imports.preview.exercises', { count: workout.exerciseCount }) }}</span>
+                <span>{{ t('imports.preview.sets', { count: workout.setCount }) }}</span>
                 <span>{{ formatVolume(workout.totalVolumeKg) }}</span>
               </p>
               <ul v-if="workout.exerciseNames.length" class="mt-2 flex flex-wrap gap-1">
@@ -214,7 +214,7 @@ const tile = 'flex flex-col gap-0.5 px-4 py-3';
           <nav
             v-if="newPages > 1"
             class="mt-3 flex items-center justify-between text-xs"
-            aria-label="New workouts pages"
+            :aria-label="t('imports.preview.newPages')"
           >
             <button
               type="button"
@@ -222,16 +222,16 @@ const tile = 'flex flex-col gap-0.5 px-4 py-3';
               :disabled="newPage <= 1"
               @click="newPage -= 1"
             >
-              Previous
+              {{ t('common.previous') }}
             </button>
-            <span class="text-zinc-500">Page {{ newPage }} of {{ newPages }}</span>
+            <span class="text-zinc-500">{{ t('common.pageOf', { page: newPage, total: newPages }) }}</span>
             <button
               type="button"
               class="rounded-md border border-zinc-800 bg-zinc-900 px-2 py-1 text-zinc-100 hover:bg-zinc-800 disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400"
               :disabled="newPage >= newPages"
               @click="newPage += 1"
             >
-              Next
+              {{ t('common.next') }}
             </button>
           </nav>
         </div>
@@ -246,7 +246,7 @@ const tile = 'flex flex-col gap-0.5 px-4 py-3';
             @click="showExisting = !showExisting"
           >
             <span aria-hidden="true" class="text-xs">{{ showExisting ? '▾' : '▸' }}</span>
-            Already present ({{ formatInteger(existing.length) }})
+            {{ t('imports.preview.alreadyPresentCount', { count: formatInteger(existing.length) }) }}
           </button>
         </h3>
 
@@ -261,7 +261,7 @@ const tile = 'flex flex-col gap-0.5 px-4 py-3';
               <span class="text-zinc-500">
                 {{ formatDate(workout.startedAt) }}
                 <span aria-hidden="true"> · </span>
-                imported {{ formatDate(workout.importedAt) }}
+                {{ t('imports.preview.importedOn', { date: formatDate(workout.importedAt) }) }}
               </span>
             </li>
           </ul>
@@ -269,7 +269,7 @@ const tile = 'flex flex-col gap-0.5 px-4 py-3';
           <nav
             v-if="existingPages > 1"
             class="mt-3 flex items-center justify-between text-xs"
-            aria-label="Already present pages"
+            :aria-label="t('imports.preview.existingPages')"
           >
             <button
               type="button"
@@ -277,16 +277,16 @@ const tile = 'flex flex-col gap-0.5 px-4 py-3';
               :disabled="existingPage <= 1"
               @click="existingPage -= 1"
             >
-              Previous
+              {{ t('common.previous') }}
             </button>
-            <span class="text-zinc-500">Page {{ existingPage }} of {{ existingPages }}</span>
+            <span class="text-zinc-500">{{ t('common.pageOf', { page: existingPage, total: existingPages }) }}</span>
             <button
               type="button"
               class="rounded-md border border-zinc-800 bg-zinc-900 px-2 py-1 text-zinc-100 hover:bg-zinc-800 disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400"
               :disabled="existingPage >= existingPages"
               @click="existingPage += 1"
             >
-              Next
+              {{ t('common.next') }}
             </button>
           </nav>
         </div>
@@ -295,10 +295,14 @@ const tile = 'flex flex-col gap-0.5 px-4 py-3';
 
     <footer class="flex flex-wrap items-center gap-3 border-t border-zinc-800 px-5 py-4">
       <p v-if="hasExpired" class="mr-auto text-xs text-red-400">
-        This preview expired. Upload the file again.
+        {{ t('imports.preview.expired') }}
       </p>
       <p v-else class="mr-auto text-xs text-zinc-500">
-        Expires in <span class="font-medium tabular-nums">{{ countdown }}</span>
+        <i18n-t keypath="imports.preview.expiresIn" scope="global">
+          <template #time>
+            <span class="font-medium tabular-nums">{{ countdown }}</span>
+          </template>
+        </i18n-t>
       </p>
 
       <p v-if="props.error" class="w-full text-sm text-red-400" role="alert">{{ props.error }}</p>
@@ -309,7 +313,7 @@ const tile = 'flex flex-col gap-0.5 px-4 py-3';
         :disabled="props.isConfirming"
         @click="emit('cancel')"
       >
-        Cancel
+        {{ t('common.cancel') }}
       </button>
 
       <button
@@ -318,7 +322,7 @@ const tile = 'flex flex-col gap-0.5 px-4 py-3';
         class="rounded-md bg-white px-3 py-2 text-sm font-medium text-zinc-900 hover:bg-zinc-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
         @click="emit('reupload')"
       >
-        Re-upload the file
+        {{ t('imports.preview.reupload') }}
       </button>
 
       <button
@@ -334,7 +338,7 @@ const tile = 'flex flex-col gap-0.5 px-4 py-3';
           class="h-3.5 w-3.5 animate-spin rounded-full border-2 border-current/30 border-t-current"
           aria-hidden="true"
         />
-        Import {{ formatInteger(summary?.newWorkouts ?? 0) }} workouts
+        {{ t('imports.preview.confirm', { count: formatInteger(summary?.newWorkouts ?? 0) }) }}
       </button>
     </footer>
   </BaseDialog>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import SectionHeader from '@/components/ui/SectionHeader.vue';
 import type { ExerciseListTotals } from '@/types/exercises';
 import { formatInteger } from '@/utils/format';
@@ -12,7 +13,7 @@ defineProps<{
 
 <template>
   <section class="flex h-full flex-col gap-4">
-    <SectionHeader title="Catalog" subtitle="Exercises you have performed at least once" />
+    <SectionHeader :title="t('exercises.catalog')" :subtitle="t('exercises.catalogSubtitle')" />
 
     <div>
       <p
@@ -23,20 +24,24 @@ defineProps<{
       </p>
       <p class="mt-2 max-w-xs text-sm text-zinc-400">
         <template v-if="totals">
-          {{ formatInteger(totals.performed) }} exercises performed,
-          {{ formatInteger(totals.neverPerformed) }} still waiting for a first session.
+          {{
+            t('exercises.catalogSummary', {
+              performed: formatInteger(totals.performed),
+              never: formatInteger(totals.neverPerformed),
+            })
+          }}
         </template>
-        <template v-else>Loading the catalog…</template>
+        <template v-else>{{ t('exercises.loadingCatalog') }}</template>
       </p>
     </div>
 
     <dl v-if="totals" class="mt-auto flex gap-8">
       <div class="flex flex-col-reverse">
-        <dt class="text-xs text-zinc-500">Never performed</dt>
+        <dt class="text-xs text-zinc-500">{{ t('exercises.neverPerformed') }}</dt>
         <dd class="text-2xl font-semibold text-white tabular-nums">{{ formatInteger(totals.neverPerformed) }}</dd>
       </div>
       <div class="flex flex-col-reverse">
-        <dt class="text-xs text-zinc-500">Custom (listed)</dt>
+        <dt class="text-xs text-zinc-500">{{ t('exercises.customListed') }}</dt>
         <dd class="text-2xl font-semibold text-white tabular-nums">{{ formatInteger(customCount) }}</dd>
       </div>
     </dl>

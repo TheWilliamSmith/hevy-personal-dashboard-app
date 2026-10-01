@@ -2,23 +2,13 @@
 import { computed, reactive, watch, type DeepReadonly } from 'vue';
 
 import SectionHeader from '@/components/ui/SectionHeader.vue';
-import SegmentedControl, { type SegmentedOption } from '@/components/ui/SegmentedControl.vue';
-import type { UserProfile, WeekStart, WeightUnit } from '@/types/profile';
+import { t } from '@/i18n';
+import type { UserProfile } from '@/types/profile';
 import { USERNAME_PATTERN } from '@/utils/profile';
 
 const props = defineProps<{ profile: DeepReadonly<UserProfile>; isSaving: boolean; usernameError?: string | null }>();
 
 const emit = defineEmits<{ save: [profile: UserProfile] }>();
-
-const UNITS: ReadonlyArray<SegmentedOption<WeightUnit>> = [
-  { value: 'kg', label: 'Kilograms' },
-  { value: 'lb', label: 'Pounds' },
-];
-
-const WEEK_STARTS: ReadonlyArray<SegmentedOption<WeekStart>> = [
-  { value: 'monday', label: 'Monday' },
-  { value: 'sunday', label: 'Sunday' },
-];
 
 const draft = reactive<UserProfile>({ ...props.profile });
 
@@ -61,15 +51,15 @@ const label = 'mb-1 block text-xs text-zinc-400';
   <form class="flex flex-col gap-8" @submit.prevent="submit">
     <div class="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)] lg:gap-0">
       <section class="flex flex-col gap-5 lg:pr-8">
-        <SectionHeader title="Public profile" subtitle="How you appear across the dashboard" />
+        <SectionHeader :title="t('profile.publicTitle')" :subtitle="t('profile.publicSubtitle')" />
 
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label for="profile-name" :class="label">Display name</label>
+            <label for="profile-name" :class="label">{{ t('auth.signUp.displayName') }}</label>
             <input id="profile-name" v-model="draft.displayName" type="text" maxlength="80" :class="field" />
           </div>
           <div>
-            <label for="profile-username" :class="label">Username</label>
+            <label for="profile-username" :class="label">{{ t('auth.signUp.username') }}</label>
             <div class="relative">
               <span class="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-sm text-zinc-500">@</span>
               <input
@@ -89,39 +79,29 @@ const label = 'mb-1 block text-xs text-zinc-400';
               class="mt-1 text-xs"
               :class="usernameValid && !visibleUsernameError ? 'text-zinc-500' : 'text-red-400'"
             >
-              {{ visibleUsernameError ?? '3 to 30 characters: lowercase letters, digits, dots and underscores.' }}
+              {{ visibleUsernameError ?? t('auth.signUp.usernameHint') }}
             </p>
           </div>
         </div>
 
         <div>
-          <label for="profile-bio" :class="label">Bio</label>
+          <label for="profile-bio" :class="label">{{ t('profile.bio') }}</label>
           <textarea id="profile-bio" v-model="draft.bio" rows="3" maxlength="160" :class="[field, 'resize-none']" />
           <p class="mt-1 text-right text-xs text-zinc-500 tabular-nums">{{ draft.bio.length }} / 160</p>
         </div>
 
         <div class="sm:max-w-xs">
-          <label for="profile-location" :class="label">Location</label>
+          <label for="profile-location" :class="label">{{ t('profile.location') }}</label>
           <input id="profile-location" v-model="draft.location" type="text" maxlength="80" :class="field" />
         </div>
       </section>
 
       <section class="flex flex-col gap-5 border-zinc-800 lg:border-l lg:pl-8">
-        <SectionHeader title="Preferences" subtitle="Units and body measurements" />
-
-        <div class="flex flex-col gap-2">
-          <span :class="label">Weight unit</span>
-          <SegmentedControl v-model="draft.weightUnit" :options="UNITS" label="Weight unit" />
-        </div>
-
-        <div class="flex flex-col gap-2">
-          <span :class="label">Week starts on</span>
-          <SegmentedControl v-model="draft.weekStart" :options="WEEK_STARTS" label="Week start" />
-        </div>
+        <SectionHeader :title="t('profile.body')" :subtitle="t('profile.bodySubtitle')" />
 
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label for="profile-bodyweight" :class="label">Bodyweight (kg)</label>
+            <label for="profile-bodyweight" :class="label">{{ t('profile.bodyweight') }}</label>
             <input
               id="profile-bodyweight"
               :value="draft.bodyweightKg ?? ''"
@@ -134,7 +114,7 @@ const label = 'mb-1 block text-xs text-zinc-400';
             />
           </div>
           <div>
-            <label for="profile-height" :class="label">Height (cm)</label>
+            <label for="profile-height" :class="label">{{ t('profile.height') }}</label>
             <input
               id="profile-height"
               :value="draft.heightCm ?? ''"
@@ -150,7 +130,7 @@ const label = 'mb-1 block text-xs text-zinc-400';
     </div>
 
     <div class="flex items-center justify-end gap-3 border-t border-zinc-800 pt-5">
-      <span v-if="isDirty" class="mr-auto text-xs text-zinc-500">Unsaved changes</span>
+      <span v-if="isDirty" class="mr-auto text-xs text-zinc-500">{{ t('profile.unsaved') }}</span>
       <button
         type="button"
         class="rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm font-medium text-zinc-100 transition-colors hover:bg-zinc-800 disabled:opacity-40"
@@ -158,7 +138,7 @@ const label = 'mb-1 block text-xs text-zinc-400';
         :disabled="!isDirty || isSaving"
         @click="reset"
       >
-        Discard
+        {{ t('profile.discard') }}
       </button>
       <button
         type="submit"
@@ -171,7 +151,7 @@ const label = 'mb-1 block text-xs text-zinc-400';
           class="h-3.5 w-3.5 animate-spin rounded-full border-2 border-zinc-900/30 border-t-zinc-900"
           aria-hidden="true"
         />
-        Save changes
+        {{ t('profile.saveChanges') }}
       </button>
     </div>
   </form>

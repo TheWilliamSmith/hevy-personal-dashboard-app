@@ -1,3 +1,4 @@
+import { t } from '@/i18n';
 import { onScopeDispose, ref, toValue, watch, type MaybeRefOrGetter, type Ref } from 'vue';
 
 import { ApiError, apiGet } from '@/lib/api';
@@ -47,7 +48,7 @@ export function useWorkout(id: MaybeRefOrGetter<string>): UseWorkout {
       workout.value = null;
       notFound.value =
         caught instanceof ApiError && (caught.status === 404 || caught.status === 400);
-      error.value = caught instanceof ApiError ? caught.message : 'Something went wrong.';
+      error.value = caught instanceof ApiError ? caught.message : t('errors.generic');
     } finally {
       if (!signal.aborted) {
         isLoading.value = false;

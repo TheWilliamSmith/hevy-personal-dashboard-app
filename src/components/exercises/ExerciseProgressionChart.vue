@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import type { EChartsOption } from 'echarts';
 import { computed, ref } from 'vue';
 
@@ -25,25 +26,25 @@ const props = defineProps<{ points: ProgressionPoint[]; kind: ExerciseKind }>();
 type Metric = 'maxWeight' | 'est1RM' | 'volume' | 'totalReps' | 'distance' | 'duration' | 'pace';
 type Range = '3m' | '6m' | '1y' | 'all';
 
-const STRENGTH_METRICS: ReadonlyArray<SegmentedOption<Metric>> = [
-  { value: 'maxWeight', label: 'Max weight', shortLabel: 'Max' },
-  { value: 'est1RM', label: 'Est. 1RM', shortLabel: '1RM' },
-  { value: 'volume', label: 'Volume', shortLabel: 'Vol' },
-  { value: 'totalReps', label: 'Reps' },
-];
+const strengthMetrics = computed<ReadonlyArray<SegmentedOption<Metric>>>(() => [
+  { value: 'maxWeight', label: t('exercises.chart.maxWeight'), shortLabel: t('exercises.chart.maxWeightShort') },
+  { value: 'est1RM', label: t('exercises.chart.est1RM'), shortLabel: t('exercises.chart.est1RMShort') },
+  { value: 'volume', label: t('exercises.chart.volume'), shortLabel: t('exercises.chart.volumeShort') },
+  { value: 'totalReps', label: t('exercises.chart.reps') },
+]);
 
-const CARDIO_METRICS: ReadonlyArray<SegmentedOption<Metric>> = [
-  { value: 'distance', label: 'Distance' },
-  { value: 'duration', label: 'Duration' },
-  { value: 'pace', label: 'Pace' },
-];
+const cardioMetrics = computed<ReadonlyArray<SegmentedOption<Metric>>>(() => [
+  { value: 'distance', label: t('exercises.chart.distance') },
+  { value: 'duration', label: t('exercises.chart.duration') },
+  { value: 'pace', label: t('exercises.chart.pace') },
+]);
 
-const RANGES: ReadonlyArray<SegmentedOption<Range>> = [
-  { value: '3m', label: '3M' },
-  { value: '6m', label: '6M' },
-  { value: '1y', label: '1Y' },
-  { value: 'all', label: 'All' },
-];
+const ranges = computed<ReadonlyArray<SegmentedOption<Range>>>(() => [
+  { value: '3m', label: t('exercises.chart.range3m') },
+  { value: '6m', label: t('exercises.chart.range6m') },
+  { value: '1y', label: t('exercises.chart.range1y') },
+  { value: 'all', label: t('exercises.chart.rangeAll') },
+]);
 
 const RANGE_DAYS: Readonly<Record<Range, number | null>> = { '3m': 90, '6m': 180, '1y': 365, all: null };
 
@@ -52,7 +53,7 @@ const PR_COLOR = '#34d399';
 
 const palette = { ...resolveTheme(true), splitLine: '#27272a', tooltipBackground: '#18181b', tooltipBorder: '#3f3f46' };
 
-const metrics = computed(() => (props.kind === 'CARDIO' ? CARDIO_METRICS : STRENGTH_METRICS));
+const metrics = computed(() => (props.kind === 'CARDIO' ? cardioMetrics.value : strengthMetrics.value));
 
 const metric = ref<Metric>('est1RM');
 const range = ref<Range>('all');
@@ -132,7 +133,7 @@ const option = computed<EChartsOption>(() => ({
       }
       const lines = [`<strong>${labels.value[index] ?? ''}</strong>`, render(values.value[index] ?? null)];
       if (point.isPR) {
-        lines.push(`<span style="color:${PR_COLOR}">Personal record</span>`);
+        lines.push(`<span style="color:${PR_COLOR}">${t('exercises.chart.personalRecord')}</span>`);
       }
       return lines.join('<br/>');
     },
@@ -170,7 +171,7 @@ const option = computed<EChartsOption>(() => ({
     ...(trend.value
       ? [
           {
-            name: 'Trend',
+            name: t('exercises.chart.trend'),
             type: 'line' as const,
             symbol: 'none' as const,
             lineStyle: { color: '#a1a1aa', width: 1.5, type: 'dashed' as const },
@@ -184,21 +185,21 @@ const option = computed<EChartsOption>(() => ({
 
 <template>
   <section class="flex flex-col gap-4">
-    <SectionHeader title="Progression" :subtitle="`${metricLabel} per session · personal records in green`">
-      <SegmentedControl v-model="metric" :options="metrics" label="Progression metric" />
+    <SectionHeader :title="t('exercises.chart.title')" :subtitle="t('exercises.chart.subtitle', { metric: metricLabel })">
+      <SegmentedControl v-model="metric" :options="metrics" :label="t('exercises.chart.metric')" />
     </SectionHeader>
 
     <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
-      <SegmentedControl v-model="range" :options="RANGES" label="Date range" />
+      <SegmentedControl v-model="range" :options="ranges" :label="t('exercises.chart.range')" />
       <label class="flex items-center gap-2 text-xs text-zinc-400">
         <input v-model="showTrend" type="checkbox" class="h-3.5 w-3.5 accent-blue-600" />
-        Trendline
+        {{ t('exercises.chart.trendline') }}
       </label>
     </div>
 
     <div class="relative h-72">
-      <EmptyState v-if="!hasData" overlay message="No sessions in this range." />
-      <BaseChart v-else :option="option" :aria-label="`${metricLabel} over ${filtered.length} sessions`" />
+      <EmptyState v-if="!hasData" overlay :message="t('exercises.chart.none')" />
+      <BaseChart v-else :option="option" :aria-label="t('exercises.chart.label', { metric: metricLabel, count: filtered.length })" />
     </div>
   </section>
 </template>

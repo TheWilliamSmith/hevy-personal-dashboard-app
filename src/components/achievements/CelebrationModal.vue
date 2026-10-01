@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { computed, onBeforeUnmount, ref } from 'vue';
 
 import BaseDialog from '@/components/ui/BaseDialog.vue';
@@ -43,7 +44,7 @@ const confettiColors = computed(() =>
         class="text-xs font-semibold tracking-wider uppercase"
         :class="negative ? 'text-amber-400' : 'text-blue-400'"
       >
-        {{ negative ? 'A little nudge' : 'Achievement unlocked' }}
+        {{ negative ? t('trophies.celebration.nudge') : t('trophies.celebration.unlocked') }}
       </p>
 
       <div
@@ -55,7 +56,7 @@ const confettiColors = computed(() =>
       </div>
 
       <p v-if="negative" class="mt-4 text-sm text-amber-300">
-        Not a reward — a hint about what your training is skipping.
+        {{ t('trophies.celebration.hint') }}
       </p>
       <p v-else class="mt-4 text-2xl font-bold text-white">+{{ current.xp }} XP</p>
 
@@ -66,7 +67,7 @@ const confettiColors = computed(() =>
           class="rounded-md px-3 py-2 text-sm font-medium text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100"
           @click="acknowledgeAll"
         >
-          Skip all ({{ remaining }})
+          {{ t('trophies.celebration.skipAll', { count: remaining }) }}
         </button>
         <button
           type="button"
@@ -75,12 +76,15 @@ const confettiColors = computed(() =>
           :class="negative ? 'bg-amber-500 text-zinc-950 hover:bg-amber-400' : 'bg-white text-zinc-900 hover:bg-zinc-200'"
           @click="acknowledge"
         >
-          {{ negative ? 'Noted' : 'Nice' }}<span v-if="remaining > 1" class="font-normal opacity-80"> · {{ remaining - 1 }} more</span>
+          {{ negative ? t('trophies.celebration.noted') : t('trophies.celebration.nice')
+          }}<span v-if="remaining > 1" class="font-normal opacity-80">{{
+            t('trophies.celebration.more', { count: remaining - 1 })
+          }}</span>
         </button>
       </div>
 
       <p class="sr-only" aria-live="polite">
-        {{ negative ? 'Warning' : 'Unlocked' }}: {{ current.name }}.
+        {{ t(negative ? 'trophies.celebration.announceWarning' : 'trophies.celebration.announceUnlocked', { name: current.name }) }}
       </p>
     </div>
   </BaseDialog>

@@ -1,3 +1,4 @@
+import { t } from '@/i18n';
 import { computed, readonly, ref, type ComputedRef, type DeepReadonly, type Ref } from 'vue';
 
 import { ApiError, apiGet, apiPatch, apiPost } from '@/lib/api';
@@ -111,7 +112,7 @@ export function useAuth(): UseAuth {
         pendingProvider.value = null;
       }
       const label = provider === 'google' ? 'Google' : 'Apple';
-      throw new Error(`${label} sign-in is not available yet. Use your email and password.`);
+      throw new Error(t('errors.oauthUnavailable', { provider: label }));
     },
     signOut,
     restore,

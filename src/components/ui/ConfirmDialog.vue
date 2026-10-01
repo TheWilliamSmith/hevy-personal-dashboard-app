@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import BaseDialog from '@/components/ui/BaseDialog.vue';
 
 const props = defineProps<{
@@ -39,7 +40,7 @@ const emit = defineEmits<{ cancel: []; confirm: [] }>();
         :disabled="props.isBusy"
         @click="emit('cancel')"
       >
-        Cancel
+        {{ t('common.cancel') }}
       </button>
       <button
         type="button"

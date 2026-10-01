@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { computed } from 'vue';
 import { RouterLink } from 'vue-router';
 
@@ -20,12 +21,12 @@ const manageLink = { name: 'home', query: { tab: 'goals' } };
 
 <template>
   <section class="flex flex-col gap-5">
-    <SectionHeader title="Goals" subtitle="Furthest behind first">
+    <SectionHeader :title="t('goals.title')" :subtitle="t('goals.furthestBehind')">
       <RouterLink
         :to="manageLink"
         class="rounded-md px-2 py-1 text-xs font-medium text-zinc-300 hover:bg-zinc-900 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400"
       >
-        {{ goals.length > SHOWN ? `All ${goals.length} goals` : 'Manage goals' }}
+        {{ goals.length > SHOWN ? t('goals.allGoals', { count: goals.length }) : t('goals.manage') }}
       </RouterLink>
     </SectionHeader>
 
@@ -39,12 +40,12 @@ const manageLink = { name: 'home', query: { tab: 'goals' } };
       </div>
     </div>
 
-    <EmptyState v-else-if="goals.length === 0" message="No goal yet.">
+    <EmptyState v-else-if="goals.length === 0" :message="t('goals.noGoal')">
       <RouterLink
         :to="manageLink"
         class="text-sm font-medium text-zinc-200 underline decoration-zinc-600 underline-offset-2 hover:decoration-zinc-300"
       >
-        Set your first goal
+        {{ t('goals.setFirst') }}
       </RouterLink>
     </EmptyState>
 
@@ -58,7 +59,7 @@ const manageLink = { name: 'home', query: { tab: 'goals' } };
           {{ formatGoalValue(goal, goal.progress.current) }}
           <span class="text-sm font-normal text-zinc-500">/ {{ formatGoalValue(goal, goal.target) }}</span>
         </p>
-        <GoalProgressBar :percent="goal.progress.percent" :status="goal.progress.status" :label="`${goalTitle(goal)} progress`" />
+        <GoalProgressBar :percent="goal.progress.percent" :status="goal.progress.status" :label="t('goals.progressLabel', { goal: goalTitle(goal) })" />
         <p class="text-xs text-zinc-500">{{ goalTiming(goal) }}</p>
       </li>
     </ul>

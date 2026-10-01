@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { computed, reactive, ref } from 'vue';
 
 import AuthError from '@/components/auth/AuthError.vue';
@@ -35,10 +36,10 @@ const passwordServer = reactive<{ current: string | null; next: string | null; f
 });
 
 const passwordErrors = computed(() => ({
-  current: passwordServer.current ?? (passwordSubmitted.value && !password.current ? 'Enter your current password.' : null),
+  current: passwordServer.current ?? (passwordSubmitted.value && !password.current ? t('security.currentPasswordRequired') : null),
   next: passwordServer.next ?? (passwordSubmitted.value ? passwordProblem(password.next) : null),
   confirm:
-    passwordSubmitted.value && password.confirm !== password.next ? 'The two passwords do not match.' : null,
+    passwordSubmitted.value && password.confirm !== password.next ? t('auth.reset.mismatch') : null,
 }));
 
 async function changePassword(): Promise<void> {
@@ -52,7 +53,11 @@ async function changePassword(): Promise<void> {
     await auth.changePassword(password.current, password.next);
     Object.assign(password, { current: '', next: '', confirm: '' });
     passwordSubmitted.value = false;
-    push({ tone: 'success', title: 'Password changed', description: 'Your other devices were signed out.' });
+    push({
+      tone: 'success',
+      title: t('security.passwordChanged'),
+      description: t('security.passwordChangedDescription'),
+    });
   } catch (caught) {
     const field = fieldOf(caught);
     if (field === 'currentPassword') {
@@ -76,8 +81,8 @@ const emailServer = reactive<{ next: string | null; current: string | null; form
 });
 
 const emailErrors = computed(() => ({
-  next: emailServer.next ?? (emailSubmitted.value && !isEmail(email.next) ? 'Enter a valid email address.' : null),
-  current: emailServer.current ?? (emailSubmitted.value && !email.current ? 'Enter your current password.' : null),
+  next: emailServer.next ?? (emailSubmitted.value && !isEmail(email.next) ? t('validation.email') : null),
+  current: emailServer.current ?? (emailSubmitted.value && !email.current ? t('security.currentPasswordRequired') : null),
 }));
 
 async function changeEmail(): Promise<void> {
@@ -91,7 +96,7 @@ async function changeEmail(): Promise<void> {
     await auth.changeEmail(email.next.trim(), email.current);
     Object.assign(email, { next: '', current: '' });
     emailSubmitted.value = false;
-    push({ tone: 'success', title: 'Email changed', description: 'Both addresses received a confirmation.' });
+    push({ tone: 'success', title: t('security.emailChanged'), description: t('security.emailChangedDescription') });
   } catch (caught) {
     const field = fieldOf(caught);
     if (field === 'email') {
@@ -114,17 +119,17 @@ const spinner = 'h-3.5 w-3.5 animate-spin rounded-full border-2 border-zinc-900/
 <template>
   <div class="flex flex-col gap-8">
     <form class="flex max-w-3xl flex-col gap-5" novalidate @submit.prevent="changeEmail">
-      <SectionHeader title="Email" subtitle="Used to sign in and for account emails" />
+      <SectionHeader :title="t('security.emailTitle')" :subtitle="t('security.emailSubtitle')" />
       <AuthError :message="emailServer.form" />
       <div>
-        <p class="text-xs text-zinc-400">Current email</p>
+        <p class="text-xs text-zinc-400">{{ t('security.currentEmail') }}</p>
         <p class="mt-1.5 truncate text-sm font-medium text-zinc-100">{{ auth.user.value?.email }}</p>
       </div>
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <AuthField
           id="security-new-email"
           v-model="email.next"
-          label="New email"
+          :label="t('security.newEmail')"
           type="email"
           autocomplete="email"
           :error="emailErrors.next"
@@ -132,7 +137,7 @@ const spinner = 'h-3.5 w-3.5 animate-spin rounded-full border-2 border-zinc-900/
         <AuthField
           id="security-email-password"
           v-model="email.current"
-          label="Current password"
+          :label="t('security.currentPassword')"
           type="password"
           autocomplete="current-password"
           :error="emailErrors.current"
@@ -140,18 +145,18 @@ const spinner = 'h-3.5 w-3.5 animate-spin rounded-full border-2 border-zinc-900/
       </div>
       <button type="submit" :class="primary" :disabled="pending !== null" :aria-busy="pending === 'email'">
         <span v-if="pending === 'email'" :class="spinner" aria-hidden="true" />
-        Change email
+        {{ t('security.changeEmail') }}
       </button>
     </form>
 
     <form class="flex max-w-3xl flex-col gap-5 border-t border-zinc-800 pt-8" novalidate @submit.prevent="changePassword">
-      <SectionHeader title="Password" subtitle="Your other devices are signed out when it changes" />
+      <SectionHeader :title="t('security.passwordTitle')" :subtitle="t('security.passwordSubtitle')" />
       <AuthError :message="passwordServer.form" />
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <AuthField
           id="security-current-password"
           v-model="password.current"
-          label="Current password"
+          :label="t('security.currentPassword')"
           type="password"
           autocomplete="current-password"
           :error="passwordErrors.current"
@@ -161,18 +166,18 @@ const spinner = 'h-3.5 w-3.5 animate-spin rounded-full border-2 border-zinc-900/
         <AuthField
           id="security-new-password"
           v-model="password.next"
-          label="New password"
+          :label="t('auth.reset.newPassword')"
           type="password"
           autocomplete="new-password"
           :error="passwordErrors.next"
-          hint="At least 8 characters, mixing letters, digits or symbols."
+          :hint="t('auth.passwordHint')"
         >
           <PasswordStrengthMeter :password="password.next" />
         </AuthField>
         <AuthField
           id="security-confirm-password"
           v-model="password.confirm"
-          label="Confirm new password"
+          :label="t('auth.reset.confirmPassword')"
           type="password"
           autocomplete="new-password"
           :error="passwordErrors.confirm"
@@ -180,18 +185,18 @@ const spinner = 'h-3.5 w-3.5 animate-spin rounded-full border-2 border-zinc-900/
       </div>
       <button type="submit" :class="primary" :disabled="pending !== null" :aria-busy="pending === 'password'">
         <span v-if="pending === 'password'" :class="spinner" aria-hidden="true" />
-        Change password
+        {{ t('security.changePassword') }}
       </button>
     </form>
 
     <div class="flex max-w-3xl flex-wrap items-center justify-between gap-3 border-t border-zinc-800 pt-5">
-      <p class="text-xs text-zinc-500">Forgot your current password? Sign out and use "Forgot password?" on the sign-in page.</p>
+      <p class="text-xs text-zinc-500">{{ t('security.forgotHint') }}</p>
       <button
         type="button"
         class="rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm font-medium text-red-400 transition-colors hover:bg-zinc-800 hover:text-red-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400"
         @click="emit('signOut')"
       >
-        Sign out
+        {{ t('security.signOut') }}
       </button>
     </div>
   </div>

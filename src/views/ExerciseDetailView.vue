@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { CalendarClock, ChevronLeft, Dumbbell, Hash, Layers, ListOrdered, Repeat, Scale, Weight } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
@@ -50,24 +51,24 @@ const summary = computed(() => detail.value?.summary ?? null);
 
 const lastPerformed = computed(() => {
   const days = summary.value?.daysSinceLast;
-  return days === null || days === undefined ? 'never' : formatDaysAgo(days);
+  return days === null || days === undefined ? t('exercises.never') : formatDaysAgo(days);
 });
 
 const metrics = computed<MetricItem[]>(() => {
   const value = summary.value;
   return [
-    { label: 'Sessions', value: formatInteger(value?.sessions), icon: Hash },
-    { label: 'Sets', value: formatInteger(value?.totalSets), icon: Layers },
-    { label: 'Reps', value: formatInteger(value?.totalReps), icon: Repeat },
-    { label: 'Total volume', value: formatVolume(value?.totalVolumeKg), icon: Weight },
-    { label: 'Sets / session', value: formatNumber(value?.avgSetsPerSession), icon: ListOrdered },
-    { label: 'Reps / set', value: formatNumber(value?.avgRepsPerSet), icon: Dumbbell },
+    { label: t('exercises.sessions'), value: formatInteger(value?.sessions), icon: Hash },
+    { label: t('exercises.sets'), value: formatInteger(value?.totalSets), icon: Layers },
+    { label: t('exercises.reps'), value: formatInteger(value?.totalReps), icon: Repeat },
+    { label: t('exercises.totalVolume'), value: formatVolume(value?.totalVolumeKg), icon: Weight },
+    { label: t('exercises.setsPerSession'), value: formatNumber(value?.avgSetsPerSession), icon: ListOrdered },
+    { label: t('exercises.repsPerSet'), value: formatNumber(value?.avgRepsPerSet), icon: Dumbbell },
     {
-      label: 'Avg weight',
+      label: t('exercises.avgWeight'),
       value: value?.avgWeightKg === null || value?.avgWeightKg === undefined ? EMPTY : `${formatWeight(value.avgWeightKg)} kg`,
       icon: Scale,
     },
-    { label: 'Last performed', value: lastPerformed.value, icon: CalendarClock },
+    { label: t('exercises.lastPerformed'), value: lastPerformed.value, icon: CalendarClock },
   ];
 });
 
@@ -76,7 +77,7 @@ async function onSave(payload: UpdateExercisePayload): Promise<void> {
   if (saved) {
     isEditing.value = false;
     catalog.refresh();
-    push({ tone: 'success', title: 'Classification updated' });
+    push({ tone: 'success', title: t('exercises.classificationUpdated') });
   }
 }
 
@@ -87,8 +88,8 @@ async function onMerge(sourceExerciseId: string): Promise<void> {
     catalog.refresh();
     push({
       tone: 'success',
-      title: `Merged into ${merged.targetName}`,
-      description: `${formatInteger(merged.workoutExercisesRepointed)} sessions re-attributed.`,
+      title: t('exercises.mergedInto', { name: merged.targetName }),
+      description: t('exercises.reattributed', { count: formatInteger(merged.workoutExercisesRepointed) }),
     });
   }
 }
@@ -105,7 +106,7 @@ const focus = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visi
         :class="focus"
       >
         <ChevronLeft class="h-4 w-4" aria-hidden="true" />
-        All exercises
+        {{ t('exercises.all') }}
       </RouterLink>
 
       <div v-if="isLoading && !detail" class="flex flex-col gap-6" aria-busy="true">
@@ -114,7 +115,7 @@ const focus = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visi
         <div class="h-16 animate-pulse rounded-md bg-zinc-900" />
       </div>
 
-      <EmptyState v-else-if="error && notFound" message="This exercise does not exist." />
+      <EmptyState v-else-if="error && notFound" :message="t('exercises.notFound')" />
 
       <SectionError v-else-if="error" :message="error" @retry="refresh" />
 
@@ -133,7 +134,7 @@ const focus = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visi
               </span>
               <span>{{ EQUIPMENT_LABELS[info.equipment] }}</span>
               <span>{{ KIND_LABELS[info.kind] }}</span>
-              <span v-if="info.isCustom" class="text-amber-400">Custom</span>
+              <span v-if="info.isCustom" class="text-amber-400">{{ t('exercises.custom') }}</span>
             </p>
           </div>
 
@@ -144,7 +145,7 @@ const focus = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visi
               :class="focus"
               @click="isEditing = true"
             >
-              Edit classification
+              {{ t('exercises.editClassification') }}
             </button>
             <button
               type="button"
@@ -152,7 +153,7 @@ const focus = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visi
               :class="focus"
               @click="isMerging = true"
             >
-              Merge into this
+              {{ t('exercises.mergeIntoThis') }}
             </button>
           </div>
         </header>

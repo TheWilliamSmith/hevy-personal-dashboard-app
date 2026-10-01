@@ -53,7 +53,8 @@ Toujours les classes Tailwind ci-dessous, jamais de couleur en dur dans un templ
 | Petits libellés (axes, jours, légendes) | `text-[11px] text-zinc-400` ou `text-xs` |
 
 - Tout nombre porte `tabular-nums`.
-- Les libellés de l'interface sont en anglais. Les dates et nombres passent par `src/utils/format.ts` (format `fr-FR`).
+- Les libellés de l'interface existent en anglais (par défaut) et en français, choisis dans Settings → Preferences et mémorisés sur l'appareil. Aucun texte en dur dans les composants : tout passe par `t()` (`src/i18n`). Les dates et nombres passent par `src/utils/format.ts`, au format de la langue choisie (`en-GB` ou `fr-FR`).
+- Un texte traduit peut être plus long (le français compte souvent 20 à 30 % de plus) : prévoir `truncate` ou un retour à la ligne plutôt qu'une largeur fixe.
 
 ## Mise en page
 

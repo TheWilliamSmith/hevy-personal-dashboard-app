@@ -1,3 +1,4 @@
+import { t } from '@/i18n';
 import { accessToken } from './auth-session';
 import { shouldBypassHttpCache } from './data-version';
 import { reportUnauthorized } from './session-expiry';
@@ -74,22 +75,22 @@ function buildQuery(params: QueryParams): string {
 
 function messageForStatus(status: number, apiMessage: string | null): string {
   if (status === 404) {
-    return apiMessage ?? 'Not found.';
+    return apiMessage ?? t('errors.notFound');
   }
 
   if (status === 409 || status === 410) {
-    return apiMessage ?? 'This action is no longer possible.';
+    return apiMessage ?? t('errors.conflict');
   }
 
   if (status === 429) {
-    return apiMessage ?? 'Too many attempts. Wait a moment and try again.';
+    return apiMessage ?? t('errors.tooManyAttempts');
   }
 
   if (status >= 500) {
-    return 'The server failed to answer. Try again in a moment.';
+    return t('errors.serverFailed');
   }
 
-  return apiMessage ?? `Request failed (HTTP ${status}).`;
+  return apiMessage ?? t('errors.requestFailed', { status });
 }
 
 interface RequestOptions {
@@ -121,7 +122,7 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
     if (error instanceof DOMException && error.name === 'AbortError') {
       throw error;
     }
-    throw new ApiError('Could not reach the server. Check your connection.', null);
+    throw new ApiError(t('errors.network'), null);
   }
 
   if (!response.ok) {

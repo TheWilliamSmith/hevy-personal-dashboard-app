@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { ref, watch } from 'vue';
 
 import BaseDialog from '@/components/ui/BaseDialog.vue';
@@ -88,7 +89,7 @@ const field =
   >
     <header class="border-b border-zinc-800 px-5 py-4">
       <h2 id="edit-classification-title" class="text-base font-semibold text-white">
-        Edit classification
+        {{ t('exercises.edit.title') }}
       </h2>
       <p class="mt-0.5 truncate text-sm text-zinc-500">{{ props.exercise?.name }}</p>
     </header>
@@ -96,7 +97,7 @@ const field =
     <div class="min-h-0 flex-1 space-y-4 overflow-y-auto px-5 py-4">
       <div>
         <label for="edit-muscle" class="mb-1 block text-xs text-zinc-400">
-          Primary muscle group
+          {{ t('exercises.edit.primary') }}
         </label>
         <select id="edit-muscle" v-model="muscleGroup" :class="field">
           <option v-for="group in MUSCLE_ORDER" :key="group" :value="group">
@@ -107,7 +108,7 @@ const field =
 
       <fieldset>
         <legend class="mb-1 text-xs text-zinc-400">
-          Secondary muscles ({{ secondaries.length }}/{{ MAX_SECONDARIES }})
+          {{ t('exercises.edit.secondary', { count: secondaries.length, max: MAX_SECONDARIES }) }}
         </legend>
         <div class="flex flex-wrap gap-1.5">
           <button
@@ -133,7 +134,7 @@ const field =
       <div class="grid gap-4 sm:grid-cols-2">
         <div>
           <label for="edit-equipment" class="mb-1 block text-xs text-zinc-400">
-            Equipment
+            {{ t('exercises.edit.equipment') }}
           </label>
           <select id="edit-equipment" v-model="equipment" :class="field">
             <option v-for="item in EQUIPMENT_ORDER" :key="item" :value="item">
@@ -143,7 +144,7 @@ const field =
         </div>
 
         <div>
-          <label for="edit-kind" class="mb-1 block text-xs text-zinc-400">Kind</label>
+          <label for="edit-kind" class="mb-1 block text-xs text-zinc-400">{{ t('exercises.edit.kind') }}</label>
           <select id="edit-kind" v-model="kind" :class="field">
             <option v-for="item in KIND_ORDER" :key="item" :value="item">
               {{ KIND_LABELS[item] }}
@@ -154,11 +155,11 @@ const field =
 
       <div>
         <label for="edit-aliases" class="mb-1 block text-xs text-zinc-400">
-          Aliases (comma separated)
+          {{ t('exercises.edit.aliases') }}
         </label>
         <input id="edit-aliases" v-model="aliasText" type="text" :class="field" />
         <p class="mt-1 text-xs text-zinc-500">
-          Alternative names matched when importing, e.g. a French export label.
+          {{ t('exercises.edit.aliasesHint') }}
         </p>
       </div>
 
@@ -174,7 +175,7 @@ const field =
         :disabled="props.isSaving"
         @click="emit('cancel')"
       >
-        Cancel
+        {{ t('common.cancel') }}
       </button>
       <button
         type="button"
@@ -188,7 +189,7 @@ const field =
           class="h-3.5 w-3.5 animate-spin rounded-full border-2 border-zinc-900/30 border-t-zinc-900"
           aria-hidden="true"
         />
-        Save
+        {{ t('exercises.edit.save') }}
       </button>
     </footer>
   </BaseDialog>

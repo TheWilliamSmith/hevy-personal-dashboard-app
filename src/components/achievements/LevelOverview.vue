@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { computed } from 'vue';
 
 import SectionHeader from '@/components/ui/SectionHeader.vue';
@@ -19,7 +20,7 @@ const xpPercent = computed(() =>
 
 <template>
   <section class="flex flex-col gap-6">
-    <SectionHeader title="Level" subtitle="XP earned from unlocked trophies">
+    <SectionHeader :title="t('trophies.levelTitle')" :subtitle="t('trophies.levelSubtitle')">
       <p class="text-right">
         <span
           class="text-2xl font-semibold text-white tabular-nums"
@@ -27,18 +28,18 @@ const xpPercent = computed(() =>
         >
           {{ formatInteger(level?.totalXp ?? 0) }}
         </span>
-        <span class="block text-[11px] leading-tight text-zinc-500">Total XP</span>
+        <span class="block text-[11px] leading-tight text-zinc-500">{{ t('trophies.totalXp') }}</span>
       </p>
     </SectionHeader>
 
     <div class="flex items-center gap-4">
       <span class="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-md border border-zinc-700">
-        <span class="text-[10px] tracking-wider text-zinc-500 uppercase">Lvl</span>
+        <span class="text-[10px] tracking-wider text-zinc-500 uppercase">{{ t('trophies.lvl') }}</span>
         <span class="text-xl leading-none font-semibold text-white tabular-nums">{{ level?.level ?? '·' }}</span>
       </span>
       <div class="min-w-0 flex-1">
         <p class="flex items-baseline justify-between gap-3 text-sm">
-          <span class="text-zinc-200">To level {{ (level?.level ?? 0) + 1 }}</span>
+          <span class="text-zinc-200">{{ t('trophies.toLevel', { level: (level?.level ?? 0) + 1 }) }}</span>
           <span class="text-xs text-zinc-400 tabular-nums">
             {{ formatInteger(level?.into ?? 0) }} / {{ formatInteger(level?.needed ?? 0) }} XP
           </span>
@@ -46,7 +47,7 @@ const xpPercent = computed(() =>
         <div
           class="mt-2 h-2 rounded-full bg-zinc-900"
           role="progressbar"
-          aria-label="Progress to the next level"
+          :aria-label="t('trophies.levelProgress')"
           :aria-valuenow="Math.round(xpPercent)"
           aria-valuemin="0"
           aria-valuemax="100"

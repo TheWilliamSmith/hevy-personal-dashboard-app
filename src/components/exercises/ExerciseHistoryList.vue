@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { ChevronRight } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { RouterLink } from 'vue-router';
@@ -48,9 +49,9 @@ const cell = 'px-2 py-2 text-sm text-zinc-100 tabular-nums';
 
 <template>
   <section class="flex flex-col gap-2">
-    <SectionHeader title="Session history" :subtitle="`${total} sessions · newest first`" />
+    <SectionHeader :title="t('exercises.history.title')" :subtitle="t('exercises.history.subtitle', { count: total })" />
 
-    <EmptyState v-if="entries.length === 0" message="No sessions recorded for this exercise." />
+    <EmptyState v-if="entries.length === 0" :message="t('exercises.history.none')" />
 
     <ul v-else>
       <li v-for="entry in entries" :key="entry.workoutId" class="border-b border-zinc-800 last:border-b-0">
@@ -73,11 +74,11 @@ const cell = 'px-2 py-2 text-sm text-zinc-100 tabular-nums';
           </span>
           <span class="hidden flex-col lg:flex">
             <span class="text-sm text-zinc-100 tabular-nums">{{ bestSetSummary(entry) }}</span>
-            <span class="text-[11px] text-zinc-500">Best set</span>
+            <span class="text-[11px] text-zinc-500">{{ t('exercises.history.bestSet') }}</span>
           </span>
           <span class="flex flex-col text-right lg:text-left">
             <span class="text-sm text-zinc-100 tabular-nums">{{ formatVolume(entry.sessionVolumeKg) }}</span>
-            <span class="text-[11px] text-zinc-500">Volume</span>
+            <span class="text-[11px] text-zinc-500">{{ t('exercises.history.volume') }}</span>
           </span>
         </button>
 
@@ -91,7 +92,7 @@ const cell = 'px-2 py-2 text-sm text-zinc-100 tabular-nums';
               :to="{ name: 'home', query: { tab: 'workouts', workout: entry.workoutId } }"
               class="font-medium text-zinc-200 underline decoration-zinc-600 underline-offset-2 hover:decoration-zinc-300"
             >
-              Open workout
+              {{ t('exercises.history.openWorkout') }}
             </RouterLink>
             <span v-if="entry.supersetId !== null" class="flex items-center gap-1 text-sky-400">
               <span class="h-1.5 w-1.5 rounded-full bg-sky-400" aria-hidden="true" />
@@ -101,15 +102,15 @@ const cell = 'px-2 py-2 text-sm text-zinc-100 tabular-nums';
           </p>
 
           <table class="w-full border-collapse">
-            <caption class="sr-only">Sets for {{ entry.workoutTitle }}</caption>
+            <caption class="sr-only">{{ t('exercises.history.setsFor', { name: entry.workoutTitle }) }}</caption>
             <thead>
               <tr class="border-b border-zinc-800">
-                <th scope="col" :class="head">Set</th>
-                <th scope="col" :class="head">Type</th>
-                <th scope="col" :class="head">Weight × reps</th>
-                <th scope="col" :class="head">Volume</th>
-                <th scope="col" :class="head">Est. 1RM</th>
-                <th scope="col" :class="head">RPE</th>
+                <th scope="col" :class="head">{{ t('exercises.history.set') }}</th>
+                <th scope="col" :class="head">{{ t('exercises.history.type') }}</th>
+                <th scope="col" :class="head">{{ t('exercises.history.weightReps') }}</th>
+                <th scope="col" :class="head">{{ t('exercises.history.volume') }}</th>
+                <th scope="col" :class="head">{{ t('exercises.history.est1RM') }}</th>
+                <th scope="col" :class="head">{{ t('exercises.history.rpe') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -122,7 +123,7 @@ const cell = 'px-2 py-2 text-sm text-zinc-100 tabular-nums';
                 <th scope="row" :class="[cell, 'text-left font-normal text-zinc-400']">
                   {{ set.setIndex + 1 }}
                   <span v-if="set.isPR" class="ml-1 text-[11px] font-medium text-emerald-400">
-                    PR<span class="sr-only"> — personal record set</span>
+                    {{ t('exercises.history.pr') }}<span class="sr-only">{{ t('exercises.history.prSet') }}</span>
                   </span>
                 </th>
                 <td :class="cell">
@@ -154,7 +155,7 @@ const cell = 'px-2 py-2 text-sm text-zinc-100 tabular-nums';
       :aria-busy="isLoadingMore"
       @click="emit('loadMore')"
     >
-      {{ isLoadingMore ? 'Loading…' : 'Load more sessions' }}
+      {{ isLoadingMore ? t('exercises.history.loading') : t('exercises.history.loadMore') }}
     </button>
   </section>
 </template>

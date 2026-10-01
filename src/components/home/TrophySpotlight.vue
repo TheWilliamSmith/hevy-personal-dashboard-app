@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { computed } from 'vue';
 import { RouterLink } from 'vue-router';
 
@@ -28,7 +29,7 @@ const latest = computed(() => props.summary?.recentUnlocks[0] ?? null);
 
 <template>
   <section class="flex h-full flex-col gap-4">
-    <SectionHeader title="Trophies" subtitle="Your progress through the trophy room" />
+    <SectionHeader :title="t('dashboard.trophies.title')" :subtitle="t('dashboard.trophies.subtitle')" />
 
     <SectionError v-if="error" :message="error" @retry="emit('retry')" />
 
@@ -42,12 +43,17 @@ const latest = computed(() => props.summary?.recentUnlocks[0] ?? null);
         </p>
         <p class="mt-2 max-w-xs text-sm text-zinc-400">
           <template v-if="summary">
-            You have unlocked {{ formatInteger(summary.unlockedCount) }} of
-            {{ formatInteger(summary.totalCount) }} trophies. Level {{ summary.level.level }},
-            {{ formatInteger(summary.level.into) }} / {{ formatInteger(summary.level.needed) }} XP to
-            the next one.
+            {{
+              t('dashboard.trophies.summary', {
+                unlocked: formatInteger(summary.unlockedCount),
+                total: formatInteger(summary.totalCount),
+                level: summary.level.level,
+                into: formatInteger(summary.level.into),
+                needed: formatInteger(summary.level.needed),
+              })
+            }}
           </template>
-          <template v-else>Loading your trophies…</template>
+          <template v-else>{{ t('dashboard.trophies.loading') }}</template>
         </p>
       </div>
 
@@ -56,13 +62,13 @@ const latest = computed(() => props.summary?.recentUnlocks[0] ?? null);
           :to="{ name: 'home', query: { tab: 'trophies' } }"
           class="flex w-full items-center justify-center rounded-md bg-white px-3 py-2 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
         >
-          Open the trophy room
+          {{ t('dashboard.trophies.open') }}
         </RouterLink>
         <p class="text-center text-xs text-zinc-500">
           <template v-if="latest">
-            Latest: {{ latest.name }} · {{ formatDay(latest.unlockedAt) }}
+            {{ t('dashboard.trophies.latest', { name: latest.name, date: formatDay(latest.unlockedAt) }) }}
           </template>
-          <template v-else-if="summary">Your first trophy is one workout away.</template>
+          <template v-else-if="summary">{{ t('dashboard.trophies.first') }}</template>
         </p>
       </div>
     </template>

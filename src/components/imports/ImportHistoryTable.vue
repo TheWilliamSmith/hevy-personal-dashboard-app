@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { ChevronRight } from 'lucide-vue-next';
 import { RouterLink } from 'vue-router';
 
@@ -31,12 +32,12 @@ const emit = defineEmits<{
 
 function statsOf(batch: ImportBatchSummary) {
   return [
-    { label: 'Rows', value: formatInteger(batch.rowCount) },
-    { label: 'Created', value: formatInteger(batch.workoutsCreated) },
-    { label: 'Skipped', value: formatInteger(batch.workoutsSkipped) },
-    { label: 'Sets', value: formatInteger(batch.setsCreated) },
+    { label: t('imports.history.rows'), value: formatInteger(batch.rowCount) },
+    { label: t('imports.history.created'), value: formatInteger(batch.workoutsCreated) },
+    { label: t('imports.history.skipped'), value: formatInteger(batch.workoutsSkipped) },
+    { label: t('imports.history.sets'), value: formatInteger(batch.setsCreated) },
     {
-      label: 'Still present',
+      label: t('imports.history.stillPresent'),
       value: `${formatInteger(batch.workoutsStillPresent)} / ${formatInteger(batch.workoutsCreated)}`,
     },
   ];
@@ -47,7 +48,10 @@ const focus = 'focus-visible:outline-2 focus-visible:outline-offset-1 focus-visi
 
 <template>
   <section class="flex flex-col gap-2">
-    <SectionHeader title="Import history" :subtitle="meta ? `${meta.total} imports · newest first` : 'Newest first'" />
+    <SectionHeader
+      :title="t('imports.history.title')"
+      :subtitle="meta ? t('imports.history.subtitle', { count: meta.total }) : t('imports.history.newestFirst')"
+    />
 
     <ul v-if="isLoading && batches.length === 0" class="flex flex-col gap-3 pt-2" aria-busy="true">
       <li v-for="row in 4" :key="row" class="h-12 animate-pulse rounded-md bg-zinc-900" />
@@ -55,7 +59,7 @@ const focus = 'focus-visible:outline-2 focus-visible:outline-offset-1 focus-visi
 
     <SectionError v-else-if="error" :message="error" @retry="emit('retry')" />
 
-    <EmptyState v-else-if="batches.length === 0" message="No imports yet." />
+    <EmptyState v-else-if="batches.length === 0" :message="t('imports.history.none')" />
 
     <ul v-else>
       <li v-for="batch in batches" :key="batch.id" class="border-b border-zinc-800 last:border-b-0">
@@ -95,7 +99,7 @@ const focus = 'focus-visible:outline-2 focus-visible:outline-offset-1 focus-visi
 
           <span
             class="shrink-0"
-            :title="batch.rollbackable ? undefined : 'This batch no longer owns any workout, so it cannot be rolled back.'"
+            :title="batch.rollbackable ? undefined : t('imports.history.notRollbackable')"
           >
             <button
               type="button"
@@ -104,7 +108,7 @@ const focus = 'focus-visible:outline-2 focus-visible:outline-offset-1 focus-visi
               :disabled="!batch.rollbackable || deletingId === batch.id"
               @click="emit('requestDelete', batch)"
             >
-              Delete
+              {{ t('imports.history.delete') }}
             </button>
           </span>
         </div>
@@ -121,7 +125,7 @@ const focus = 'focus-visible:outline-2 focus-visible:outline-offset-1 focus-visi
           <p v-else-if="detailError" class="text-sm text-red-300" role="alert">{{ detailError }}</p>
 
           <p v-else-if="!detail || detail.workouts.length === 0" class="text-sm text-zinc-500">
-            This import has no workouts left.
+            {{ t('imports.history.noWorkoutsLeft') }}
           </p>
 
           <ul v-else class="divide-y divide-zinc-800">
@@ -138,7 +142,7 @@ const focus = 'focus-visible:outline-2 focus-visible:outline-offset-1 focus-visi
               </RouterLink>
               <span class="text-xs text-zinc-500">
                 {{ formatDate(workout.startedAt) }} · {{ workout.exerciseCount }} exercises ·
-                {{ workout.setCount }} sets · {{ formatVolume(workout.totalVolumeKg) }}
+                {{ t('imports.history.workoutSummary', { count: workout.setCount, volume: formatVolume(workout.totalVolumeKg) }) }}
               </span>
             </li>
           </ul>
@@ -150,8 +154,8 @@ const focus = 'focus-visible:outline-2 focus-visible:outline-offset-1 focus-visi
       v-if="meta && meta.totalPages > 1"
       class="pt-2"
       :meta="meta"
-      label="Import history pagination"
-      unit="imports"
+      :label="t('imports.history.pagination')"
+      :unit="t('imports.history.unit')"
       @change="emit('page', $event)"
     />
   </section>

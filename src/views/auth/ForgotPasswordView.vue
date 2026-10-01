@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { ChevronLeft, MailCheck } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
@@ -17,7 +18,7 @@ const touched = ref(false);
 const sentTo = ref<string | null>(null);
 const formError = ref<string | null>(null);
 
-const error = computed(() => (touched.value && !isEmail(email.value) ? 'Enter a valid email address.' : null));
+const error = computed(() => (touched.value && !isEmail(email.value) ? t('validation.email') : null));
 
 async function submit(): Promise<void> {
   touched.value = true;
@@ -36,25 +37,29 @@ async function submit(): Promise<void> {
 
 <template>
   <AuthLayout
-    :title="sentTo ? 'Check your inbox' : 'Reset your password'"
-    :subtitle="sentTo ? 'The link is valid for 30 minutes.' : 'Enter your email and we will send you a link to choose a new password.'"
+    :title="sentTo ? t('auth.forgot.sentTitle') : t('auth.forgot.title')"
+    :subtitle="sentTo ? t('auth.forgot.sentSubtitle') : t('auth.forgot.subtitle')"
   >
     <div v-if="sentTo" class="flex flex-col gap-4">
       <div class="flex items-start gap-3 rounded-md border border-emerald-500/30 bg-emerald-500/10 p-4">
         <MailCheck class="mt-0.5 h-5 w-5 shrink-0 text-emerald-400" aria-hidden="true" />
-        <p class="text-sm text-zinc-200" role="status">
-          If an account exists for <span class="font-medium text-white">{{ sentTo }}</span>, a reset link is on its way.
-        </p>
+        <i18n-t keypath="auth.forgot.sentBody" tag="p" scope="global" class="text-sm text-zinc-200" role="status">
+          <template #email>
+            <span class="font-medium text-white">{{ sentTo }}</span>
+          </template>
+        </i18n-t>
       </div>
-      <p class="text-xs text-zinc-500">
-        Nothing arrived? Check your spam folder, or
-        <button
-          type="button"
-          class="font-medium text-zinc-300 underline decoration-zinc-600 underline-offset-2 hover:decoration-zinc-300"
-          @click="sentTo = null"
-        >
-          try another address</button>.
-      </p>
+      <i18n-t keypath="auth.forgot.nothingArrived" tag="p" scope="global" class="text-xs text-zinc-500">
+        <template #action>
+          <button
+            type="button"
+            class="font-medium text-zinc-300 underline decoration-zinc-600 underline-offset-2 hover:decoration-zinc-300"
+            @click="sentTo = null"
+          >
+            {{ t('auth.forgot.tryAnother') }}
+          </button>
+        </template>
+      </i18n-t>
     </div>
 
     <form v-else class="flex flex-col gap-4" novalidate @submit.prevent="submit">
@@ -62,7 +67,7 @@ async function submit(): Promise<void> {
       <AuthField
         id="forgot-email"
         v-model="email"
-        label="Email"
+        :label="t('auth.email')"
         type="email"
         autocomplete="email"
         :error="error"
@@ -79,7 +84,7 @@ async function submit(): Promise<void> {
           class="h-3.5 w-3.5 animate-spin rounded-full border-2 border-zinc-900/30 border-t-zinc-900"
           aria-hidden="true"
         />
-        Send reset link
+        {{ t('auth.forgot.submit') }}
       </button>
     </form>
 
@@ -88,7 +93,7 @@ async function submit(): Promise<void> {
       class="-ml-2 inline-flex w-fit items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-zinc-300 transition-colors hover:bg-zinc-900 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400"
     >
       <ChevronLeft class="h-4 w-4" aria-hidden="true" />
-      Back to sign in
+      {{ t('auth.backToSignIn') }}
     </RouterLink>
   </AuthLayout>
 </template>

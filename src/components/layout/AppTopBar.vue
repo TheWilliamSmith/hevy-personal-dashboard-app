@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { Menu } from 'lucide-vue-next';
 import { computed } from 'vue';
 
@@ -19,7 +20,7 @@ const title = computed(() => TABS.find((item) => item.name === tab.value)?.label
     <button
       type="button"
       class="-ml-1.5 rounded-md p-1.5 text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400 lg:hidden"
-      aria-label="Open menu"
+      :aria-label="t('nav.openMenu')"
       :aria-expanded="mobileOpen"
       @click="openMobile"
     >

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { computed } from 'vue';
 
 import { passwordStrength } from '@/utils/auth';
@@ -6,11 +7,11 @@ import { passwordStrength } from '@/utils/auth';
 const props = defineProps<{ password: string }>();
 
 const LEVELS = [
-  { label: '', bar: 'bg-zinc-800', text: 'text-zinc-500' },
-  { label: 'Too short', bar: 'bg-red-400', text: 'text-red-400' },
-  { label: 'Weak', bar: 'bg-amber-400', text: 'text-amber-400' },
-  { label: 'Good', bar: 'bg-blue-500', text: 'text-blue-400' },
-  { label: 'Strong', bar: 'bg-emerald-400', text: 'text-emerald-400' },
+  { key: '', bar: 'bg-zinc-800', text: 'text-zinc-500' },
+  { key: 'auth.strength.tooShort', bar: 'bg-red-400', text: 'text-red-400' },
+  { key: 'auth.strength.weak', bar: 'bg-amber-400', text: 'text-amber-400' },
+  { key: 'auth.strength.good', bar: 'bg-blue-500', text: 'text-blue-400' },
+  { key: 'auth.strength.strong', bar: 'bg-emerald-400', text: 'text-emerald-400' },
 ] as const;
 
 const strength = computed(() => passwordStrength(props.password));
@@ -27,6 +28,6 @@ const level = computed(() => LEVELS[strength.value]);
         :class="step <= strength ? level.bar : 'bg-zinc-800'"
       />
     </div>
-    <span class="w-16 text-right text-[11px] font-medium" :class="level.text">{{ level.label }}</span>
+    <span class="w-16 text-right text-[11px] font-medium" :class="level.text">{{ level.key ? t(level.key) : '' }}</span>
   </div>
 </template>

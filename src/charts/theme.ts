@@ -1,5 +1,6 @@
 import type { EChartsOption } from 'echarts';
 
+import { t, translated } from '@/i18n';
 import { formatDuration, formatInteger, formatVolume } from '@/utils/format';
 import type { TimeseriesMetric } from '@/types/stats';
 
@@ -52,21 +53,10 @@ export const METRIC_COLORS: Readonly<Record<TimeseriesMetric, string>> = {
 
 export const WORKOUT_COUNT_COLOR = '#ec4899';
 
-export const METRIC_LABELS: Readonly<Record<TimeseriesMetric, string>> = {
-  volume: 'Volume',
-  sets: 'Sets',
-  reps: 'Reps',
-  duration: 'Duration',
-  workouts: 'Workouts',
-};
-
-export const METRIC_UNITS: Readonly<Record<TimeseriesMetric, string>> = {
-  volume: 'kg',
-  sets: 'sets',
-  reps: 'reps',
-  duration: '',
-  workouts: 'workouts',
-};
+export const METRIC_LABELS: Readonly<Record<TimeseriesMetric, string>> = translated(
+  ['volume', 'sets', 'reps', 'duration', 'workouts'],
+  (key) => `metrics.${key}`,
+);
 
 export function formatMetric(metric: TimeseriesMetric, value: number): string {
   switch (metric) {
@@ -75,7 +65,7 @@ export function formatMetric(metric: TimeseriesMetric, value: number): string {
     case 'duration':
       return formatDuration(value);
     default:
-      return `${formatInteger(value)} ${METRIC_UNITS[metric]}`;
+      return t(`units.${metric}`, { count: formatInteger(value) }, value);
   }
 }
 

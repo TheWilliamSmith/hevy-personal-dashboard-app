@@ -1,3 +1,4 @@
+import { t } from '@/i18n';
 import { computed, ref, type ComputedRef, type Ref } from 'vue';
 
 import { ApiError, apiDelete, apiGet, apiPatch, apiPost } from '@/lib/api';
@@ -30,7 +31,7 @@ export function useGoals(options: { includeArchived?: boolean } = {}): UseGoals 
       goals.value = await apiGet<Goal[]>('/goals', options.includeArchived ? { archived: 'true' } : {});
       hasLoaded.value = true;
     } catch (caught) {
-      error.value = caught instanceof ApiError ? caught.message : 'Could not load your goals.';
+      error.value = caught instanceof ApiError ? caught.message : t('errors.loadGoals');
     } finally {
       isLoading.value = false;
     }

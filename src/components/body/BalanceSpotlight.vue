@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { computed } from 'vue';
 import { RouterLink } from 'vue-router';
 
@@ -42,7 +43,7 @@ function changeClass(change: number | null): string {
 
 <template>
   <section class="flex h-full flex-col gap-4">
-    <SectionHeader title="Balance" subtitle="Muscle groups trained in this period" />
+    <SectionHeader :title="t('body.balance')" :subtitle="t('body.balanceSubtitle')" />
 
     <div>
       <p
@@ -53,16 +54,22 @@ function changeClass(change: number | null): string {
       </p>
       <p class="mt-2 max-w-xs text-sm text-zinc-400">
         <template v-if="heatmap?.topMuscle">
-          {{ trained.length }} of {{ mappedMuscles.length }} muscle groups worked · {{ rangeLabel.toLowerCase() }}.
-          {{ MUSCLE_LABELS[heatmap.topMuscle] }} led with {{ format(heatmap.values[heatmap.topMuscle]) }} {{ unit }}.
+          {{ t('body.balanceSummary', { trained: trained.length, total: mappedMuscles.length, range: rangeLabel.toLowerCase() }) }}
+          {{
+            t('body.balanceLeader', {
+              muscle: MUSCLE_LABELS[heatmap.topMuscle],
+              value: format(heatmap.values[heatmap.topMuscle]),
+              unit,
+            })
+          }}
         </template>
-        <template v-else-if="heatmap">No muscle trained in this period.</template>
-        <template v-else>Loading your muscle balance…</template>
+        <template v-else-if="heatmap">{{ t('body.noMuscle') }}</template>
+        <template v-else>{{ t('body.loadingBalance') }}</template>
       </p>
     </div>
 
     <div v-if="leastTrained.length > 0" class="mt-auto flex flex-col gap-2">
-      <p class="text-xs text-zinc-500">Least trained</p>
+      <p class="text-xs text-zinc-500">{{ t('body.leastTrained') }}</p>
       <ul class="flex flex-col gap-1">
         <li v-for="entry in leastTrained" :key="entry.muscle">
           <RouterLink

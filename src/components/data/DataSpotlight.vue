@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { computed } from 'vue';
 
 import SectionHeader from '@/components/ui/SectionHeader.vue';
@@ -23,7 +24,7 @@ const missing = computed(() => {
 
 <template>
   <section class="flex h-full flex-col gap-4">
-    <SectionHeader title="Your data" subtitle="Workouts stored in this dashboard" />
+    <SectionHeader :title="t('data.spotlight.title')" :subtitle="t('data.spotlight.subtitle')" />
 
     <div>
       <p
@@ -34,9 +35,9 @@ const missing = computed(() => {
       </p>
       <p class="mt-2 max-w-xs text-sm text-zinc-400">
         <template v-if="stats?.firstWorkoutAt && stats.lastWorkoutAt">
-          Workouts from {{ formatDay(stats.firstWorkoutAt) }} to {{ formatDay(stats.lastWorkoutAt) }}.
+          {{ t('data.spotlight.range', { from: formatDay(stats.firstWorkoutAt), to: formatDay(stats.lastWorkoutAt) }) }}
         </template>
-        <template v-else-if="stats">No workout yet — connect Hevy or import a CSV export.</template>
+        <template v-else-if="stats">{{ t('data.spotlight.empty') }}</template>
       </p>
     </div>
 
@@ -47,16 +48,16 @@ const missing = computed(() => {
           :class="!connected ? 'bg-zinc-600' : missing ? 'bg-amber-400' : 'bg-emerald-400'"
           aria-hidden="true"
         />
-        <span class="min-w-0 flex-1 text-zinc-200">Hevy sync</span>
+        <span class="min-w-0 flex-1 text-zinc-200">{{ t('data.spotlight.hevySync') }}</span>
         <span class="text-xs" :class="!connected ? 'text-zinc-500' : missing ? 'text-amber-400' : 'text-emerald-400'">
-          <template v-if="!connected">Not connected</template>
-          <template v-else-if="missing">{{ formatInteger(missing) }} workouts behind Hevy</template>
-          <template v-else>Up to date</template>
+          <template v-if="!connected">{{ t('data.spotlight.notConnected') }}</template>
+          <template v-else-if="missing">{{ t('data.spotlight.behind', { count: formatInteger(missing) }) }}</template>
+          <template v-else>{{ t('data.spotlight.upToDate') }}</template>
         </span>
       </li>
       <li v-if="connected" class="flex items-center gap-3 rounded-md px-2 py-2">
         <span class="h-2 w-2 shrink-0 rounded-full bg-zinc-600" aria-hidden="true" />
-        <span class="min-w-0 flex-1 text-zinc-200">Last sync</span>
+        <span class="min-w-0 flex-1 text-zinc-200">{{ t('data.spotlight.lastSync') }}</span>
         <span class="text-xs text-zinc-400">{{ formatRelativeTime(connected.lastSyncAt) }}</span>
       </li>
     </ul>

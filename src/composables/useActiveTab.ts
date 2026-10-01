@@ -1,3 +1,4 @@
+import { t } from '@/i18n';
 import { computed, type ComputedRef } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
@@ -12,14 +13,54 @@ export type TabName =
   | 'settings';
 
 export const TABS: ReadonlyArray<{ name: TabName; label: string }> = [
-  { name: 'dashboard', label: 'Dashboard' },
-  { name: 'body', label: 'Body' },
-  { name: 'progress', label: 'Progress' },
-  { name: 'goals', label: 'Goals' },
-  { name: 'trophies', label: 'Trophies' },
-  { name: 'workouts', label: 'Workouts' },
-  { name: 'exercises', label: 'Exercises' },
-  { name: 'settings', label: 'Settings' },
+  {
+    name: 'dashboard',
+    get label() {
+      return t('nav.dashboard');
+    },
+  },
+  {
+    name: 'body',
+    get label() {
+      return t('nav.body');
+    },
+  },
+  {
+    name: 'progress',
+    get label() {
+      return t('nav.progress');
+    },
+  },
+  {
+    name: 'goals',
+    get label() {
+      return t('nav.goals');
+    },
+  },
+  {
+    name: 'trophies',
+    get label() {
+      return t('nav.trophies');
+    },
+  },
+  {
+    name: 'workouts',
+    get label() {
+      return t('nav.workouts');
+    },
+  },
+  {
+    name: 'exercises',
+    get label() {
+      return t('nav.exercises');
+    },
+  },
+  {
+    name: 'settings',
+    get label() {
+      return t('nav.settings');
+    },
+  },
 ];
 
 function isTab(value: unknown): value is TabName {

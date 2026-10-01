@@ -35,7 +35,7 @@ describe('buildCalendarGrid', () => {
 
     expect(grid.monthLabels).toEqual([
       { week: 0, label: 'Aug' },
-      { week: 5, label: 'Sep' },
+      { week: 5, label: 'Sept' },
     ]);
   });
 

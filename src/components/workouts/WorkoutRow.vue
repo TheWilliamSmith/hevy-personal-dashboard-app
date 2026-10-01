@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { ChevronRight } from 'lucide-vue-next';
 import { computed } from 'vue';
 import { RouterLink } from 'vue-router';
@@ -11,14 +12,14 @@ const props = defineProps<{ workout: WorkoutSummary; backQuery: Record<string, s
 const isOverflow = (name: string): boolean => /^\+\d+$/.test(name);
 
 const stats = computed(() => [
-  { label: 'Duration', value: formatDuration(props.workout.durationSec) },
-  { label: 'Exercises', value: formatInteger(props.workout.exerciseCount) },
-  { label: 'Sets', value: formatInteger(props.workout.setCount) },
-  { label: 'Volume', value: formatVolume(props.workout.totalVolumeKg) },
+  { label: t('workouts.duration'), value: formatDuration(props.workout.durationSec) },
+  { label: t('workouts.exercises'), value: formatInteger(props.workout.exerciseCount) },
+  { label: t('workouts.sets'), value: formatInteger(props.workout.setCount) },
+  { label: t('workouts.volume'), value: formatVolume(props.workout.totalVolumeKg) },
 ]);
 
 const exerciseSummary = computed(() =>
-  props.workout.exerciseNames.map((name) => (isOverflow(name) ? `${name} more` : name)).join(' · '),
+  props.workout.exerciseNames.map((name) => (isOverflow(name) ? t('workouts.more', { count: name }) : name)).join(' · '),
 );
 </script>
 

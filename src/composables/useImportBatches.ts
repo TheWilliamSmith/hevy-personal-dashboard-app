@@ -1,3 +1,4 @@
+import { t } from '@/i18n';
 import { onScopeDispose, ref, type Ref } from 'vue';
 
 import { ApiError, apiDelete, apiGet } from '@/lib/api';
@@ -72,7 +73,7 @@ export function useImportBatches(): UseImportBatches {
       }
       batches.value = [];
       meta.value = null;
-      error.value = caught instanceof ApiError ? caught.message : 'Something went wrong.';
+      error.value = caught instanceof ApiError ? caught.message : t('errors.generic');
     } finally {
       if (!signal.aborted) {
         isLoading.value = false;
@@ -99,7 +100,7 @@ export function useImportBatches(): UseImportBatches {
       if (signal.aborted) {
         return;
       }
-      detailError.value = caught instanceof ApiError ? caught.message : 'Something went wrong.';
+      detailError.value = caught instanceof ApiError ? caught.message : t('errors.generic');
     } finally {
       if (!signal.aborted) {
         isDetailLoading.value = false;
@@ -144,7 +145,7 @@ export function useImportBatches(): UseImportBatches {
 
       return rolled;
     } catch (caught) {
-      deleteError.value = caught instanceof ApiError ? caught.message : 'Something went wrong.';
+      deleteError.value = caught instanceof ApiError ? caught.message : t('errors.generic');
       return null;
     } finally {
       deletingId.value = null;

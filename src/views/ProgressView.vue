@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { ChevronRight, SlidersHorizontal } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import { RouterLink } from 'vue-router';
@@ -23,14 +24,14 @@ const { push } = useToasts();
 const showSettings = ref(false);
 const showMuted = ref(false);
 
-const SORTS: ReadonlyArray<{ value: ProgressSort; label: string }> = [
-  { value: 'priority', label: 'Priority' },
-  { value: 'slope', label: 'Slope (worst first)' },
-  { value: 'gap', label: 'Gap to best' },
-  { value: 'lastPR', label: 'Longest since PR' },
-  { value: 'lastDone', label: 'Longest since done' },
-  { value: 'name', label: 'Name' },
-];
+const sorts = computed<ReadonlyArray<{ value: ProgressSort; label: string }>>(() => [
+  { value: 'priority', label: t('progress.sortPriority') },
+  { value: 'slope', label: t('progress.sortSlope') },
+  { value: 'gap', label: t('progress.sortGap') },
+  { value: 'lastPR', label: t('progress.sortLastPR') },
+  { value: 'lastDone', label: t('progress.sortLastDone') },
+  { value: 'name', label: t('progress.sortName') },
+]);
 
 const WINDOW_OPTIONS: ReadonlyArray<SegmentedOption<ProgressWindow>> = WINDOWS;
 
@@ -47,26 +48,34 @@ const isGloballyEmpty = computed(
 );
 
 const listTitle = computed(() =>
-  progress.status.value ? STATUS_STYLES[progress.status.value].label : 'All exercises',
+  progress.status.value ? STATUS_STYLES[progress.status.value].label : t('progress.allExercises'),
 );
 
 const sortLabel = computed(
-  () => SORTS.find((option) => option.value === progress.sort.value)?.label.toLowerCase() ?? '',
+  () => sorts.value.find((option) => option.value === progress.sort.value)?.label.toLowerCase() ?? '',
 );
 
 const emptyMessage = computed(() =>
-  progress.status.value ? STATUS_STYLES[progress.status.value].empty : 'No exercises match these settings.',
+  progress.status.value ? STATUS_STYLES[progress.status.value].empty : t('progress.noMatch'),
 );
 
 async function mute(item: ProgressItem, reason: string | null): Promise<void> {
   if (!(await progress.mute(item, reason))) {
-    push({ tone: 'error', title: `Could not mute ${item.name}`, description: progress.muteError.value ?? undefined });
+    push({
+      tone: 'error',
+      title: t('progress.muteFailed', { name: item.name }),
+      description: progress.muteError.value ?? undefined,
+    });
   }
 }
 
 async function unmute(entry: MutedExercise): Promise<void> {
   if (!(await progress.unmute(entry))) {
-    push({ tone: 'error', title: `Could not unmute ${entry.name}`, description: progress.muteError.value ?? undefined });
+    push({
+      tone: 'error',
+      title: t('progress.unmuteFailed', { name: entry.name }),
+      description: progress.muteError.value ?? undefined,
+    });
   }
 }
 
@@ -79,14 +88,14 @@ const focus = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visi
       <SegmentedControl
         :options="WINDOW_OPTIONS"
         :model-value="progress.draft.window"
-        label="Assessment window"
+        :label="t('progress.window')"
         @update:model-value="progress.updateDraft({ window: $event })"
       />
       <button
         type="button"
         class="relative rounded-md border border-zinc-800 bg-zinc-900 p-1.5 text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-white"
         :class="[focus, { 'bg-zinc-800 text-white': showSettings }]"
-        aria-label="Assessment settings"
+        :aria-label="t('progress.settings')"
         aria-controls="progress-settings"
         :aria-expanded="showSettings"
         @click="showSettings = !showSettings"
@@ -112,7 +121,7 @@ const focus = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visi
         @reset="progress.resetDefaults"
       />
 
-      <EmptyState v-if="isGloballyEmpty" import-link message="No training history to assess yet." />
+      <EmptyState v-if="isGloballyEmpty" import-link :message="t('progress.noHistory')" />
 
       <SectionError v-else-if="progress.error.value" :message="progress.error.value" @retry="progress.refresh" />
 
@@ -137,7 +146,7 @@ const focus = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visi
         </div>
 
         <section class="flex flex-col gap-2">
-          <SectionHeader :title="listTitle" :subtitle="`${progress.visible.value.length} exercises · sorted by ${sortLabel}`">
+          <SectionHeader :title="listTitle" :subtitle="t('progress.listSubtitle', { count: progress.visible.value.length, sort: sortLabel })">
             <div class="flex items-center gap-2">
               <button
                 v-if="progress.status.value"
@@ -146,9 +155,9 @@ const focus = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visi
                 :class="focus"
                 @click="progress.setStatus(null)"
               >
-                Show all
+                {{ t('progress.showAll') }}
               </button>
-              <label class="sr-only" for="progress-sort">Sort</label>
+              <label class="sr-only" for="progress-sort">{{ t('progress.sort') }}</label>
               <select
                 id="progress-sort"
                 class="rounded-md border border-zinc-800 bg-zinc-900 px-2 py-1.5 text-xs text-zinc-100"
@@ -156,7 +165,7 @@ const focus = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visi
                 :value="progress.sort.value"
                 @change="progress.setSort(($event.target as HTMLSelectElement).value as ProgressSort)"
               >
-                <option v-for="option in SORTS" :key="option.value" :value="option.value">
+                <option v-for="option in sorts" :key="option.value" :value="option.value">
                   {{ option.label }}
                 </option>
               </select>
@@ -191,7 +200,7 @@ const focus = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visi
               @click="showMuted = !showMuted"
             >
               <ChevronRight class="h-4 w-4 text-zinc-500 transition-transform" :class="{ 'rotate-90': showMuted }" aria-hidden="true" />
-              Muted
+              {{ t('progress.muted') }}
               <span class="text-xs font-normal text-zinc-500">{{ progress.muted.value.length }}</span>
             </button>
           </h2>
@@ -202,14 +211,14 @@ const focus = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visi
               class="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-zinc-800 py-2.5 pl-6 last:border-b-0"
             >
               <span class="text-sm font-medium text-zinc-200">{{ entry.name }}</span>
-              <span class="min-w-0 flex-1 truncate text-xs text-zinc-500">{{ entry.muteReason ?? 'No reason given' }}</span>
+              <span class="min-w-0 flex-1 truncate text-xs text-zinc-500">{{ entry.muteReason ?? t('progress.noReason') }}</span>
               <RouterLink
                 :to="{ name: 'home', query: { tab: 'exercises', exercise: entry.slug } }"
                 class="rounded-md px-2 py-1 text-xs font-medium text-zinc-300 transition-colors hover:bg-zinc-900 hover:text-white"
                 :class="focus"
-                :aria-label="`Open ${entry.name} in Exercises`"
+                :aria-label="t('progress.openIn', { name: entry.name })"
               >
-                Open
+                {{ t('progress.open') }}
               </RouterLink>
               <MuteButton
                 :exercise-id="entry.exerciseId"

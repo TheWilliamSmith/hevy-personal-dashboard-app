@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { Eye, EyeOff } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
@@ -55,7 +56,7 @@ const describedBy = computed(() => (props.error || props.hint ? `${props.id}-hel
         v-if="type === 'password'"
         type="button"
         class="absolute top-1/2 right-1.5 -translate-y-1/2 rounded p-1 text-zinc-500 hover:text-zinc-200 focus-visible:outline-2 focus-visible:outline-zinc-400"
-        :aria-label="revealed ? 'Hide password' : 'Show password'"
+        :aria-label="revealed ? t('auth.hidePassword') : t('auth.showPassword')"
         :aria-pressed="revealed"
         @click="revealed = !revealed"
       >

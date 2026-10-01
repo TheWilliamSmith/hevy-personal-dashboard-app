@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { computed } from 'vue';
 import { RouterLink } from 'vue-router';
 
@@ -34,7 +35,7 @@ const tiles = computed<Tile[]>(() => {
   if (props.kind === 'CARDIO') {
     if (records.longestDistanceKm) {
       result.push({
-        label: 'Longest distance',
+        label: t('exercises.records.longestDistance'),
         value: formatDistanceKm(records.longestDistanceKm.value),
         detail: null,
         date: records.longestDistanceKm.date,
@@ -43,7 +44,7 @@ const tiles = computed<Tile[]>(() => {
     }
     if (records.longestDurationSec) {
       result.push({
-        label: 'Longest duration',
+        label: t('exercises.records.longestDuration'),
         value: formatDuration(records.longestDurationSec.value),
         detail: null,
         date: records.longestDurationSec.date,
@@ -52,7 +53,7 @@ const tiles = computed<Tile[]>(() => {
     }
     if (records.bestPaceMinPerKm) {
       result.push({
-        label: 'Best pace',
+        label: t('exercises.records.bestPace'),
         value: formatPace(records.bestPaceMinPerKm.value),
         detail: null,
         date: records.bestPaceMinPerKm.date,
@@ -64,28 +65,31 @@ const tiles = computed<Tile[]>(() => {
 
   if (records.best1RM) {
     result.push({
-      label: 'Estimated 1RM',
+      label: t('exercises.records.oneRepMax'),
       value: `${formatWeight(records.best1RM.value)} kg`,
       detail:
         records.best1RM.weightKg === null
           ? null
-          : `from ${formatWeight(records.best1RM.weightKg)} kg × ${records.best1RM.reps ?? EMPTY}`,
+          : t('exercises.records.fromSet', {
+              weight: formatWeight(records.best1RM.weightKg),
+              reps: records.best1RM.reps ?? EMPTY,
+            }),
       date: records.best1RM.date,
       workoutId: records.best1RM.workoutId,
     });
   }
   if (records.maxWeight) {
     result.push({
-      label: 'Max weight',
+      label: t('exercises.records.maxWeight'),
       value: `${formatWeight(records.maxWeight.weightKg)} kg`,
-      detail: `× ${records.maxWeight.reps ?? EMPTY} reps`,
+      detail: t('exercises.records.timesReps', { reps: records.maxWeight.reps ?? EMPTY }),
       date: records.maxWeight.date,
       workoutId: records.maxWeight.workoutId,
     });
   }
   if (records.maxVolumeSession) {
     result.push({
-      label: 'Best session volume',
+      label: t('exercises.records.bestVolume'),
       value: formatVolume(records.maxVolumeSession.value),
       detail: null,
       date: records.maxVolumeSession.date,
@@ -94,10 +98,12 @@ const tiles = computed<Tile[]>(() => {
   }
   if (records.maxReps) {
     result.push({
-      label: 'Max reps',
-      value: `${formatInteger(records.maxReps.reps)} reps`,
+      label: t('exercises.records.maxReps'),
+      value: t('exercises.records.reps', { count: formatInteger(records.maxReps.reps) }),
       detail:
-        records.maxReps.weightKg === null ? null : `at ${formatWeight(records.maxReps.weightKg)} kg`,
+        records.maxReps.weightKg === null
+          ? null
+          : t('exercises.records.atWeight', { weight: formatWeight(records.maxReps.weightKg) }),
       date: records.maxReps.date,
       workoutId: records.maxReps.workoutId,
     });
@@ -112,9 +118,9 @@ const others = computed(() => tiles.value.slice(1));
 
 <template>
   <section class="flex h-full flex-col gap-4">
-    <SectionHeader title="Personal records" subtitle="Best efforts on this exercise" />
+    <SectionHeader :title="t('exercises.records.title')" :subtitle="t('exercises.records.subtitle')" />
 
-    <EmptyState v-if="!hero" message="No record yet." />
+    <EmptyState v-if="!hero" :message="t('exercises.records.none')" />
 
     <template v-else>
       <RouterLink

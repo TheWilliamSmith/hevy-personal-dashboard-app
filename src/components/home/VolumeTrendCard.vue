@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import type { EChartsOption } from 'echarts';
 import { computed } from 'vue';
 
@@ -61,7 +62,7 @@ const option = computed<EChartsOption>(() => ({
   },
   series: [
     {
-      name: 'Volume',
+      name: t('dashboard.volume'),
       type: 'line',
       symbol: 'none',
       lineStyle: { color: LINE_COLOR, width: 2 },
@@ -87,10 +88,10 @@ const option = computed<EChartsOption>(() => ({
 
 <template>
   <section class="flex flex-col gap-4">
-    <SectionHeader title="Training volume" :subtitle="caption">
+    <SectionHeader :title="t('dashboard.trainingVolume')" :subtitle="caption">
       <p class="text-right">
         <span class="text-2xl font-semibold text-white tabular-nums">{{ formatVolume(totalVolumeKg) }}</span>
-        <span class="block text-[11px] leading-tight text-zinc-500">Total volume</span>
+        <span class="block text-[11px] leading-tight text-zinc-500">{{ t('dashboard.totalVolume') }}</span>
       </p>
     </SectionHeader>
 
@@ -98,7 +99,7 @@ const option = computed<EChartsOption>(() => ({
 
     <div v-else class="relative h-64">
       <div v-if="isLoading && !points" class="absolute inset-0 animate-pulse rounded-md bg-zinc-900" />
-      <EmptyState v-else-if="!hasData" overlay message="No volume in this period." />
+      <EmptyState v-else-if="!hasData" overlay :message="t('dashboard.noVolume')" />
       <BaseChart v-else :option="option" :aria-label="caption" />
     </div>
   </section>

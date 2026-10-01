@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { CalendarDays, Layers, Repeat, Target, TrendingUp, Weight } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -21,17 +22,17 @@ import { formatInteger, formatPercent, formatVolume, percentChange } from '@/uti
 
 type FigureView = 'both' | 'front' | 'back';
 
-const METRICS: ReadonlyArray<SegmentedOption<HeatmapMetric>> = [
-  { value: 'sets', label: 'Sets' },
-  { value: 'volume', label: 'Volume' },
-  { value: 'reps', label: 'Reps' },
-];
+const metrics = computed<ReadonlyArray<SegmentedOption<HeatmapMetric>>>(() => [
+  { value: 'sets', label: t('body.sets') },
+  { value: 'volume', label: t('body.volume') },
+  { value: 'reps', label: t('body.reps') },
+]);
 
-const VIEWS: ReadonlyArray<SegmentedOption<FigureView>> = [
-  { value: 'both', label: 'Both' },
-  { value: 'front', label: 'Front' },
-  { value: 'back', label: 'Back' },
-];
+const views = computed<ReadonlyArray<SegmentedOption<FigureView>>>(() => [
+  { value: 'both', label: t('body.both') },
+  { value: 'front', label: t('body.front') },
+  { value: 'back', label: t('body.back') },
+]);
 
 const MAPPED_MUSCLES = MUSCLE_ORDER.filter((muscle) => muscle !== 'CARDIO' && muscle !== 'FULL_BODY');
 
@@ -49,7 +50,7 @@ const preset = computed<RangePreset>(() =>
 
 const rangeLabel = computed(() => {
   const found = RANGE_PRESETS.find((candidate) => candidate.value === preset.value);
-  return found?.days ? `Last ${found.label}` : 'All time';
+  return found?.days ? t('ranges.last', { range: found.label }) : t('ranges.allTime');
 });
 
 const heatmap = useMuscleHeatmap(
@@ -59,8 +60,10 @@ const heatmap = useMuscleHeatmap(
 );
 
 const data = computed(() => heatmap.data.value);
-const metricLabel = computed(() => METRICS.find((option) => option.value === metric.value)?.label ?? '');
-const unit = computed(() => (metric.value === 'volume' ? 'kg' : metric.value));
+const metricLabel = computed(() => metrics.value.find((option) => option.value === metric.value)?.label ?? '');
+const unit = computed(() =>
+  metric.value === 'volume' ? 'kg' : metric.value === 'reps' ? t('body.unitReps') : t('body.unitSets'),
+);
 const isEmpty = computed(() => data.value !== null && data.value.max <= 0);
 
 function format(value: number): string {
@@ -118,22 +121,22 @@ const highlights = computed<MetricItem[]>(() => {
   const payload = data.value;
   return [
     {
-      label: 'Top muscle',
+      label: t('body.topMuscle'),
       value: payload?.topMuscle ? MUSCLE_LABELS[payload.topMuscle] : '—',
       icon: Target,
     },
     {
-      label: `Total ${metricLabel.value.toLowerCase()}`,
+      label: t('body.totalOf', { metric: metricLabel.value.toLowerCase() }),
       value: total.value === null ? '—' : format(total.value),
       icon: metric.value === 'volume' ? Weight : metric.value === 'reps' ? Repeat : Layers,
     },
     {
-      label: 'Weekly avg per muscle',
+      label: t('body.weeklyAvg'),
       value: weeklyAverage.value === null ? '—' : format(Math.round(weeklyAverage.value * 10) / 10),
       icon: CalendarDays,
     },
     {
-      label: 'Biggest gain',
+      label: t('body.biggestGain'),
       value: biggestGain.value
         ? `${MUSCLE_LABELS[biggestGain.value.muscleGroup]} ${formatPercent(biggestGain.value.change)}`
         : '—',
@@ -159,21 +162,21 @@ function openExercises(group: MuscleGroup): void {
       <template v-else>
         <div class="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:gap-0">
           <section class="flex flex-col gap-4 lg:pr-8" :aria-busy="heatmap.isLoading.value">
-            <SectionHeader title="Muscle map" :subtitle="`${metricLabel} per muscle · ${rangeLabel}`">
-              <SegmentedControl v-model="metric" :options="METRICS" label="Metric" />
+            <SectionHeader :title="t('body.muscleMap')" :subtitle="t('body.perMuscle', { metric: metricLabel, range: rangeLabel })">
+              <SegmentedControl v-model="metric" :options="metrics" :label="t('body.metric')" />
             </SectionHeader>
 
             <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
-              <SegmentedControl v-model="view" :options="VIEWS" label="Figure view" />
+              <SegmentedControl v-model="view" :options="views" :label="t('body.figureView')" />
               <label class="flex items-center gap-2 text-xs text-zinc-400">
                 <input v-model="includeSecondary" type="checkbox" class="h-3.5 w-3.5 accent-blue-600" />
-                Count secondary muscles
+                {{ t('body.countSecondary') }}
               </label>
             </div>
 
             <div class="relative h-[26rem] sm:h-[30rem]">
               <div v-if="heatmap.isLoading.value && !data" class="h-full animate-pulse rounded-md bg-zinc-900" />
-              <EmptyState v-else-if="isEmpty" overlay import-link message="No training in this period." />
+              <EmptyState v-else-if="isEmpty" overlay import-link :message="t('body.noTraining')" />
               <BodyHeatmap
                 v-else
                 :values="data?.values ?? {}"
@@ -199,19 +202,19 @@ function openExercises(group: MuscleGroup): void {
 
         <div class="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:gap-0">
           <section class="flex flex-col gap-4 lg:pr-8">
-            <SectionHeader title="Ranking" :subtitle="`${metricLabel} per muscle · change vs the previous period`">
+            <SectionHeader :title="t('body.ranking')" :subtitle="t('body.rankingSubtitle', { metric: metricLabel })">
               <p class="text-right">
                 <span class="text-2xl font-semibold text-white tabular-nums">
                   {{ total === null ? '—' : format(total) }}
                 </span>
-                <span class="block text-[11px] leading-tight text-zinc-500">Total {{ metricLabel.toLowerCase() }}</span>
+                <span class="block text-[11px] leading-tight text-zinc-500">{{ t('body.totalOf', { metric: metricLabel.toLowerCase() }) }}</span>
               </p>
             </SectionHeader>
 
             <ul v-if="heatmap.isLoading.value && !data" class="flex flex-col gap-4" aria-hidden="true">
               <li v-for="index in 8" :key="index" class="h-7 animate-pulse rounded bg-zinc-900" />
             </ul>
-            <EmptyState v-else-if="entries.length === 0" message="No muscle trained in this period." />
+            <EmptyState v-else-if="entries.length === 0" :message="t('body.noMuscle')" />
             <MuscleRanking
               v-else
               :entries="entries"
@@ -222,17 +225,20 @@ function openExercises(group: MuscleGroup): void {
           </section>
 
           <section class="flex flex-col gap-4 border-zinc-800 lg:border-l lg:pl-8">
-            <SectionHeader title="This period vs previous" :subtitle="`${metricLabel} per muscle · ${rangeLabel}`" />
+            <SectionHeader
+              :title="t('body.comparison')"
+              :subtitle="t('body.perMuscle', { metric: metricLabel, range: rangeLabel })"
+            />
             <div class="relative h-[28rem] lg:h-auto lg:min-h-[20rem] lg:flex-1">
               <div v-if="heatmap.isLoading.value && !data" class="h-full animate-pulse rounded-md bg-zinc-900" />
-              <EmptyState v-else-if="comparedMuscles.length === 0" overlay message="Nothing to compare in this period." />
+              <EmptyState v-else-if="comparedMuscles.length === 0" overlay :message="t('body.nothingToCompare')" />
               <PeriodComparisonChart v-else-if="data" :heatmap="data" :muscles="comparedMuscles" :format="format" />
             </div>
           </section>
         </div>
 
         <section class="flex flex-col gap-5">
-          <SectionHeader title="Highlights" :subtitle="`${metricLabel} · ${rangeLabel}`" />
+          <SectionHeader :title="t('body.highlights')" :subtitle="t('body.highlightsSubtitle', { metric: metricLabel, range: rangeLabel })" />
           <MetricGrid :items="highlights" :is-loading="heatmap.isLoading.value && !data" />
         </section>
       </template>

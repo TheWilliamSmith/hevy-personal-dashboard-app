@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { computed } from 'vue';
 import { RouterLink } from 'vue-router';
 
@@ -15,30 +16,30 @@ const isSyncing = computed(() => connection.activeRun.value !== null);
 
 const title = computed(() => {
   if (connection.indicatorTone.value === 'unknown') {
-    return 'Hevy';
+    return t('sync.hevy');
   }
   if (!connected.value) {
-    return 'Connect Hevy';
+    return t('sync.connectHevy');
   }
-  return connected.value.username ? `@${connected.value.username}` : 'Hevy connected';
+  return connected.value.username ? `@${connected.value.username}` : t('sync.hevyConnected');
 });
 
 const description = computed(() => {
   if (connection.indicatorTone.value === 'unknown') {
-    return 'Checking the connection…';
+    return t('sync.checking');
   }
   if (!connected.value) {
-    return 'Sync your workouts automatically with your Hevy Pro API key.';
+    return t('sync.pitch');
   }
   if (isSyncing.value) {
-    return 'Sync in progress…';
+    return t('sync.inProgress');
   }
   if (connection.indicatorTone.value === 'attention') {
-    return 'Last sync needs attention.';
+    return t('sync.needsAttention');
   }
   return connected.value.lastSyncAt
-    ? `Synced ${formatRelativeTime(connected.value.lastSyncAt)}.`
-    : 'Never synced yet.';
+    ? t('sync.syncedAgo', { when: formatRelativeTime(connected.value.lastSyncAt) })
+    : t('sync.neverSynced');
 });
 
 const buttonClass =
@@ -69,14 +70,14 @@ const buttonClass =
       :disabled="isSyncing"
       @click="connection.sync(false)"
     >
-      {{ isSyncing ? 'Syncing…' : 'Sync now' }}
+      {{ isSyncing ? t('sync.syncing') : t('sync.syncNow') }}
     </button>
     <RouterLink
       v-else-if="connection.indicatorTone.value === 'disconnected'"
       :to="{ name: 'home', query: { tab: 'settings', section: 'data' } }"
       :class="[buttonClass, 'mt-3']"
     >
-      Connect
+      {{ t('sync.connect') }}
     </RouterLink>
   </div>
 </template>

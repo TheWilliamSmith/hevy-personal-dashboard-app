@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { computed } from 'vue';
 import { RouterLink } from 'vue-router';
 
@@ -22,13 +23,13 @@ const rows = computed(() => {
 
 <template>
   <section class="flex h-full flex-col gap-5">
-    <SectionHeader title="Most trained" subtitle="Sessions per exercise · exercises listed below" />
+    <SectionHeader :title="t('exercises.mostTrained')" :subtitle="t('exercises.mostTrainedSubtitle')" />
 
     <ul v-if="isLoading && exercises.length === 0" class="flex flex-col gap-5" aria-hidden="true">
       <li v-for="index in 5" :key="index" class="h-6 animate-pulse rounded bg-zinc-900" />
     </ul>
 
-    <EmptyState v-else-if="rows.length === 0" message="No exercise performed yet." />
+    <EmptyState v-else-if="rows.length === 0" :message="t('exercises.noneYet')" />
 
     <ul v-else class="flex flex-col gap-1">
       <li v-for="row in rows" :key="row.exercise.id">
@@ -46,7 +47,7 @@ const rows = computed(() => {
               <span class="truncate">{{ row.exercise.name }}</span>
             </span>
             <span class="shrink-0 text-xs text-zinc-400 tabular-nums">
-              {{ formatInteger(row.exercise.sessions) }} sessions
+              {{ t('exercises.sessionCount', { count: formatInteger(row.exercise.sessions) }, row.exercise.sessions) }}
             </span>
           </span>
           <span class="mt-1.5 block h-2 rounded-full bg-zinc-900">

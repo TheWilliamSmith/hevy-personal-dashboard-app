@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { computed } from 'vue';
 
 import GoalsCard from '@/components/goals/GoalsCard.vue';
@@ -44,7 +45,7 @@ const granularity = computed(() => GRANULARITY_BY_PRESET[preset.value]);
 
 const rangeLabel = computed(() => {
   const found = RANGE_PRESETS.find((candidate) => candidate.value === preset.value);
-  return found?.days ? `Last ${found.label}` : 'All time';
+  return found?.days ? t('ranges.last', { range: found.label }) : t('ranges.allTime');
 });
 
 const calendarYears = computed(() => {
@@ -78,10 +79,16 @@ const volumePoints = computed(() => {
   return rollingSum(points, ROLLING_DAYS);
 });
 
+const VOLUME_CAPTIONS = {
+  day: 'dashboard.volumePerDay',
+  week: 'dashboard.volumePerWeek',
+  month: 'dashboard.volumePerMonth',
+} as const;
+
 const volumeCaption = computed(() =>
   isRolling.value
-    ? `Rolling ${ROLLING_DAYS}-day volume · ${rangeLabel.value}`
-    : `Volume per ${granularity.value} · ${rangeLabel.value}`,
+    ? t('dashboard.rollingVolume', { days: ROLLING_DAYS, range: rangeLabel.value })
+    : t(VOLUME_CAPTIONS[granularity.value], { range: rangeLabel.value }),
 );
 const muscles = useMuscleHeatmap(
   () => filters.range.value,

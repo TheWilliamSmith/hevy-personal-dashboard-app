@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { RouterLink } from 'vue-router';
 
 withDefaults(
@@ -23,7 +24,7 @@ withDefaults(
       :to="{ name: 'home', query: { tab: 'settings', section: 'data' } }"
       class="text-sm font-medium text-zinc-200 underline decoration-zinc-600 underline-offset-2 hover:decoration-zinc-300"
     >
-      Connect Hevy or import a CSV export
+      {{ t('common.connectOrImport') }}
     </RouterLink>
     <slot />
   </div>

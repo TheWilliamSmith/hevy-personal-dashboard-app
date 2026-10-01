@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { computed } from 'vue';
 import { RouterLink } from 'vue-router';
 
@@ -16,15 +17,15 @@ const DOT_CLASS: Readonly<Record<string, string>> = {
 const label = computed(() => {
   const tone = connection.indicatorTone.value;
   if (tone === 'connected') {
-    return 'Hevy connected and up to date';
+    return t('data.indicator.connected');
   }
   if (tone === 'attention') {
-    return 'Hevy connected, needs attention';
+    return t('data.indicator.attention');
   }
   if (tone === 'disconnected') {
-    return 'Hevy not connected';
+    return t('data.indicator.disconnected');
   }
-  return 'Checking Hevy connection…';
+  return t('data.indicator.checking');
 });
 </script>
 

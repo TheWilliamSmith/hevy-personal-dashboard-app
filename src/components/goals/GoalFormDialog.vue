@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { computed, reactive, ref, watch } from 'vue';
 
 import ExercisePicker from '@/components/exercises/ExercisePicker.vue';
@@ -29,7 +30,7 @@ const exercisesError = ref<string | null>(null);
 
 const isEdit = computed(() => props.goal !== null);
 const typeHint = computed(() => GOAL_TYPES.find((option) => option.value === form.type)?.hint ?? '');
-const unit = computed(() => (form.type === 'WEEKLY_WORKOUTS' ? 'workouts' : 'kg'));
+const unit = computed(() => (form.type === 'WEEKLY_WORKOUTS' ? t('goals.form.workouts') : 'kg'));
 
 async function loadExercises(): Promise<void> {
   if (exercises.value.length > 0) {
@@ -41,7 +42,7 @@ async function loadExercises(): Promise<void> {
       .flatMap((group) => group.exercises)
       .map((exercise) => ({ id: exercise.id, name: exercise.name, sessions: exercise.sessions }));
   } catch (caught) {
-    exercisesError.value = caught instanceof ApiError ? caught.message : 'Could not load your exercises.';
+    exercisesError.value = caught instanceof ApiError ? caught.message : t('goals.form.loadExercises');
   }
 }
 
@@ -69,11 +70,11 @@ watch(
 
 function validate(): number | null {
   const target = Number(form.target.replace(',', '.'));
-  fieldErrors.target = Number.isFinite(target) && target > 0 ? null : 'Enter a target above zero.';
+  fieldErrors.target = Number.isFinite(target) && target > 0 ? null : t('goals.form.targetAboveZero');
   if (!fieldErrors.target && form.type === 'WEEKLY_WORKOUTS' && (!Number.isInteger(target) || target > 14)) {
-    fieldErrors.target = 'Use a whole number of workouts, up to 14.';
+    fieldErrors.target = t('goals.form.wholeWorkouts');
   }
-  fieldErrors.exerciseId = !isEdit.value && isExerciseGoal(form.type) && !form.exerciseId ? 'Choose an exercise.' : null;
+  fieldErrors.exerciseId = !isEdit.value && isExerciseGoal(form.type) && !form.exerciseId ? t('goals.form.chooseExercise') : null;
   return fieldErrors.target || fieldErrors.exerciseId ? null : target;
 }
 
@@ -117,7 +118,7 @@ function showError(caught: unknown): void {
     formError.value = caught.message;
     return;
   }
-  formError.value = 'Something went wrong. Try again.';
+  formError.value = t('common.somethingWrong');
 }
 
 const label = 'mb-1 block text-xs text-zinc-400';
@@ -130,19 +131,19 @@ const errorText = 'mt-1 text-xs text-red-400';
   <BaseDialog :open="open" labelled-by="goal-form-title" size="md" :locked="isSaving" @close="emit('close')">
     <form class="flex min-h-0 flex-1 flex-col" novalidate @submit.prevent="onSubmit">
       <header class="border-b border-zinc-800 px-5 py-4">
-        <h2 id="goal-form-title" class="text-base font-semibold text-white">{{ goal ? 'Edit goal' : 'New goal' }}</h2>
+        <h2 id="goal-form-title" class="text-base font-semibold text-white">{{ goal ? t('goals.form.editTitle') : t('goals.form.newTitle') }}</h2>
         <p v-if="goal" class="mt-0.5 text-xs text-zinc-500">{{ goalTitle(goal) }}</p>
       </header>
 
       <div class="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-5 py-4">
         <div v-if="!goal" class="flex flex-col gap-2">
-          <span :class="label">Goal type</span>
-          <SegmentedControl v-model="form.type" :options="GOAL_TYPES" label="Goal type" class="self-start" />
+          <span :class="label">{{ t('goals.form.type') }}</span>
+          <SegmentedControl v-model="form.type" :options="GOAL_TYPES" :label="t('goals.form.type')" class="self-start" />
           <p class="text-xs text-zinc-500">{{ typeHint }}</p>
         </div>
 
         <div v-if="!goal && isExerciseGoal(form.type)">
-          <label for="goal-exercise" :class="label">Exercise</label>
+          <label for="goal-exercise" :class="label">{{ t('goals.form.exercise') }}</label>
           <ExercisePicker
             id="goal-exercise"
             v-model="form.exerciseId"
@@ -155,7 +156,7 @@ const errorText = 'mt-1 text-xs text-red-400';
 
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label for="goal-target" :class="label">Target ({{ unit }})</label>
+            <label for="goal-target" :class="label">{{ t('goals.form.target', { unit }) }}</label>
             <input
               id="goal-target"
               v-model="form.target"
@@ -169,7 +170,7 @@ const errorText = 'mt-1 text-xs text-red-400';
             <p id="goal-target-help" :class="errorText">{{ fieldErrors.target ?? '' }}</p>
           </div>
           <div>
-            <label for="goal-deadline" :class="label">Deadline (optional)</label>
+            <label for="goal-deadline" :class="label">{{ t('goals.form.deadline') }}</label>
             <input
               id="goal-deadline"
               v-model="form.deadline"
@@ -181,7 +182,7 @@ const errorText = 'mt-1 text-xs text-red-400';
             <p id="goal-deadline-help" :class="errorText">{{ fieldErrors.deadline ?? '' }}</p>
           </div>
           <div v-if="!goal && form.type === 'PERIOD_VOLUME'">
-            <label for="goal-start" :class="label">Counted from</label>
+            <label for="goal-start" :class="label">{{ t('goals.form.countedFrom') }}</label>
             <input
               id="goal-start"
               v-model="form.startsAt"
@@ -207,7 +208,7 @@ const errorText = 'mt-1 text-xs text-red-400';
           :disabled="isSaving"
           @click="emit('close')"
         >
-          Cancel
+          {{ t('common.cancel') }}
         </button>
         <button
           type="submit"
@@ -215,7 +216,7 @@ const errorText = 'mt-1 text-xs text-red-400';
           :disabled="isSaving"
           :aria-busy="isSaving"
         >
-          {{ goal ? 'Save goal' : 'Create goal' }}
+          {{ goal ? t('goals.form.save') : t('goals.form.create') }}
         </button>
       </footer>
     </form>

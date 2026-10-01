@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import SectionHeader from '@/components/ui/SectionHeader.vue';
 import { MUSCLE_LABELS, MUSCLE_ORDER } from '@/constants/muscles';
 import { SESSIONS_RANGE, STALE_RANGE, THRESHOLD_RANGE } from '@/constants/progress';
 import type { MuscleGroup } from '@/types/exercises';
 import type { ProgressParams, StatusCounts } from '@/types/progress';
+import { formatDecimal } from '@/utils/format';
 
 defineProps<{
   draft: ProgressParams;
@@ -22,16 +24,16 @@ const effect = 'mt-1 text-xs text-zinc-500 tabular-nums';
 
 <template>
   <section id="progress-settings" class="flex flex-col gap-5">
-    <SectionHeader title="Assessment settings" subtitle="How exercises are classified">
+    <SectionHeader :title="t('progress.settings')" :subtitle="t('progress.settingsPanel.subtitle')">
       <div class="flex items-center gap-3">
-        <span v-if="isLoading" class="text-xs text-zinc-500" aria-live="polite">Updating…</span>
+        <span v-if="isLoading" class="text-xs text-zinc-500" aria-live="polite">{{ t('progress.settingsPanel.updating') }}</span>
         <button
           v-if="!isDefault"
           type="button"
           class="rounded-md border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs font-medium text-zinc-100 transition-colors hover:bg-zinc-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400"
           @click="emit('reset')"
         >
-          Reset to defaults
+          {{ t('progress.settingsPanel.reset') }}
         </button>
       </div>
     </SectionHeader>
@@ -39,7 +41,7 @@ const effect = 'mt-1 text-xs text-zinc-500 tabular-nums';
     <div class="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2 xl:grid-cols-4">
       <div>
         <label for="progress-sessions" :class="label">
-          Sessions analysed: <span :class="value">{{ draft.sessions }}</span>
+          {{ t('progress.settingsPanel.sessions') }} <span :class="value">{{ draft.sessions }}</span>
         </label>
         <input
           id="progress-sessions"
@@ -51,12 +53,13 @@ const effect = 'mt-1 text-xs text-zinc-500 tabular-nums';
           :value="draft.sessions"
           @input="emit('change', { sessions: Number(($event.target as HTMLInputElement).value) })"
         />
-        <p :class="effect">{{ counts.NOT_ENOUGH_DATA }} need more sessions</p>
+        <p :class="effect">{{ t('progress.settingsPanel.needMore', { count: counts.NOT_ENOUGH_DATA }) }}</p>
       </div>
 
       <div>
         <label for="progress-stale" :class="label">
-          Stale after: <span :class="value">{{ draft.staleWeeks }} weeks</span>
+          {{ t('progress.settingsPanel.staleAfter') }}
+          <span :class="value">{{ t('progress.settingsPanel.weeks', { count: draft.staleWeeks }) }}</span>
         </label>
         <input
           id="progress-stale"
@@ -68,12 +71,13 @@ const effect = 'mt-1 text-xs text-zinc-500 tabular-nums';
           :value="draft.staleWeeks"
           @input="emit('change', { staleWeeks: Number(($event.target as HTMLInputElement).value) })"
         />
-        <p :class="effect">{{ counts.STALE }} stale</p>
+        <p :class="effect">{{ t('progress.settingsPanel.stale', { count: counts.STALE }) }}</p>
       </div>
 
       <div>
         <label for="progress-threshold" :class="label">
-          Progress threshold: <span :class="value">±{{ draft.threshold }} %/week</span>
+          {{ t('progress.settingsPanel.threshold') }}
+          <span :class="value">{{ t('progress.settingsPanel.perWeek', { value: formatDecimal(draft.threshold, 1) }) }}</span>
         </label>
         <input
           id="progress-threshold"
@@ -86,13 +90,18 @@ const effect = 'mt-1 text-xs text-zinc-500 tabular-nums';
           @input="emit('change', { threshold: Number(($event.target as HTMLInputElement).value) })"
         />
         <p :class="effect">
-          {{ counts.PROGRESSING }} progressing · {{ counts.PLATEAU }} plateau ·
-          {{ counts.REGRESSING }} regressing
+          {{
+            t('progress.settingsPanel.breakdown', {
+              progressing: counts.PROGRESSING,
+              plateau: counts.PLATEAU,
+              regressing: counts.REGRESSING,
+            })
+          }}
         </p>
       </div>
 
       <div>
-        <label for="progress-muscle" :class="label">Muscle group</label>
+        <label for="progress-muscle" :class="label">{{ t('progress.settingsPanel.muscleGroup') }}</label>
         <select
           id="progress-muscle"
           class="mt-1.5 w-full rounded-md border border-zinc-800 bg-zinc-900 px-2 py-1.5 text-sm text-zinc-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400"
@@ -103,12 +112,12 @@ const effect = 'mt-1 text-xs text-zinc-500 tabular-nums';
             })
           "
         >
-          <option value="">All muscle groups</option>
+          <option value="">{{ t('progress.settingsPanel.allMuscles') }}</option>
           <option v-for="group in MUSCLE_ORDER" :key="group" :value="group">
             {{ MUSCLE_LABELS[group] }}
           </option>
         </select>
-        <p :class="effect">{{ total }} in scope</p>
+        <p :class="effect">{{ t('progress.settingsPanel.inScope', { count: total }) }}</p>
       </div>
     </div>
   </section>

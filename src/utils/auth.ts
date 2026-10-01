@@ -1,3 +1,4 @@
+import { t } from '@/i18n';
 export type PasswordStrength = 0 | 1 | 2 | 3 | 4;
 
 export const MIN_PASSWORD_LENGTH = 8;
@@ -22,15 +23,15 @@ export function safeRedirect(value: unknown): string | null {
 }
 
 export function errorMessage(caught: unknown): string {
-  return caught instanceof Error && caught.message ? caught.message : 'Something went wrong. Try again.';
+  return caught instanceof Error && caught.message ? caught.message : t('common.somethingWrong');
 }
 
 export function passwordProblem(password: string): string | null {
   if (password.length < MIN_PASSWORD_LENGTH) {
-    return `Use at least ${MIN_PASSWORD_LENGTH} characters.`;
+    return t('validation.passwordLength', { min: MIN_PASSWORD_LENGTH });
   }
   if (passwordStrength(password) < 3) {
-    return 'Mix upper and lower case letters, digits or symbols.';
+    return t('validation.passwordVariety');
   }
   return null;
 }

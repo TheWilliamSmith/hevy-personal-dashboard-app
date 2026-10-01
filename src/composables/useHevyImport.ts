@@ -1,3 +1,4 @@
+import { t } from '@/i18n';
 import { readonly, ref, type DeepReadonly, type Ref } from 'vue';
 
 import { apiPost, apiUrl, authHeaders, extractApiMessage, ApiError } from '@/lib/api';
@@ -41,15 +42,15 @@ export function useHevyImport(): UseHevyImport {
 
   function messageForStatus(httpStatus: number, apiMessage: string | null): string {
     if (httpStatus === 413) {
-      return apiMessage ?? 'This file exceeds the 10 MB limit.';
+      return apiMessage ?? t('errors.fileTooLarge');
     }
     if (httpStatus >= 500) {
-      return 'The server could not process this import. Try again in a moment.';
+      return t('errors.importServer');
     }
     if (httpStatus >= 400) {
-      return apiMessage ?? 'The server rejected this file.';
+      return apiMessage ?? t('errors.fileRejected');
     }
-    return `Unexpected response from the server (HTTP ${httpStatus}).`;
+    return t('errors.unexpectedResponse', { status: httpStatus });
   }
 
   function selectFile(candidate: File | null | undefined): void {
@@ -70,19 +71,19 @@ export function useHevyImport(): UseHevyImport {
 
     if (!CSV_EXTENSION.test(candidate.name)) {
       file.value = null;
-      fail('Only .csv files are accepted. Export your workouts from Hevy as CSV.', null);
+      fail(t('errors.csvOnly'), null);
       return;
     }
 
     if (candidate.size === 0) {
       file.value = null;
-      fail('This file is empty.', null);
+      fail(t('errors.fileEmpty'), null);
       return;
     }
 
     if (candidate.size > MAX_FILE_BYTES) {
       file.value = null;
-      fail('This file exceeds the 10 MB limit.', null);
+      fail(t('errors.fileTooLarge'), null);
       return;
     }
 
@@ -121,7 +122,7 @@ export function useHevyImport(): UseHevyImport {
             preview.value = JSON.parse(xhr.responseText) as ImportPreview;
             status.value = 'previewing';
           } catch {
-            fail('The server returned a malformed response.', xhr.status);
+            fail(t('errors.malformed'), xhr.status);
           }
           settle();
           return;
@@ -133,12 +134,12 @@ export function useHevyImport(): UseHevyImport {
       });
 
       xhr.addEventListener('error', () => {
-        fail('Could not reach the server. Check your connection and try again.', null);
+        fail(t('errors.network'), null);
         settle();
       });
 
       xhr.addEventListener('timeout', () => {
-        fail('The upload timed out. Try again.', null);
+        fail(t('errors.uploadTimeout'), null);
         settle();
       });
 
@@ -182,7 +183,7 @@ export function useHevyImport(): UseHevyImport {
         return null;
       }
       fail(
-        caught instanceof ApiError ? caught.message : 'Something went wrong.',
+        caught instanceof ApiError ? caught.message : t('errors.generic'),
         caught instanceof ApiError ? caught.status : null,
       );
       return null;

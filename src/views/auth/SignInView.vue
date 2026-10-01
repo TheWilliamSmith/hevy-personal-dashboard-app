@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { computed, onMounted, reactive, ref } from 'vue';
 import { RouterLink, useRoute, useRouter } from 'vue-router';
 
@@ -23,7 +24,7 @@ onMounted(() => {
   if (route.query.reason !== 'expired') {
     return;
   }
-  useToasts().push({ tone: 'warning', title: 'Your session ended', description: 'Sign in again to continue.' });
+  useToasts().push({ tone: 'warning', title: t('auth.signIn.sessionEnded'), description: t('auth.signIn.signInAgain') });
   const { reason: _reason, ...rest } = route.query;
   void router.replace({ query: rest });
 });
@@ -33,8 +34,8 @@ function enterApp(): void {
 }
 
 const errors = computed(() => ({
-  email: (touched.email || submitted.value) && !isEmail(form.email) ? 'Enter a valid email address.' : null,
-  password: (touched.password || submitted.value) && !form.password ? 'Enter your password.' : null,
+  email: (touched.email || submitted.value) && !isEmail(form.email) ? t('validation.email') : null,
+  password: (touched.password || submitted.value) && !form.password ? t('auth.signIn.passwordRequired') : null,
 }));
 
 const busy = computed(() => auth.isSubmitting.value);
@@ -65,13 +66,13 @@ async function withProvider(provider: OAuthProvider): Promise<void> {
 </script>
 
 <template>
-  <AuthLayout title="Welcome back" subtitle="Sign in to see your training dashboard.">
+  <AuthLayout :title="t('auth.signIn.title')" :subtitle="t('auth.signIn.subtitle')">
     <AuthError :message="formError" />
-    <OAuthButtons action="Continue" :pending="auth.pendingProvider.value" :disabled="busy" @select="withProvider" />
+    <OAuthButtons :action="t('auth.signIn.continue')" :pending="auth.pendingProvider.value" :disabled="busy" @select="withProvider" />
 
     <div class="flex items-center gap-3 text-xs text-zinc-600" role="separator">
       <span class="h-px flex-1 bg-zinc-800" />
-      or with your email
+      {{ t('auth.orWithEmail') }}
       <span class="h-px flex-1 bg-zinc-800" />
     </div>
 
@@ -79,7 +80,7 @@ async function withProvider(provider: OAuthProvider): Promise<void> {
       <AuthField
         id="signin-email"
         v-model="form.email"
-        label="Email"
+        :label="t('auth.email')"
         type="email"
         autocomplete="email"
         :error="errors.email"
@@ -88,7 +89,7 @@ async function withProvider(provider: OAuthProvider): Promise<void> {
       <AuthField
         id="signin-password"
         v-model="form.password"
-        label="Password"
+        :label="t('auth.password')"
         type="password"
         autocomplete="current-password"
         :error="errors.password"
@@ -99,14 +100,14 @@ async function withProvider(provider: OAuthProvider): Promise<void> {
             :to="{ name: 'forgot-password', query: form.email ? { email: form.email } : {} }"
             class="text-xs font-medium text-zinc-300 underline decoration-zinc-600 underline-offset-2 hover:decoration-zinc-300"
           >
-            Forgot password?
+            {{ t('auth.signIn.forgot') }}
           </RouterLink>
         </template>
       </AuthField>
 
       <label class="flex items-center gap-2 text-xs text-zinc-400">
         <input v-model="form.remember" type="checkbox" class="h-3.5 w-3.5 accent-blue-600" />
-        Keep me signed in on this device
+        {{ t('auth.signIn.remember') }}
       </label>
 
       <button
@@ -120,17 +121,17 @@ async function withProvider(provider: OAuthProvider): Promise<void> {
           class="h-3.5 w-3.5 animate-spin rounded-full border-2 border-zinc-900/30 border-t-zinc-900"
           aria-hidden="true"
         />
-        Sign in
+        {{ t('auth.signIn.submit') }}
       </button>
     </form>
 
     <p class="text-center text-sm text-zinc-500">
-      New here?
+      {{ t('auth.signIn.newHere') }}
       <RouterLink
         :to="{ name: 'sign-up' }"
         class="font-medium text-zinc-200 underline decoration-zinc-600 underline-offset-2 hover:decoration-zinc-300"
       >
-        Create an account
+        {{ t('auth.signIn.createAccount') }}
       </RouterLink>
     </p>
   </AuthLayout>

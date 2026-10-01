@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { CircleCheck, TriangleAlert } from 'lucide-vue-next';
 import { computed, reactive, ref } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
@@ -26,7 +27,7 @@ const stage = ref<Stage>(token.value ? 'form' : 'invalid');
 const errors = computed(() => ({
   password: (touched.password || submitted.value) ? passwordProblem(form.password) : null,
   confirm:
-    (touched.confirm || submitted.value) && form.confirm !== form.password ? 'The two passwords do not match.' : null,
+    (touched.confirm || submitted.value) && form.confirm !== form.password ? t('auth.reset.mismatch') : null,
 }));
 
 async function submit(): Promise<void> {
@@ -43,9 +44,9 @@ async function submit(): Promise<void> {
 }
 
 const TITLES: Record<Stage, { title: string; subtitle: string }> = {
-  form: { title: 'Choose a new password', subtitle: 'You will use it the next time you sign in.' },
-  done: { title: 'Password updated', subtitle: 'Your new password is ready to use.' },
-  invalid: { title: 'This link does not work', subtitle: 'Reset links expire after 30 minutes and can be used once.' },
+  form: { title: 'auth.reset.formTitle', subtitle: 'auth.reset.formSubtitle' },
+  done: { title: 'auth.reset.doneTitle', subtitle: 'auth.reset.doneSubtitle' },
+  invalid: { title: 'auth.reset.invalidTitle', subtitle: 'auth.reset.invalidSubtitle' },
 };
 
 const primary =
@@ -53,17 +54,17 @@ const primary =
 </script>
 
 <template>
-  <AuthLayout :title="TITLES[stage].title" :subtitle="TITLES[stage].subtitle">
+  <AuthLayout :title="t(TITLES[stage].title)" :subtitle="t(TITLES[stage].subtitle)">
     <form v-if="stage === 'form'" class="flex flex-col gap-4" novalidate @submit.prevent="submit">
       <AuthError :message="formError" />
       <AuthField
         id="reset-password"
         v-model="form.password"
-        label="New password"
+        :label="t('auth.reset.newPassword')"
         type="password"
         autocomplete="new-password"
         :error="errors.password"
-        hint="At least 8 characters, mixing letters, digits or symbols."
+        :hint="t('auth.passwordHint')"
         @blur="touched.password = true"
       >
         <PasswordStrengthMeter :password="form.password" />
@@ -71,7 +72,7 @@ const primary =
       <AuthField
         id="reset-confirm"
         v-model="form.confirm"
-        label="Confirm new password"
+        :label="t('auth.reset.confirmPassword')"
         type="password"
         autocomplete="new-password"
         :error="errors.confirm"
@@ -88,29 +89,29 @@ const primary =
           class="h-3.5 w-3.5 animate-spin rounded-full border-2 border-zinc-900/30 border-t-zinc-900"
           aria-hidden="true"
         />
-        Update password
+        {{ t('auth.reset.submit') }}
       </button>
     </form>
 
     <div v-else-if="stage === 'done'" class="flex flex-col gap-4">
       <div class="flex items-start gap-3 rounded-md border border-emerald-500/30 bg-emerald-500/10 p-4" role="status">
         <CircleCheck class="mt-0.5 h-5 w-5 shrink-0 text-emerald-400" aria-hidden="true" />
-        <p class="text-sm text-zinc-200">Every device was signed out. Sign in again with your new password.</p>
+        <p class="text-sm text-zinc-200">{{ t('auth.reset.signedOut') }}</p>
       </div>
-      <RouterLink :to="{ name: 'sign-in' }" :class="primary">Go to sign in</RouterLink>
+      <RouterLink :to="{ name: 'sign-in' }" :class="primary">{{ t('auth.reset.goToSignIn') }}</RouterLink>
     </div>
 
     <div v-else class="flex flex-col gap-4">
       <div class="flex items-start gap-3 rounded-md border border-amber-500/30 bg-amber-500/10 p-4" role="alert">
         <TriangleAlert class="mt-0.5 h-5 w-5 shrink-0 text-amber-400" aria-hidden="true" />
-        <p class="text-sm text-zinc-200">Ask for a new link and use it within 30 minutes.</p>
+        <p class="text-sm text-zinc-200">{{ t('auth.reset.askNewLink') }}</p>
       </div>
-      <RouterLink :to="{ name: 'forgot-password' }" :class="primary">Request a new link</RouterLink>
+      <RouterLink :to="{ name: 'forgot-password' }" :class="primary">{{ t('auth.reset.requestNewLink') }}</RouterLink>
       <RouterLink
         :to="{ name: 'sign-in' }"
         class="text-center text-xs font-medium text-zinc-400 underline decoration-zinc-700 underline-offset-2 hover:text-zinc-200"
       >
-        Back to sign in
+        {{ t('auth.backToSignIn') }}
       </RouterLink>
     </div>
   </AuthLayout>

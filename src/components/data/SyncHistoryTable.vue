@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { ChevronRight } from 'lucide-vue-next';
 import { RouterLink } from 'vue-router';
 
@@ -21,26 +22,26 @@ defineProps<{
 
 const emit = defineEmits<{ retry: []; toggle: [id: string]; page: [page: number] }>();
 
-const TRIGGER_LABELS: Readonly<Record<string, string>> = {
-  MANUAL: 'Manual',
-  CRON: 'Scheduled',
-  POST_CONNECT: 'After connect',
+const TRIGGER_KEYS: Readonly<Record<string, string>> = {
+  MANUAL: 'data.syncHistory.manual',
+  CRON: 'data.syncHistory.cron',
+  POST_CONNECT: 'data.syncHistory.postConnect',
 };
 
-const STATUS: Readonly<Record<string, { label: string; dot: string; text: string }>> = {
-  RUNNING: { label: 'Running', dot: 'bg-blue-400', text: 'text-blue-400' },
-  SUCCESS: { label: 'Succeeded', dot: 'bg-emerald-400', text: 'text-emerald-400' },
-  PARTIAL: { label: 'Partial', dot: 'bg-amber-400', text: 'text-amber-400' },
-  FAILED: { label: 'Failed', dot: 'bg-red-400', text: 'text-red-400' },
+const STATUS: Readonly<Record<string, { key: string; dot: string; text: string }>> = {
+  RUNNING: { key: 'data.syncStatus.RUNNING', dot: 'bg-blue-400', text: 'text-blue-400' },
+  SUCCESS: { key: 'data.syncStatus.SUCCESS', dot: 'bg-emerald-400', text: 'text-emerald-400' },
+  PARTIAL: { key: 'data.syncHistory.partial', dot: 'bg-amber-400', text: 'text-amber-400' },
+  FAILED: { key: 'data.syncStatus.FAILED', dot: 'bg-red-400', text: 'text-red-400' },
 };
 
 function statsOf(run: HevySyncRun) {
   return [
-    { label: 'Created', value: run.workoutsCreated },
-    { label: 'Updated', value: run.workoutsUpdated },
-    { label: 'Deleted', value: run.workoutsDeleted },
-    { label: 'Matched', value: run.workoutsMatched },
-    { label: 'Requests', value: run.requestCount },
+    { label: t('data.syncHistory.created'), value: run.workoutsCreated },
+    { label: t('data.syncHistory.updated'), value: run.workoutsUpdated },
+    { label: t('data.syncHistory.deleted'), value: run.workoutsDeleted },
+    { label: t('data.syncHistory.matched'), value: run.workoutsMatched },
+    { label: t('data.syncHistory.requests'), value: run.requestCount },
   ];
 }
 
@@ -59,7 +60,7 @@ function hasDetail(run: HevySyncRun): boolean {
 
 <template>
   <section class="flex flex-col gap-2">
-    <SectionHeader title="Sync history" :subtitle="meta ? `${meta.total} syncs · newest first` : 'Newest first'" />
+    <SectionHeader :title="t('data.syncHistory.title')" :subtitle="meta ? t('data.syncHistory.subtitle', { count: meta.total }) : t('data.syncHistory.newestFirst')" />
 
     <ul v-if="isLoading && runs.length === 0" class="flex flex-col gap-3 pt-2" aria-busy="true">
       <li v-for="row in 4" :key="row" class="h-12 animate-pulse rounded-md bg-zinc-900" />
@@ -67,7 +68,7 @@ function hasDetail(run: HevySyncRun): boolean {
 
     <SectionError v-else-if="error" :message="error" @retry="emit('retry')" />
 
-    <EmptyState v-else-if="runs.length === 0" message="No syncs yet." />
+    <EmptyState v-else-if="runs.length === 0" :message="t('data.syncHistory.none')" />
 
     <ul v-else>
       <li v-for="run in runs" :key="run.id" class="border-b border-zinc-800 last:border-b-0">
@@ -90,15 +91,15 @@ function hasDetail(run: HevySyncRun): boolean {
           <span class="min-w-0">
             <span class="block truncate text-sm font-medium text-zinc-100">{{ formatDate(run.startedAt) }}</span>
             <span class="block text-[11px] text-zinc-500">
-              {{ TRIGGER_LABELS[run.trigger] ?? run.trigger }} · {{ formatDuration(durationOf(run)) }}
+              {{ TRIGGER_KEYS[run.trigger] ? t(TRIGGER_KEYS[run.trigger] ?? '') : run.trigger }} · {{ formatDuration(durationOf(run)) }}
               <template v-if="warningsOf(run).length > 0">
-                · <span class="text-amber-400">{{ warningsOf(run).length }} to review</span>
+                · <span class="text-amber-400">{{ t('data.syncHistory.toReview', { count: warningsOf(run).length }) }}</span>
               </template>
             </span>
           </span>
           <span class="flex items-center gap-1.5 text-xs" :class="STATUS[run.status]?.text">
             <span class="h-2 w-2 rounded-full" :class="STATUS[run.status]?.dot" aria-hidden="true" />
-            {{ STATUS[run.status]?.label ?? run.status }}
+            {{ STATUS[run.status] ? t(STATUS[run.status]?.key ?? '') : run.status }}
           </span>
           <span
             v-for="stat in statsOf(run)"
@@ -120,22 +121,28 @@ function hasDetail(run: HevySyncRun): boolean {
             <li v-for="(warning, index) in warningsOf(run)" :key="index" class="flex items-start gap-2 text-zinc-300">
               <span class="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400" aria-hidden="true" />
               <span v-if="warning.type === 'UNMAPPED_MUSCLE_GROUP'">
-                Unknown muscle group for
-                <RouterLink
-                  :to="{ name: 'home', query: { tab: 'exercises', q: warning.exerciseTitle } }"
-                  class="font-medium text-zinc-100 underline decoration-zinc-600 underline-offset-2 hover:decoration-zinc-300"
-                >
-                  {{ warning.exerciseTitle }}</RouterLink>{{ warning.rawValue ? ` (Hevy: ${warning.rawValue})` : '' }}
+                <i18n-t keypath="data.syncHistory.unknownMuscle" scope="global">
+                  <template #exercise>
+                    <RouterLink
+                      :to="{ name: 'home', query: { tab: 'exercises', q: warning.exerciseTitle } }"
+                      class="font-medium text-zinc-100 underline decoration-zinc-600 underline-offset-2 hover:decoration-zinc-300"
+                    >
+                      {{ warning.exerciseTitle }}
+                    </RouterLink>
+                  </template>
+                </i18n-t>{{ warning.rawValue ? t('data.syncHistory.hevyValue', { value: warning.rawValue }) : '' }}
               </span>
-              <span v-else>
-                “{{ warning.title }}” overlaps
-                <RouterLink
-                  :to="{ name: 'home', query: { tab: 'workouts', workout: warning.existingWorkoutId } }"
-                  class="font-medium text-zinc-100 underline decoration-zinc-600 underline-offset-2 hover:decoration-zinc-300"
-                >
-                  {{ warning.existingTitle }}</RouterLink>
-                without matching it.
-              </span>
+              <i18n-t v-else keypath="data.syncHistory.overlaps" tag="span" scope="global">
+                <template #title>{{ warning.title }}</template>
+                <template #workout>
+                  <RouterLink
+                    :to="{ name: 'home', query: { tab: 'workouts', workout: warning.existingWorkoutId } }"
+                    class="font-medium text-zinc-100 underline decoration-zinc-600 underline-offset-2 hover:decoration-zinc-300"
+                  >
+                    {{ warning.existingTitle }}
+                  </RouterLink>
+                </template>
+              </i18n-t>
             </li>
           </ul>
         </div>
@@ -146,8 +153,8 @@ function hasDetail(run: HevySyncRun): boolean {
       v-if="meta && meta.totalPages > 1"
       class="pt-2"
       :meta="meta"
-      label="Sync history pagination"
-      unit="syncs"
+      :label="t('data.syncHistory.pagination')"
+      :unit="t('data.syncHistory.unit')"
       @change="emit('page', $event)"
     />
   </section>

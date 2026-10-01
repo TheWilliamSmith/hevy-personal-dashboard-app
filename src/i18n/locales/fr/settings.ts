@@ -1,0 +1,78 @@
+import type { Messages } from '../../types';
+import type * as en from '../en/settings';
+
+export const settings: Messages<typeof en.settings> = {
+  section: 'Section des paramètres',
+  profile: 'Profil',
+  account: 'Compte',
+  preferences: 'Préférences',
+  preferencesShort: 'Préf.',
+  data: 'Données',
+  profileSaved: 'Profil enregistré',
+  saveFailed: 'Impossible d’enregistrer votre profil',
+  pictureUpdated: 'Photo de profil mise à jour',
+  pictureUpdateFailed: 'Impossible de mettre à jour la photo',
+  pictureRemoved: 'Photo de profil supprimée',
+  pictureRemoveFailed: 'Impossible de supprimer la photo',
+};
+
+export const profile: Messages<typeof en.profile> = {
+  publicTitle: 'Profil public',
+  publicSubtitle: 'Votre apparence dans le tableau de bord',
+  bio: 'Bio',
+  location: 'Localisation',
+  body: 'Corps',
+  bodySubtitle: 'Vos mensurations',
+  bodyweight: 'Poids de corps (kg)',
+  height: 'Taille (cm)',
+  unsaved: 'Modifications non enregistrées',
+  discard: 'Annuler',
+  saveChanges: 'Enregistrer',
+  changePicture: 'Changer la photo de profil',
+  changePhoto: 'Changer la photo',
+  addPhoto: 'Ajouter une photo',
+  remove: 'Supprimer',
+  workouts: 'Séances',
+  level: 'Niveau',
+  trophies: 'Trophées',
+  streak: 'Série',
+  streakWeeks: '{count} sem.',
+  memberSince: 'Membre depuis le {date}',
+};
+
+export const security: Messages<typeof en.security> = {
+  emailTitle: 'E-mail',
+  emailSubtitle: 'Sert à la connexion et aux e-mails du compte',
+  currentEmail: 'E-mail actuel',
+  newEmail: 'Nouvel e-mail',
+  currentPassword: 'Mot de passe actuel',
+  currentPasswordRequired: 'Saisissez votre mot de passe actuel.',
+  changeEmail: 'Changer l’e-mail',
+  emailChanged: 'E-mail modifié',
+  emailChangedDescription: 'Les deux adresses ont reçu une confirmation.',
+  passwordTitle: 'Mot de passe',
+  passwordSubtitle: 'Vos autres appareils sont déconnectés quand il change',
+  changePassword: 'Changer le mot de passe',
+  passwordChanged: 'Mot de passe modifié',
+  passwordChangedDescription: 'Vos autres appareils ont été déconnectés.',
+  forgotHint: 'Mot de passe actuel oublié ? Déconnectez-vous et utilisez « Mot de passe oublié ? » sur la page de connexion.',
+  signOut: 'Se déconnecter',
+};
+
+export const preferences: Messages<typeof en.preferences> = {
+  languageTitle: 'Langue',
+  languageSubtitle: 'Langue de l’interface, des dates et des nombres',
+  unitsTitle: 'Unités et calendrier',
+  unitsSubtitle: 'Enregistrées sur votre compte et appliquées partout',
+  saved: 'Préférences enregistrées',
+  saveFailed: 'Impossible d’enregistrer vos préférences',
+  weightUnit: 'Unité de poids',
+  kilograms: 'Kilogrammes',
+  pounds: 'Livres',
+  weekStartsOn: 'La semaine commence le',
+  weekStart: 'Début de semaine',
+  monday: 'Lundi',
+  sunday: 'Dimanche',
+  language: 'Langue',
+  languageHint: 'S’applique tout de suite sur cet appareil.',
+};

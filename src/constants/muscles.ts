@@ -1,3 +1,4 @@
+import { translated } from '@/i18n';
 import type { Equipment, ExerciseKind, MuscleGroup } from '@/types/exercises';
 
 export const MUSCLE_ORDER: readonly MuscleGroup[] = [
@@ -18,23 +19,7 @@ export const MUSCLE_ORDER: readonly MuscleGroup[] = [
   'FULL_BODY',
 ];
 
-export const MUSCLE_LABELS: Readonly<Record<MuscleGroup, string>> = {
-  CHEST: 'Chest',
-  BACK: 'Back',
-  TRAPS: 'Traps',
-  SHOULDERS: 'Shoulders',
-  BICEPS: 'Biceps',
-  TRICEPS: 'Triceps',
-  FOREARMS: 'Forearms',
-  QUADS: 'Quads',
-  HAMSTRINGS: 'Hamstrings',
-  GLUTES: 'Glutes',
-  ADDUCTORS: 'Adductors',
-  CALVES: 'Calves',
-  ABS: 'Abs',
-  CARDIO: 'Cardio',
-  FULL_BODY: 'Full body',
-};
+export const MUSCLE_LABELS: Readonly<Record<MuscleGroup, string>> = translated(MUSCLE_ORDER, (key) => `muscles.${key}`);
 
 export interface MuscleStyle {
   hex: string;
@@ -69,23 +54,14 @@ export const EQUIPMENT_ORDER: readonly Equipment[] = [
   'OTHER',
 ];
 
-export const EQUIPMENT_LABELS: Readonly<Record<Equipment, string>> = {
-  BARBELL: 'Barbell',
-  DUMBBELL: 'Dumbbell',
-  MACHINE: 'Machine',
-  CABLE: 'Cable',
-  BODYWEIGHT: 'Bodyweight',
-  ASSISTED: 'Assisted',
-  OTHER: 'Other',
-};
+export const EQUIPMENT_LABELS: Readonly<Record<Equipment, string>> = translated(
+  EQUIPMENT_ORDER,
+  (key) => `equipment.${key}`,
+);
 
 export const KIND_ORDER: readonly ExerciseKind[] = ['STRENGTH', 'CARDIO', 'BODYWEIGHT_HOLD'];
 
-export const KIND_LABELS: Readonly<Record<ExerciseKind, string>> = {
-  STRENGTH: 'Strength',
-  CARDIO: 'Cardio',
-  BODYWEIGHT_HOLD: 'Hold',
-};
+export const KIND_LABELS: Readonly<Record<ExerciseKind, string>> = translated(KIND_ORDER, (key) => `kinds.${key}`);
 
 export function muscleRank(group: MuscleGroup): number {
   const index = MUSCLE_ORDER.indexOf(group);

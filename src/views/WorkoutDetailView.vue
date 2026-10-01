@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { ChevronLeft, Clock, Layers, Repeat, Weight } from 'lucide-vue-next';
 import { computed } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
@@ -33,10 +34,10 @@ const orderedExercises = computed(() =>
 );
 
 const metrics = computed<MetricItem[]>(() => [
-  { label: 'Total volume', value: formatVolume(workout.value?.totalVolumeKg), icon: Weight },
-  { label: 'Sets', value: formatInteger(workout.value?.totalSets), icon: Layers },
-  { label: 'Reps', value: formatInteger(workout.value?.totalReps), icon: Repeat },
-  { label: 'Duration', value: formatDuration(workout.value?.durationSec), icon: Clock },
+  { label: t('workouts.totalVolume'), value: formatVolume(workout.value?.totalVolumeKg), icon: Weight },
+  { label: t('workouts.sets'), value: formatInteger(workout.value?.totalSets), icon: Layers },
+  { label: t('workouts.reps'), value: formatInteger(workout.value?.totalReps), icon: Repeat },
+  { label: t('workouts.duration'), value: formatDuration(workout.value?.durationSec), icon: Clock },
 ]);
 </script>
 
@@ -48,7 +49,7 @@ const metrics = computed<MetricItem[]>(() => [
         class="-ml-2 inline-flex w-fit items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-zinc-300 transition-colors hover:bg-zinc-900 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400"
       >
         <ChevronLeft class="h-4 w-4" aria-hidden="true" />
-        All workouts
+        {{ t('workouts.all') }}
       </RouterLink>
 
       <div v-if="isLoading && !workout" class="flex flex-col gap-6" aria-busy="true">
@@ -57,7 +58,7 @@ const metrics = computed<MetricItem[]>(() => [
         <div class="h-64 animate-pulse rounded-md bg-zinc-900" />
       </div>
 
-      <EmptyState v-else-if="error && notFound" message="This workout does not exist." />
+      <EmptyState v-else-if="error && notFound" :message="t('workouts.notFound')" />
 
       <SectionError v-else-if="error" :message="error" @retry="retry" />
 
@@ -68,7 +69,7 @@ const metrics = computed<MetricItem[]>(() => [
               <h2 class="text-2xl font-semibold tracking-tight text-white">{{ workout.title }}</h2>
               <p class="mt-1 text-xs text-zinc-500">
                 <time :datetime="workout.startedAt">{{ formatDate(workout.startedAt) }}</time>
-                · {{ formatInteger(orderedExercises.length) }} exercises
+                · {{ t('workouts.exerciseCount', { count: formatInteger(orderedExercises.length) }) }}
               </p>
               <p v-if="workout.description" class="mt-3 max-w-prose text-sm text-zinc-400">
                 {{ workout.description }}
@@ -85,8 +86,8 @@ const metrics = computed<MetricItem[]>(() => [
         </div>
 
         <section class="flex flex-col gap-6">
-          <SectionHeader title="Exercises" subtitle="In the order they were performed" />
-          <EmptyState v-if="orderedExercises.length === 0" message="No exercise logged in this workout." />
+          <SectionHeader :title="t('workouts.exercises')" :subtitle="t('workouts.exercisesSubtitle')" />
+          <EmptyState v-if="orderedExercises.length === 0" :message="t('workouts.noExercise')" />
           <div v-else class="grid grid-cols-[minmax(0,1fr)] gap-x-10 gap-y-10 xl:grid-cols-2">
             <ExerciseSection v-for="exercise in orderedExercises" :key="exercise.id" :exercise="exercise" />
           </div>

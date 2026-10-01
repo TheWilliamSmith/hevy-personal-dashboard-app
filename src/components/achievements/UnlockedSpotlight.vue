@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { computed } from 'vue';
 import { RouterLink } from 'vue-router';
 
@@ -29,7 +30,7 @@ const target = computed(() =>
 
 <template>
   <section class="flex h-full flex-col gap-4">
-    <SectionHeader title="Unlocked" subtitle="Your progress through the trophy room" />
+    <SectionHeader :title="t('trophies.unlockedTitle')" :subtitle="t('trophies.unlockedSubtitle')" />
 
     <div>
       <p
@@ -39,15 +40,15 @@ const target = computed(() =>
         {{ formatInteger(unlockedCount) }}<span class="text-3xl text-zinc-500"> / {{ formatInteger(totalCount) }}</span>
       </p>
       <p class="mt-2 max-w-xs text-sm text-zinc-400">
-        {{ percent }}% of the trophy room.
+        {{ t('trophies.shareOfRoom', { percent }) }}
         <template v-if="unlockedCount === 0 && totalCount > 0">
-          Anything you have already done unlocks retroactively once your history is imported.
+          {{ t('trophies.retroactive') }}
         </template>
       </p>
     </div>
 
     <div v-if="highlight" class="mt-auto flex flex-col gap-2">
-      <p class="text-xs text-zinc-500">Rarest trophy</p>
+      <p class="text-xs text-zinc-500">{{ t('trophies.rarest') }}</p>
       <component
         :is="target ? RouterLink : 'div'"
         :to="target ?? undefined"

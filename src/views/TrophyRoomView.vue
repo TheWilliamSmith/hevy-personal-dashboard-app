@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { computed, ref } from 'vue';
 
 import FamilyFilter from '@/components/achievements/FamilyFilter.vue';
@@ -30,18 +31,18 @@ const layouts = computed(() =>
 
 const openLadder = ref<{ key: string; family: AchievementFamily; tiers: AchievementItem[] } | null>(null);
 
-const SHOWS: ReadonlyArray<SegmentedOption<TrophyShow>> = [
-  { value: 'all', label: 'Everything', shortLabel: 'All' },
-  { value: 'unlocked', label: 'Unlocked', shortLabel: 'Done' },
-  { value: 'locked', label: 'Locked' },
-  { value: 'progress', label: 'In progress', shortLabel: 'Active' },
-];
+const shows = computed<ReadonlyArray<SegmentedOption<TrophyShow>>>(() => [
+  { value: 'all', label: t('trophies.showAll'), shortLabel: t('trophies.showAllShort') },
+  { value: 'unlocked', label: t('trophies.showUnlocked'), shortLabel: t('trophies.showUnlockedShort') },
+  { value: 'locked', label: t('trophies.showLocked') },
+  { value: 'progress', label: t('trophies.showProgress'), shortLabel: t('trophies.showProgressShort') },
+]);
 
 const EMPTY: Record<TrophyShow, string> = {
-  unlocked: 'Nothing unlocked here yet — the first one is the hardest.',
-  locked: 'Everything in this family is unlocked. Impressive.',
-  progress: 'Nothing started here yet.',
-  all: 'No achievements to show.',
+  unlocked: 'trophies.emptyUnlocked',
+  locked: 'trophies.emptyLocked',
+  progress: 'trophies.emptyProgress',
+  all: 'trophies.emptyAll',
 };
 </script>
 
@@ -49,9 +50,9 @@ const EMPTY: Record<TrophyShow, string> = {
   <div class="px-4 pb-10 sm:px-6">
     <Teleport to="#topbar-actions" defer>
       <SegmentedControl
-        :options="SHOWS"
+        :options="shows"
         :model-value="trophies.show.value"
-        label="Show trophies"
+        :label="t('trophies.show')"
         @update:model-value="trophies.setShow"
       />
     </Teleport>
@@ -90,12 +91,12 @@ const EMPTY: Record<TrophyShow, string> = {
           <div v-for="card in 12" :key="card" class="h-44 animate-pulse rounded-lg bg-zinc-900" />
         </div>
 
-        <EmptyState v-else-if="trophies.visibleCount.value === 0" :message="EMPTY[trophies.show.value]" />
+        <EmptyState v-else-if="trophies.visibleCount.value === 0" :message="t(EMPTY[trophies.show.value])" />
 
         <section v-for="section in layouts" :key="section.family" class="flex flex-col gap-4">
           <SectionHeader
             :title="FAMILY_LABELS[section.family]"
-            :subtitle="`${section.unlocked} of ${section.total} unlocked`"
+            :subtitle="t('trophies.sectionSubtitle', { unlocked: section.unlocked, total: section.total })"
           />
           <ul class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
             <li v-for="ladder in section.ladders" :key="ladder.key">

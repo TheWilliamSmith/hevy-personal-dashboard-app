@@ -1,3 +1,4 @@
+import { t } from '@/i18n';
 import { computed, type ComputedRef } from 'vue';
 import { useRoute, useRouter, type LocationQuery } from 'vue-router';
 
@@ -7,17 +8,57 @@ export type RangePreset = '30d' | '3m' | '6m' | '1y' | 'all' | 'custom';
 
 export const RANGE_PRESETS: ReadonlyArray<{ value: RangePreset; label: string; days: number | null }> =
   [
-    { value: '30d', label: '30 days', days: 30 },
-    { value: '3m', label: '3 months', days: 90 },
-    { value: '6m', label: '6 months', days: 180 },
-    { value: '1y', label: '1 year', days: 365 },
-    { value: 'all', label: 'All', days: null },
+    {
+    value: '30d',
+    get label() {
+      return t('ranges.30d');
+    },
+    days: 30 },
+    {
+    value: '3m',
+    get label() {
+      return t('ranges.3m');
+    },
+    days: 90 },
+    {
+    value: '6m',
+    get label() {
+      return t('ranges.6m');
+    },
+    days: 180 },
+    {
+    value: '1y',
+    get label() {
+      return t('ranges.1y');
+    },
+    days: 365 },
+    {
+    value: 'all',
+    get label() {
+      return t('ranges.all');
+    },
+    days: null },
   ];
 
 export const GRANULARITIES: ReadonlyArray<{ value: Granularity; label: string }> = [
-  { value: 'day', label: 'Day' },
-  { value: 'week', label: 'Week' },
-  { value: 'month', label: 'Month' },
+  {
+    value: 'day',
+    get label() {
+      return t('ranges.day');
+    },
+  },
+  {
+    value: 'week',
+    get label() {
+      return t('ranges.week');
+    },
+  },
+  {
+    value: 'month',
+    get label() {
+      return t('ranges.month');
+    },
+  },
 ];
 
 function queryString(query: LocationQuery, key: string): string {

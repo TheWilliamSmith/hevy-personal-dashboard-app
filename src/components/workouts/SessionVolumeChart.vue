@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import type { EChartsOption } from 'echarts';
 import { computed } from 'vue';
 
@@ -44,8 +45,8 @@ const option = computed<EChartsOption>(() => ({
       return [
         `<strong>${workout.title}</strong>`,
         formatBucket(workout.startedAt, 'day'),
-        `Volume: ${formatVolume(workout.totalVolumeKg)}`,
-        `Duration: ${formatDuration(workout.durationSec)}`,
+        t('workouts.volumeValue', { value: formatVolume(workout.totalVolumeKg) }),
+        t('workouts.durationValue', { value: formatDuration(workout.durationSec) }),
       ].join('<br/>');
     },
   },
@@ -61,7 +62,7 @@ const option = computed<EChartsOption>(() => ({
   },
   series: [
     {
-      name: 'Volume',
+      name: t('workouts.volume'),
       type: 'bar',
       barMaxWidth: 18,
       cursor: 'pointer',
@@ -82,20 +83,20 @@ function onSelect(index: number): void {
 
 <template>
   <section class="flex flex-col gap-4">
-    <SectionHeader title="Volume per session" subtitle="Workouts listed below · click a bar to open it">
+    <SectionHeader :title="t('workouts.perSession')" :subtitle="t('workouts.perSessionSubtitle')">
       <p class="text-right">
         <span class="text-2xl font-semibold text-white tabular-nums">{{ formatVolume(average) }}</span>
-        <span class="block text-[11px] leading-tight text-zinc-500">Average volume</span>
+        <span class="block text-[11px] leading-tight text-zinc-500">{{ t('workouts.averageVolume') }}</span>
       </p>
     </SectionHeader>
 
     <div class="relative h-64">
       <div v-if="isLoading && workouts.length === 0" class="absolute inset-0 animate-pulse rounded-md bg-zinc-900" />
-      <EmptyState v-else-if="workouts.length === 0" overlay message="No workout to chart." />
+      <EmptyState v-else-if="workouts.length === 0" overlay :message="t('workouts.noChart')" />
       <BaseChart
         v-else
         :option="option"
-        :aria-label="`Volume of the ${workouts.length} workouts listed below`"
+        :aria-label="t('workouts.chartLabel', { count: workouts.length })"
         @select="onSelect"
       />
     </div>

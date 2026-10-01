@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { computed } from 'vue';
 
 import SectionHeader from '@/components/ui/SectionHeader.vue';
@@ -31,7 +32,7 @@ function toggle(status: ProgressStatus): void {
 
 <template>
   <section class="flex flex-col gap-5">
-    <SectionHeader title="Status" :subtitle="`Exercises assessed over the last ${windowLabel}`">
+    <SectionHeader :title="t('progress.status.title')" :subtitle="t('progress.status.subtitle', { window: windowLabel })">
       <p class="text-right">
         <span
           class="text-2xl font-semibold text-white tabular-nums"
@@ -39,7 +40,7 @@ function toggle(status: ProgressStatus): void {
         >
           {{ formatInteger(total) }}
         </span>
-        <span class="block text-[11px] leading-tight text-zinc-500">Exercises</span>
+        <span class="block text-[11px] leading-tight text-zinc-500">{{ t('progress.status.exercises') }}</span>
       </p>
     </SectionHeader>
 
@@ -54,7 +55,7 @@ function toggle(status: ProgressStatus): void {
       />
     </div>
 
-    <div class="grid grid-cols-2 gap-1 sm:grid-cols-5" role="group" aria-label="Filter by status">
+    <div class="grid grid-cols-2 gap-1 sm:grid-cols-5" role="group" :aria-label="t('progress.status.filter')">
       <button
         v-for="row in rows"
         :key="row.status"

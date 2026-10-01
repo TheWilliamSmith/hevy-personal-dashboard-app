@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { X } from 'lucide-vue-next';
 import { computed } from 'vue';
 
@@ -40,13 +41,13 @@ const percent = computed(() => (next.value ? progressPercent(next.value) : 100))
         <div class="min-w-0 flex-1">
           <h2 id="ladder-dialog-title" class="truncate text-base font-semibold text-white">{{ title }}</h2>
           <p class="text-xs text-zinc-500">
-            {{ FAMILY_LABELS[ladder.family] }} · level {{ progress.unlockedCount }} of {{ tiers.length }}
+            {{ t('trophies.levelOf', { family: FAMILY_LABELS[ladder.family], level: progress.unlockedCount, total: tiers.length }) }}
           </p>
         </div>
         <button
           type="button"
           class="rounded-md p-1.5 text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-zinc-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400"
-          aria-label="Close"
+          :aria-label="t('trophies.close')"
           @click="emit('close')"
         >
           <X class="h-4 w-4" />
@@ -55,9 +56,9 @@ const percent = computed(() => (next.value ? progressPercent(next.value) : 100))
 
       <div class="min-h-0 flex-1 overflow-y-auto px-5 py-4">
         <section v-if="next" class="rounded-md border border-blue-500/40 bg-blue-500/10 p-4">
-          <p class="text-[11px] font-medium tracking-wide text-blue-300 uppercase">Next step</p>
+          <p class="text-[11px] font-medium tracking-wide text-blue-300 uppercase">{{ t('trophies.nextStep') }}</p>
           <p class="mt-1 text-base font-semibold text-white">{{ next.name }}</p>
-          <p class="text-sm text-zinc-300">Goal: {{ next.description }}</p>
+          <p class="text-sm text-zinc-300">{{ t('trophies.goal', { description: next.description }) }}</p>
           <div v-if="next.progress" class="mt-3">
             <div class="flex items-baseline justify-between text-xs">
               <span class="font-medium text-zinc-100 tabular-nums">{{ formatProgress(next) }}</span>
@@ -76,10 +77,10 @@ const percent = computed(() => (next.value ? progressPercent(next.value) : 100))
           </p>
         </section>
         <p v-else class="rounded-md border border-emerald-400/40 bg-emerald-400/10 p-4 text-sm text-emerald-300">
-          Every level of this series is unlocked.
+          {{ t('trophies.seriesDone') }}
         </p>
 
-        <h3 class="mt-5 mb-2 text-xs font-medium tracking-wide text-zinc-400 uppercase">All steps</h3>
+        <h3 class="mt-5 mb-2 text-xs font-medium tracking-wide text-zinc-400 uppercase">{{ t('trophies.allSteps') }}</h3>
         <LadderSteps :tiers="tiers" />
       </div>
     </template>

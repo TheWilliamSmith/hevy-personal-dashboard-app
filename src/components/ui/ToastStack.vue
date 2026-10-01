@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { useToasts } from '@/composables/useToasts';
 
 const { toasts, dismiss } = useToasts();
@@ -29,7 +30,7 @@ const TONES: Readonly<Record<string, string>> = {
       <button
         type="button"
         class="shrink-0 rounded px-1 text-sm opacity-60 hover:opacity-100"
-        aria-label="Dismiss notification"
+        :aria-label="t('common.dismissNotification')"
         @click="dismiss(toast.id)"
       >
         ✕

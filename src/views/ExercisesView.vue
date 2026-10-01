@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { computed, onBeforeUnmount, ref, watch } from 'vue';
 
 import CatalogSpotlight from '@/components/exercises/CatalogSpotlight.vue';
@@ -72,8 +73,8 @@ function anchorId(group: string): string {
 
       <section class="flex flex-col gap-4">
         <SectionHeader
-          title="All exercises"
-          :subtitle="`${formatInteger(exercises.length)} exercises listed · grouped by muscle`"
+          :title="t('exercises.all')"
+          :subtitle="t('exercises.listed', { count: formatInteger(exercises.length) })"
         />
 
         <ExerciseToolbar
@@ -93,7 +94,7 @@ function anchorId(group: string): string {
           <nav
             v-if="groups.length > 1"
             class="sticky top-[calc(var(--toolbar-h)+0.5rem)] hidden h-fit w-40 shrink-0 flex-col gap-0.5 pt-2 lg:flex"
-            aria-label="Jump to muscle group"
+            :aria-label="t('exercises.jumpTo')"
           >
             <a
               v-for="group in groups"
@@ -120,15 +121,15 @@ function anchorId(group: string): string {
 
             <SectionError v-else-if="error" :message="error" @retry="refresh" />
 
-            <EmptyState v-else-if="isEmptyCatalog" import-link message="No exercises yet." />
+            <EmptyState v-else-if="isEmptyCatalog" import-link :message="t('exercises.none')" />
 
-            <EmptyState v-else-if="groups.length === 0" message="No exercises match these filters.">
+            <EmptyState v-else-if="groups.length === 0" :message="t('exercises.noMatch')">
               <button
                 type="button"
                 class="text-sm font-medium text-zinc-200 underline decoration-zinc-600 underline-offset-2"
                 @click="clearFilters"
               >
-                Clear filters
+                {{ t('common.clearFilters') }}
               </button>
             </EmptyState>
 
@@ -151,7 +152,7 @@ function anchorId(group: string): string {
                     {{ MUSCLE_LABELS[group.muscleGroup] }}
                   </h3>
                   <p class="text-xs text-zinc-500">
-                    {{ formatInteger(group.exerciseCount) }} exercises · {{ formatInteger(group.totalSets) }} sets
+                    {{ t('exercises.groupSummary', { exercises: formatInteger(group.exerciseCount), sets: formatInteger(group.totalSets) }) }}
                   </p>
                 </header>
 

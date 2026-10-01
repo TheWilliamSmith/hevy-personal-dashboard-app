@@ -1,3 +1,4 @@
+import { t } from '@/i18n';
 import { computed, onScopeDispose, ref, watch, type ComputedRef, type Ref } from 'vue';
 import { useRoute, useRouter, type LocationQuery } from 'vue-router';
 
@@ -78,7 +79,7 @@ export function useAchievements(): UseAchievements {
       if (!signal.aborted) catalog.value = result;
     } catch (caught) {
       if (!signal.aborted) {
-        error.value = caught instanceof ApiError ? caught.message : 'Something went wrong.';
+        error.value = caught instanceof ApiError ? caught.message : t('errors.generic');
       }
     } finally {
       if (!signal.aborted) isLoading.value = false;

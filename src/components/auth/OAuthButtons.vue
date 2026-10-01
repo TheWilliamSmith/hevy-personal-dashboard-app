@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import type { OAuthProvider } from '@/composables/useAuth';
 
 defineProps<{ pending: OAuthProvider | null; disabled: boolean; action: string }>();
@@ -38,7 +39,7 @@ const PROVIDERS: ReadonlyArray<{ id: OAuthProvider; label: string }> = [
           d="M16.4 12.7c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.8-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9a5 5 0 0 0-4.2 2.6c-1.8 3.1-.5 7.7 1.3 10.2.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8s2 .8 3.4.8c1.4 0 2.3-1.3 3.1-2.5a11 11 0 0 0 1.4-2.9 4.5 4.5 0 0 1-2.6-4.1zM13.9 5.1c.7-.9 1.2-2 1.1-3.1-1 0-2.3.7-3 1.6-.7.8-1.2 2-1.1 3.1 1.1.1 2.3-.6 3-1.6z"
         />
       </svg>
-      {{ action }} with {{ provider.label }}
+      {{ t('auth.oauthWith', { action, provider: provider.label }) }}
     </button>
   </div>
 </template>

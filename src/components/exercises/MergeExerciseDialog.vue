@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { computed, ref, watch } from 'vue';
 
 import BaseDialog from '@/components/ui/BaseDialog.vue';
@@ -50,35 +51,41 @@ const selected = computed(() => options.value.find((option) => option.id === sel
   >
     <header class="border-b border-zinc-800 px-5 py-4">
       <h2 id="merge-exercise-title" class="text-base font-semibold text-white">
-        Merge into {{ props.target?.name }}
+        {{ t('exercises.merge.title', { name: props.target?.name ?? '' }) }}
       </h2>
       <p class="mt-0.5 text-sm text-zinc-400">
-        Pick the duplicate to absorb. Its sessions move here and it is then deleted.
+        {{ t('exercises.merge.subtitle') }}
       </p>
     </header>
 
     <div class="min-h-0 flex-1 overflow-y-auto px-5 py-4">
-      <p class="rounded-md border border-red-900/60 bg-red-950/40 px-3 py-2 text-sm text-red-200">
-        This cannot be undone. The chosen exercise is permanently removed and every set it holds is
-        re-attributed to <strong>{{ props.target?.name }}</strong>.
-      </p>
+      <i18n-t
+        keypath="exercises.merge.warning"
+        tag="p"
+        scope="global"
+        class="rounded-md border border-red-900/60 bg-red-950/40 px-3 py-2 text-sm text-red-200"
+      >
+        <template #name>
+          <strong>{{ props.target?.name }}</strong>
+        </template>
+      </i18n-t>
 
       <div class="mt-4">
         <label for="merge-search" class="mb-1 block text-xs text-zinc-400">
-          Search exercises
+          {{ t('exercises.merge.search') }}
         </label>
         <input
           id="merge-search"
           v-model="search"
           type="search"
-          placeholder="Type to filter…"
+          :placeholder="t('exercises.merge.placeholder')"
           class="w-full rounded-md border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400"
         />
       </div>
 
       <ul class="mt-3 max-h-72 divide-y divide-zinc-800 overflow-y-auto rounded-md border border-zinc-800">
         <li v-if="options.length === 0" class="px-3 py-6 text-center text-sm text-zinc-500">
-          No exercise matches.
+          {{ t('exercises.merge.noMatch') }}
         </li>
         <li v-for="option in options" :key="option.id">
           <label class="flex cursor-pointer items-start gap-2 px-3 py-2 hover:bg-zinc-800">
@@ -90,7 +97,7 @@ const selected = computed(() => options.value.find((option) => option.id === sel
                 <span aria-hidden="true"> · </span>
                 {{ EQUIPMENT_LABELS[option.equipment] }}
                 <span aria-hidden="true"> · </span>
-                {{ formatInteger(option.sessions) }} sessions
+                {{ t('exercises.merge.sessions', { count: formatInteger(option.sessions) }) }}
               </span>
             </span>
           </label>
@@ -109,7 +116,7 @@ const selected = computed(() => options.value.find((option) => option.id === sel
         :disabled="props.isSaving"
         @click="emit('cancel')"
       >
-        Cancel
+        {{ t('common.cancel') }}
       </button>
       <button
         type="button"
@@ -123,7 +130,7 @@ const selected = computed(() => options.value.find((option) => option.id === sel
           class="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white"
           aria-hidden="true"
         />
-        {{ selected ? `Merge ${selected.name}` : 'Merge' }}
+        {{ selected ? t('exercises.merge.mergeName', { name: selected.name }) : t('exercises.merge.merge') }}
       </button>
     </footer>
   </BaseDialog>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { Search, X } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 
@@ -98,7 +99,7 @@ function onBlur(): void {
         role="combobox"
         autocomplete="off"
         spellcheck="false"
-        placeholder="Search an exercise"
+        :placeholder="t('exercises.picker.placeholder')"
         aria-autocomplete="list"
         :aria-expanded="open"
         :aria-controls="listId"
@@ -116,7 +117,7 @@ function onBlur(): void {
         v-if="query"
         type="button"
         class="absolute top-1/2 right-1.5 -translate-y-1/2 rounded p-1 text-zinc-500 hover:text-zinc-200 focus-visible:outline-2 focus-visible:outline-zinc-400"
-        aria-label="Clear the exercise"
+        :aria-label="t('exercises.picker.clear')"
         @mousedown.prevent
         @click="clear"
       >
@@ -128,7 +129,7 @@ function onBlur(): void {
       v-show="open"
       :id="listId"
       role="listbox"
-      :aria-label="query ? `Exercises matching ${query}` : 'Most performed exercises'"
+      :aria-label="query ? t('exercises.picker.matching', { query }) : t('exercises.picker.mostPerformed')"
       class="max-h-60 overflow-y-auto rounded-md border border-zinc-800 bg-zinc-900 p-1"
     >
       <li
@@ -144,11 +145,15 @@ function onBlur(): void {
       >
         <span class="truncate">{{ exercise.name }}</span>
         <span class="shrink-0 text-[11px] text-zinc-500 tabular-nums">
-          {{ exercise.sessions ? `${formatInteger(exercise.sessions)} sessions` : 'Never performed' }}
+          {{
+            exercise.sessions
+              ? t('exercises.sessionCount', { count: formatInteger(exercise.sessions) }, exercise.sessions)
+              : t('exercises.neverPerformed')
+          }}
         </span>
       </li>
       <li v-if="results.length === 0" class="px-2 py-3 text-center text-sm text-zinc-500" role="presentation">
-        No exercise matches “{{ query }}”.
+        {{ t('exercises.picker.noMatch', { query }) }}
       </li>
     </ul>
   </div>

@@ -1,3 +1,4 @@
+import { t } from '@/i18n';
 import { onScopeDispose, ref, toValue, watch, type MaybeRefOrGetter, type Ref } from 'vue';
 
 import { ApiError, apiGet, apiPatch, apiPost } from '@/lib/api';
@@ -91,7 +92,7 @@ export function useExercise(slug: MaybeRefOrGetter<string>): UseExercise {
         detail.value = null;
         notFound.value = caught instanceof ApiError && caught.status === 404;
       }
-      error.value = caught instanceof ApiError ? caught.message : 'Something went wrong.';
+      error.value = caught instanceof ApiError ? caught.message : t('errors.generic');
     } finally {
       if (!signal.aborted) {
         isLoading.value = false;
@@ -122,7 +123,7 @@ export function useExercise(slug: MaybeRefOrGetter<string>): UseExercise {
       await fetchDetail(1);
       return true;
     } catch (caught) {
-      mutationError.value = caught instanceof ApiError ? caught.message : 'Something went wrong.';
+      mutationError.value = caught instanceof ApiError ? caught.message : t('errors.generic');
       return false;
     } finally {
       isSaving.value = false;
@@ -147,7 +148,7 @@ export function useExercise(slug: MaybeRefOrGetter<string>): UseExercise {
       await fetchDetail(1);
       return merged;
     } catch (caught) {
-      mutationError.value = caught instanceof ApiError ? caught.message : 'Something went wrong.';
+      mutationError.value = caught instanceof ApiError ? caught.message : t('errors.generic');
       return null;
     } finally {
       isSaving.value = false;

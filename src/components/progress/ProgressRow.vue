@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { ChevronRight } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import { RouterLink } from 'vue-router';
@@ -7,7 +8,7 @@ import Sparkline from '@/components/charts/Sparkline.vue';
 import { EQUIPMENT_LABELS, MUSCLE_LABELS, MUSCLE_STYLES } from '@/constants/muscles';
 import { LOW_WEEKLY_SETS, METRIC_LABELS, STATUS_STYLES } from '@/constants/progress';
 import type { ProgressItem } from '@/types/progress';
-import { formatDay } from '@/utils/format';
+import { formatDay, formatDecimal } from '@/utils/format';
 import {
   formatDaysAgo,
   formatGapToBest,
@@ -46,7 +47,7 @@ const lowVolume = computed(
 );
 
 const weeklySets = computed(() =>
-  props.alert.weeklySetsAvg.toLocaleString('fr-FR', { maximumFractionDigits: 1 }),
+  formatDecimal(props.alert.weeklySetsAvg, 1),
 );
 
 const detailId = computed(() => `progress-detail-${props.alert.exerciseId}`);
@@ -70,7 +71,7 @@ const cell = 'px-3 py-1.5 text-xs';
           :class="focus"
           :aria-expanded="expanded"
           :aria-controls="detailId"
-          :aria-label="`${expanded ? 'Hide' : 'Show'} sessions for ${alert.name}`"
+          :aria-label="t(expanded ? 'progress.row.hide' : 'progress.row.toggle', { name: alert.name })"
           @click="expanded = !expanded"
         >
           <ChevronRight class="h-4 w-4 transition-transform" :class="{ 'rotate-90': expanded }" aria-hidden="true" />
@@ -103,7 +104,13 @@ const cell = 'px-3 py-1.5 text-xs';
         marker-stroke="#09090b"
         :width="104"
         :height="26"
-        :label="`${METRIC_LABELS[alert.metricUsed]} over ${values.length} sessions, ${prIndices.length} personal records`"
+        :label="
+          t('progress.row.sparkline', {
+            metric: METRIC_LABELS[alert.metricUsed],
+            count: values.length,
+            records: prIndices.length,
+          })
+        "
       />
 
       <div class="hidden text-xs lg:block">
@@ -115,13 +122,19 @@ const cell = 'px-3 py-1.5 text-xs';
       </div>
 
       <p class="hidden text-xs font-medium tabular-nums lg:block" :class="isNoData ? 'text-zinc-500' : slopeClass">
-        <template v-if="isNoData">needs more sessions</template>
+        <template v-if="isNoData">{{ t('progress.row.needsSessions') }}</template>
         <template v-else>{{ formatSlope(alert.slopePctPerWeek) }}</template>
       </p>
 
       <div class="hidden text-xs text-zinc-400 lg:block">
-        <p>Last PR: {{ alert.weeksSincePR === null ? 'none yet' : formatWeeksAgo(alert.weeksSincePR) }}</p>
-        <p>Last done: {{ formatDaysAgo(alert.daysSinceLast) }}</p>
+        <p>
+          {{
+            t('progress.row.lastPR', {
+              when: alert.weeksSincePR === null ? t('progress.row.noneYet') : formatWeeksAgo(alert.weeksSincePR),
+            })
+          }}
+        </p>
+        <p>{{ t('progress.row.lastDone', { when: formatDaysAgo(alert.daysSinceLast) }) }}</p>
       </div>
 
       <div class="flex items-center justify-end gap-2">
@@ -129,9 +142,9 @@ const cell = 'px-3 py-1.5 text-xs';
           :to="{ name: 'home', query: { tab: 'exercises', exercise: alert.slug } }"
           class="rounded-md px-2 py-1 text-xs font-medium text-zinc-300 transition-colors hover:bg-zinc-900 hover:text-white"
           :class="focus"
-          :aria-label="`Open ${alert.name} in Exercises`"
+          :aria-label="t('progress.openIn', { name: alert.name })"
         >
-          Open
+          {{ t('progress.open') }}
         </RouterLink>
         <MuteButton
           :exercise-id="alert.exerciseId"
@@ -144,18 +157,18 @@ const cell = 'px-3 py-1.5 text-xs';
 
       <p class="col-span-full pl-7 text-[11px]" :class="lowVolume ? 'text-amber-400' : 'text-zinc-500'">
         <template v-if="isNoData">
-          Needs more sessions — {{ alert.sessionsAnalyzed }} in this window, 4 needed to assess.
+          {{ t('progress.row.notEnough', { count: alert.sessionsAnalyzed }) }}
         </template>
         <template v-else-if="lowVolume">
-          {{ weeklySets }} sets/week — low volume: this may be a programming issue, not a plateau.
+          {{ t('progress.row.lowVolume', { sets: weeklySets }) }}
         </template>
-        <template v-else>{{ weeklySets }} sets/week on average</template>
+        <template v-else>{{ t('progress.row.average', { sets: weeklySets }) }}</template>
         <span class="lg:hidden">
           · {{ formatMetricValue(alert.metricUsed, alert.current?.value) }} ({{ formatGapToBest(gap) }})
           <template v-if="!isNoData">
             · <span class="whitespace-nowrap" :class="slopeClass">{{ formatSlope(alert.slopePctPerWeek) }}</span>
           </template>
-          · <span class="whitespace-nowrap">last done {{ formatDaysAgo(alert.daysSinceLast) }}</span>
+          · <span class="whitespace-nowrap">{{ t('progress.row.lastDoneShort', { when: formatDaysAgo(alert.daysSinceLast) }) }}</span>
         </span>
       </p>
     </div>
@@ -167,26 +180,26 @@ const cell = 'px-3 py-1.5 text-xs';
           :to="{ name: 'home', query: { tab: 'workouts', workout: alert.current.workoutId } }"
           :class="link"
         >
-          Latest session ({{ formatDay(alert.current.date) }})
+          {{ t('progress.row.latest', { date: formatDay(alert.current.date) }) }}
         </RouterLink>
         <RouterLink
           v-if="alert.best"
           :to="{ name: 'home', query: { tab: 'workouts', workout: alert.best.workoutId } }"
           :class="link"
         >
-          Best session ({{ formatDay(alert.best.date) }})
+          {{ t('progress.row.best', { date: formatDay(alert.best.date) }) }}
         </RouterLink>
-        <span>{{ alert.avgSetsPerSession.toLocaleString('fr-FR', { maximumFractionDigits: 1 }) }} sets per session</span>
-        <span>{{ alert.sessionsSinceImprovement }} sessions since the last improvement</span>
+        <span>{{ t('progress.row.setsPerSession', { sets: formatDecimal(alert.avgSetsPerSession, 1) }) }}</span>
+        <span>{{ t('progress.row.sinceImprovement', { count: alert.sessionsSinceImprovement }) }}</span>
       </p>
 
       <table class="w-full max-w-md border-collapse">
-        <caption class="sr-only">Sessions analysed for {{ alert.name }}</caption>
+        <caption class="sr-only">{{ t('progress.row.caption', { name: alert.name }) }}</caption>
         <thead>
           <tr class="text-left text-[11px] font-medium text-zinc-500">
-            <th scope="col" :class="cell">Date</th>
+            <th scope="col" :class="cell">{{ t('progress.row.date') }}</th>
             <th scope="col" :class="cell">{{ METRIC_LABELS[alert.metricUsed] }}</th>
-            <th scope="col" :class="cell">Record</th>
+            <th scope="col" :class="cell">{{ t('progress.row.record') }}</th>
           </tr>
         </thead>
         <tbody>
@@ -194,7 +207,7 @@ const cell = 'px-3 py-1.5 text-xs';
             <th scope="row" :class="[cell, 'text-left font-normal text-zinc-300']">{{ formatDay(session.date) }}</th>
             <td :class="[cell, 'text-zinc-100 tabular-nums']">{{ formatMetricValue(alert.metricUsed, session.value) }}</td>
             <td :class="cell">
-              <span v-if="session.isPR" class="font-semibold text-emerald-400">PR</span>
+              <span v-if="session.isPR" class="font-semibold text-emerald-400">{{ t('progress.row.pr') }}</span>
               <span v-else class="text-zinc-600">—</span>
             </td>
           </tr>

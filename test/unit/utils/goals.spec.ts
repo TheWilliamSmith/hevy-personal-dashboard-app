@@ -1,8 +1,12 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
+import { setLocale } from '@/i18n';
 import { isExerciseGoal } from '@/constants/goals';
 import type { Goal } from '@/types/goals';
 import { formatGoalValue, goalTiming, goalTitle, sortGoals } from '@/utils/goals';
+
+beforeEach(() => setLocale('fr'));
+afterEach(() => setLocale('en'));
 
 function goal(overrides: Partial<Goal> = {}, progress: Partial<Goal['progress']> = {}): Goal {
   return {
@@ -23,10 +27,10 @@ function goal(overrides: Partial<Goal> = {}, progress: Partial<Goal['progress']>
 
 describe('goal labels', () => {
   it('names each goal type', () => {
-    expect(goalTitle(goal())).toBe('Bench Press (Barbell) · estimated 1RM');
-    expect(goalTitle(goal({ type: 'EXERCISE_WEIGHT' }))).toBe('Bench Press (Barbell) · working weight');
-    expect(goalTitle(goal({ type: 'WEEKLY_WORKOUTS', exercise: null }))).toBe('Workouts per week');
-    expect(goalTitle(goal({ type: 'PERIOD_VOLUME', exercise: null }))).toBe('Total volume');
+    expect(goalTitle(goal())).toBe('Bench Press (Barbell) · 1RM estimé');
+    expect(goalTitle(goal({ type: 'EXERCISE_WEIGHT' }))).toBe('Bench Press (Barbell) · charge de travail');
+    expect(goalTitle(goal({ type: 'WEEKLY_WORKOUTS', exercise: null }))).toBe('Séances par semaine');
+    expect(goalTitle(goal({ type: 'PERIOD_VOLUME', exercise: null }))).toBe('Volume total');
   });
 
   it('formats values in the goal unit', () => {
@@ -44,23 +48,31 @@ describe('goal labels', () => {
 
 describe('goalTiming', () => {
   it('gives the projected date and the deadline', () => {
-    expect(goalTiming(goal({ deadline: '2027-01-15T00:00:00.000Z' }))).toMatch(/^Expected around .+\. Deadline .+\.$/);
+    expect(goalTiming(goal({ deadline: '2027-01-15T00:00:00.000Z' }))).toMatch(/^Prévu vers le .+\. Échéance le .+\.$/);
   });
 
   it('explains the other states', () => {
-    expect(goalTiming(goal({ achievedAt: '2026-09-20T00:00:00.000Z' }, { status: 'ACHIEVED' }))).toMatch(/^Reached on /);
+    expect(goalTiming(goal({ achievedAt: '2026-09-20T00:00:00.000Z' }, { status: 'ACHIEVED' }))).toMatch(/^Atteint le /);
     expect(goalTiming(goal({}, { status: 'NOT_ENOUGH_DATA', projectedDate: null }))).toBe(
-      'Needs a few more sessions to project.',
+      'Encore quelques séances avant de pouvoir projeter.',
     );
     expect(goalTiming(goal({}, { status: 'OFF_TRACK', projectedDate: null }))).toBe(
-      'The current trend does not reach it.',
+      'La tendance actuelle ne l’atteint pas.',
     );
   });
 
   it('summarises past weeks for a weekly goal', () => {
     const weekly = goal({ type: 'WEEKLY_WORKOUTS', unit: 'workouts' }, { weeksMet: 3, weeksConsidered: 4 });
-    expect(goalTiming(weekly)).toBe('This week · 3 of the last 4 weeks met.');
-    expect(goalTiming(goal({ type: 'WEEKLY_WORKOUTS' }, { weeksConsidered: 0 }))).toBe('This week · First week.');
+    expect(goalTiming(weekly)).toBe('Cette semaine · 3 des 4 dernières semaines réussies.');
+    expect(goalTiming(goal({ type: 'WEEKLY_WORKOUTS' }, { weeksConsidered: 0 }))).toBe('Cette semaine · Première semaine.');
+  });
+
+  it('speaks English once the locale is switched', () => {
+    setLocale('en');
+    expect(goalTitle(goal())).toBe('Bench Press (Barbell) · estimated 1RM');
+    expect(goalTiming(goal({ deadline: '2027-01-15T00:00:00.000Z' }))).toBe(
+      'Expected around 1 Dec 2026. Deadline 15 Jan 2027.',
+    );
   });
 });
 

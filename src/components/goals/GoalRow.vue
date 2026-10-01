@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { Archive, ArchiveRestore, Pencil, Trash2 } from 'lucide-vue-next';
 import { RouterLink } from 'vue-router';
 
@@ -32,24 +33,24 @@ const iconButton =
       </div>
       <div class="flex shrink-0 items-center gap-1.5">
         <template v-if="goal.archivedAt === null">
-          <button type="button" :class="iconButton" :disabled="busy" aria-label="Edit goal" @click="emit('edit')">
+          <button type="button" :class="iconButton" :disabled="busy" :aria-label="t('goals.edit')" @click="emit('edit')">
             <Pencil class="h-4 w-4" aria-hidden="true" />
           </button>
-          <button type="button" :class="iconButton" :disabled="busy" aria-label="Archive goal" @click="emit('archive')">
+          <button type="button" :class="iconButton" :disabled="busy" :aria-label="t('goals.archive')" @click="emit('archive')">
             <Archive class="h-4 w-4" aria-hidden="true" />
           </button>
         </template>
-        <button v-else type="button" :class="iconButton" :disabled="busy" aria-label="Restore goal" @click="emit('restore')">
+        <button v-else type="button" :class="iconButton" :disabled="busy" :aria-label="t('goals.restore')" @click="emit('restore')">
           <ArchiveRestore class="h-4 w-4" aria-hidden="true" />
         </button>
-        <button type="button" :class="iconButton" :disabled="busy" aria-label="Delete goal" @click="emit('remove')">
+        <button type="button" :class="iconButton" :disabled="busy" :aria-label="t('goals.delete')" @click="emit('remove')">
           <Trash2 class="h-4 w-4" aria-hidden="true" />
         </button>
       </div>
     </div>
 
     <div class="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1.5">
-      <GoalProgressBar :percent="goal.progress.percent" :status="goal.progress.status" :label="`${goalTitle(goal)} progress`" />
+      <GoalProgressBar :percent="goal.progress.percent" :status="goal.progress.status" :label="t('goals.progressLabel', { goal: goalTitle(goal) })" />
       <p class="text-sm text-zinc-100 tabular-nums">
         {{ formatGoalValue(goal, goal.progress.current) }}
         <span class="text-zinc-500">/ {{ formatGoalValue(goal, goal.target) }}</span>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import {
   Activity,
   Dumbbell,
@@ -76,7 +77,7 @@ const iconButton =
       mobileOpen ? 'translate-x-0' : '-translate-x-full',
       collapsed ? 'lg:w-16' : 'lg:w-60',
     ]"
-    aria-label="Main navigation"
+    :aria-label="t('nav.mainNavigation')"
   >
     <div
       class="flex h-14 shrink-0 items-center gap-2 px-3"
@@ -88,19 +89,19 @@ const iconButton =
         >
           <Activity class="h-4 w-4" :stroke-width="2.5" aria-hidden="true" />
         </span>
-        <span class="truncate text-sm font-semibold text-white">Hevy Dashboard</span>
+        <span class="truncate text-sm font-semibold text-white">{{ t('common.appName') }}</span>
       </div>
 
       <button
         type="button"
         :class="[iconButton, 'hidden lg:inline-flex']"
-        :aria-label="collapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+        :aria-label="collapsed ? t('nav.expandSidebar') : t('nav.collapseSidebar')"
         :aria-expanded="!collapsed"
         @click="toggleCollapsed"
       >
         <component :is="collapsed ? PanelLeftOpen : PanelLeftClose" class="h-4 w-4" />
       </button>
-      <button type="button" :class="[iconButton, 'lg:hidden']" aria-label="Close menu" @click="closeMobile">
+      <button type="button" :class="[iconButton, 'lg:hidden']" :aria-label="t('nav.closeMenu')" @click="closeMobile">
         <X class="h-4 w-4" />
       </button>
     </div>
@@ -133,7 +134,7 @@ const iconButton =
         class="flex items-center gap-3 rounded-md p-1.5 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400"
         :class="[tab === 'settings' ? 'bg-zinc-800' : 'hover:bg-zinc-900', { 'lg:justify-center': collapsed }]"
         :aria-current="tab === 'settings' ? 'page' : undefined"
-        :title="collapsed ? 'Profile and settings' : undefined"
+        :title="collapsed ? t('nav.profileAndSettings') : undefined"
       >
         <ProfileAvatar :name="profile.displayName" :url="profile.avatarUrl" />
         <span class="min-w-0 flex-1" :class="{ 'lg:sr-only': collapsed }">

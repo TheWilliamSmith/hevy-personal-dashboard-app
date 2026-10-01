@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { computed, reactive, ref, watch } from 'vue';
 import { RouterLink, useRouter } from 'vue-router';
 
@@ -47,21 +48,21 @@ const normalized = computed(() => ({
 
 const errors = computed(() => ({
   displayName:
-    (touched.displayName || submitted.value) && !form.displayName.trim() ? 'Tell us what to call you.' : null,
+    (touched.displayName || submitted.value) && !form.displayName.trim() ? t('auth.signUp.displayNameRequired') : null,
   username:
     taken.username !== null && taken.username === normalized.value.username
-      ? 'This username is already taken.'
+      ? t('auth.signUp.usernameTaken')
       : (touched.username || submitted.value) && !isUsername(form.username)
-        ? 'Use 3 to 30 lowercase letters, digits, dots or underscores.'
+        ? t('auth.signUp.usernameInvalid')
         : null,
   email:
     taken.email !== null && taken.email === normalized.value.email
-      ? 'An account already exists for this email.'
+      ? t('auth.signUp.emailTaken')
       : (touched.email || submitted.value) && !isEmail(form.email)
-        ? 'Enter a valid email address.'
+        ? t('validation.email')
         : null,
   password: (touched.password || submitted.value) ? passwordProblem(form.password) : null,
-  terms: submitted.value && !form.terms ? 'Accept the terms to create an account.' : null,
+  terms: submitted.value && !form.terms ? t('auth.signUp.termsRequired') : null,
 }));
 
 const isValid = computed(
@@ -96,7 +97,11 @@ async function submit(): Promise<void> {
       email: normalized.value.email,
       password: form.password,
     });
-    push({ tone: 'success', title: 'Account created', description: `Welcome, ${form.displayName.trim()}.` });
+    push({
+      tone: 'success',
+      title: t('auth.signUp.created'),
+      description: t('auth.signUp.welcome', { name: form.displayName.trim() }),
+    });
     void router.replace({ name: 'home', query: { tab: 'settings' } });
   } catch (caught) {
     const field = takenField(caught);
@@ -120,13 +125,13 @@ async function withProvider(provider: OAuthProvider): Promise<void> {
 </script>
 
 <template>
-  <AuthLayout title="Create your account" subtitle="Keep your Hevy history, profile and trophies in one place.">
+  <AuthLayout :title="t('auth.signUp.title')" :subtitle="t('auth.signUp.subtitle')">
     <AuthError :message="formError" />
-    <OAuthButtons action="Sign up" :pending="auth.pendingProvider.value" :disabled="busy" @select="withProvider" />
+    <OAuthButtons :action="t('auth.signUp.action')" :pending="auth.pendingProvider.value" :disabled="busy" @select="withProvider" />
 
     <div class="flex items-center gap-3 text-xs text-zinc-600" role="separator">
       <span class="h-px flex-1 bg-zinc-800" />
-      or with your email
+      {{ t('auth.orWithEmail') }}
       <span class="h-px flex-1 bg-zinc-800" />
     </div>
 
@@ -134,7 +139,7 @@ async function withProvider(provider: OAuthProvider): Promise<void> {
       <AuthField
         id="signup-display-name"
         v-model="form.displayName"
-        label="Display name"
+        :label="t('auth.signUp.displayName')"
         autocomplete="name"
         :maxlength="80"
         :error="errors.displayName"
@@ -143,19 +148,19 @@ async function withProvider(provider: OAuthProvider): Promise<void> {
       <AuthField
         id="signup-username"
         :model-value="form.username"
-        label="Username"
+        :label="t('auth.signUp.username')"
         prefix="@"
         autocomplete="username"
         :maxlength="30"
         :error="errors.username"
-        hint="3 to 30 characters: lowercase letters, digits, dots and underscores."
+        :hint="t('auth.signUp.usernameHint')"
         @update:model-value="editUsername"
         @blur="touched.username = true"
       />
       <AuthField
         id="signup-email"
         v-model="form.email"
-        label="Email"
+        :label="t('auth.email')"
         type="email"
         autocomplete="email"
         :error="errors.email"
@@ -164,11 +169,11 @@ async function withProvider(provider: OAuthProvider): Promise<void> {
       <AuthField
         id="signup-password"
         v-model="form.password"
-        label="Password"
+        :label="t('auth.password')"
         type="password"
         autocomplete="new-password"
         :error="errors.password"
-        hint="At least 8 characters, mixing letters, digits or symbols."
+        :hint="t('auth.passwordHint')"
         @blur="touched.password = true"
       >
         <PasswordStrengthMeter :password="form.password" />
@@ -183,7 +188,7 @@ async function withProvider(provider: OAuthProvider): Promise<void> {
             :aria-invalid="Boolean(errors.terms)"
             aria-describedby="signup-terms-help"
           />
-          I accept the terms of use and the privacy policy.
+          {{ t('auth.signUp.terms') }}
         </label>
         <p v-if="errors.terms" id="signup-terms-help" class="text-xs text-red-400">{{ errors.terms }}</p>
       </div>
@@ -199,17 +204,17 @@ async function withProvider(provider: OAuthProvider): Promise<void> {
           class="h-3.5 w-3.5 animate-spin rounded-full border-2 border-zinc-900/30 border-t-zinc-900"
           aria-hidden="true"
         />
-        Create account
+        {{ t('auth.signUp.submit') }}
       </button>
     </form>
 
     <p class="text-center text-sm text-zinc-500">
-      Already have an account?
+      {{ t('auth.signUp.haveAccount') }}
       <RouterLink
         :to="{ name: 'sign-in' }"
         class="font-medium text-zinc-200 underline decoration-zinc-600 underline-offset-2 hover:decoration-zinc-300"
       >
-        Sign in
+        {{ t('auth.signUp.signIn') }}
       </RouterLink>
     </p>
   </AuthLayout>

@@ -1,7 +1,8 @@
+import { t } from '@/i18n';
 import { FAMILY_ORDER, RARITY_STYLES } from '@/constants/achievements';
 import type { AchievementItem } from '@/types/achievements';
 
-import { formatDay } from './format';
+import { formatDay, formatDecimal } from './format';
 
 export function isMasked(item: AchievementItem): boolean {
   return item.secret && !item.unlocked;
@@ -118,10 +119,6 @@ function unitFor(item: AchievementItem): UnitRule | null {
   return prefix ? (UNIT_RULES[prefix] ?? null) : null;
 }
 
-function number(value: number, decimals: number): string {
-  return value.toLocaleString('fr-FR', { maximumFractionDigits: decimals }).replace(/ | /g, ' ');
-}
-
 export function formatProgress(item: AchievementItem): string {
   if (!item.progress) {
     return '';
@@ -129,9 +126,9 @@ export function formatProgress(item: AchievementItem): string {
   const rule = unitFor(item);
   const divide = rule?.divide ?? 1;
   const decimals = rule?.decimals ?? 0;
-  const value = number(item.progress.value / divide, decimals);
-  const target = number(item.progress.target / divide, decimals);
-  return rule ? `${value} / ${target} ${rule.unit}` : `${value} / ${target}`;
+  const value = formatDecimal(item.progress.value / divide, decimals);
+  const target = formatDecimal(item.progress.target / divide, decimals);
+  return rule ? `${value} / ${target} ${rule.unit === 'weeks' ? t('achievementText.weeks') : rule.unit}` : `${value} / ${target}`;
 }
 
 export function progressPercent(item: AchievementItem): number {
@@ -147,18 +144,24 @@ export function isInProgress(item: AchievementItem): boolean {
 
 export function describeAchievement(item: AchievementItem): string {
   if (isMasked(item)) {
-    return 'Hidden achievement, locked';
+    return t('achievementText.hiddenLocked');
   }
   const parts = [item.name];
   if (isNegative(item)) {
-    parts.push(item.unlocked ? 'warning, triggered' : 'warning, not triggered');
+    parts.push(item.unlocked ? t('achievementText.warningTriggered') : t('achievementText.warningNotTriggered'));
   } else {
-    parts.push(item.unlocked ? `unlocked, ${RARITY_STYLES[item.rarity].label}` : 'locked');
+    parts.push(
+      item.unlocked
+        ? t('achievementText.unlocked', { rarity: RARITY_STYLES[item.rarity].label })
+        : t('achievementText.locked'),
+    );
   }
-  if (item.tier !== null) parts.push(`tier ${item.tier}`);
-  if (item.unlocked && item.unlockedAt) parts.push(`on ${formatDay(item.unlockedAt)}`);
+  if (item.tier !== null) parts.push(t('achievementText.tier', { tier: item.tier }));
+  if (item.unlocked && item.unlockedAt) parts.push(t('achievementText.on', { date: formatDay(item.unlockedAt) }));
   if (!item.unlocked && item.progress) {
-    parts.push(`progress ${formatProgress(item)}, ${Math.floor(progressPercent(item))} percent`);
+    parts.push(
+      t('achievementText.progress', { progress: formatProgress(item), percent: Math.floor(progressPercent(item)) }),
+    );
   }
   parts.push(item.description);
   if (!isNegative(item)) parts.push(`${item.xp} XP`);

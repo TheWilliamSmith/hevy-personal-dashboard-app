@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
+import { MUSCLE_LABELS as LABELS } from '@/constants/muscles'
+import { t } from '@/i18n'
+import { formatInteger } from '@/utils/format'
+
 type MuscleGroup =
   | 'CHEST' | 'BACK' | 'TRAPS' | 'SHOULDERS' | 'BICEPS' | 'TRICEPS'
   | 'FOREARMS' | 'QUADS' | 'HAMSTRINGS' | 'GLUTES' | 'ADDUCTORS'
@@ -22,13 +26,6 @@ const props = withDefaults(defineProps<{
 })
 
 const emit = defineEmits<{ select: [group: MuscleGroup] }>()
-
-const LABELS: Record<MuscleGroup, string> = {
-  CHEST: 'Chest', BACK: 'Back', TRAPS: 'Traps', SHOULDERS: 'Shoulders',
-  BICEPS: 'Biceps', TRICEPS: 'Triceps', FOREARMS: 'Forearms', QUADS: 'Quads',
-  HAMSTRINGS: 'Hamstrings', GLUTES: 'Glutes', ADDUCTORS: 'Adductors',
-  CALVES: 'Calves', ABS: 'Abs', CARDIO: 'Cardio', FULL_BODY: 'Full body',
-}
 
 const UNMAPPED: MuscleGroup[] = ['CARDIO', 'FULL_BODY']
 
@@ -109,7 +106,7 @@ function levelOf(group: MuscleGroup): number {
 }
 
 const fmt = (value: number) =>
-  props.format ? props.format(value) : new Intl.NumberFormat('fr-FR').format(value)
+  props.format ? props.format(value) : formatInteger(value)
 
 const hovered = ref<MuscleGroup | null>(null)
 const pointer = ref({ x: 0, y: 0 })
@@ -164,7 +161,7 @@ function describe(group: MuscleGroup): string {
       :viewBox="visibleSides.length === 2 ? '0 0 440 450' : '0 0 200 450'"
       preserveAspectRatio="xMidYMid meet"
       role="img"
-      :aria-label="`Training per muscle group, in ${unit}`"
+      :aria-label="t('body.heatmapLabel', { unit })"
     >
       <defs>
         <path id="bh-half" :d="HALF" />
@@ -203,7 +200,7 @@ function describe(group: MuscleGroup): string {
         </g>
 
         <text x="100" y="446" class="body-heatmap__caption">
-          {{ side === 'front' ? 'Front' : 'Back' }}
+          {{ side === 'front' ? t('body.front') : t('body.back') }}
         </text>
       </g>
     </svg>
@@ -216,15 +213,15 @@ function describe(group: MuscleGroup): string {
     >
       <strong>{{ tooltip.label }}</strong>
       <span>{{ fmt(tooltip.value) }} {{ unit }}</span>
-      <span class="body-heatmap__share">{{ tooltip.share }}% of top muscle</span>
+      <span class="body-heatmap__share">{{ t('body.shareOfTop', { share: tooltip.share }) }}</span>
     </div>
 
     <div class="body-heatmap__footer">
       <div class="body-heatmap__legend" aria-hidden="true">
-        <span>Less</span>
+        <span>{{ t('body.less') }}</span>
         <i data-level="0" />
         <i v-for="step in legendSteps" :key="step" :data-level="step" />
-        <span>More</span>
+        <span>{{ t('body.more') }}</span>
       </div>
 
       <div v-if="unmappedPresent.length" class="body-heatmap__chips">
@@ -241,7 +238,7 @@ function describe(group: MuscleGroup): string {
       </div>
     </div>
 
-    <p v-if="isEmpty" class="body-heatmap__empty">No training data in this period.</p>
+    <p v-if="isEmpty" class="body-heatmap__empty">{{ t('body.noData') }}</p>
   </div>
 </template>
 

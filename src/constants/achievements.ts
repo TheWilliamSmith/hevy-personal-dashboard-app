@@ -1,3 +1,4 @@
+import { t, translated } from '@/i18n';
 import type { AchievementFamily, Rarity } from '@/types/achievements';
 
 export const RARITY_ORDER: readonly Rarity[] = ['COMMON', 'RARE', 'EPIC', 'LEGENDARY'];
@@ -13,7 +14,9 @@ export interface RarityStyle {
 
 export const RARITY_STYLES: Readonly<Record<Rarity, RarityStyle>> = {
   COMMON: {
-    label: 'Common',
+    get label() {
+      return t('rarities.COMMON');
+    },
     hex: '#10b981',
     badge: 'bg-emerald-500 text-white',
     card: 'border-emerald-500/30 bg-zinc-900',
@@ -21,7 +24,9 @@ export const RARITY_STYLES: Readonly<Record<Rarity, RarityStyle>> = {
     dot: 'bg-emerald-400',
   },
   RARE: {
-    label: 'Rare',
+    get label() {
+      return t('rarities.RARE');
+    },
     hex: '#3b82f6',
     badge: 'bg-blue-500 text-white',
     card: 'border-blue-500/30 bg-zinc-900',
@@ -29,7 +34,9 @@ export const RARITY_STYLES: Readonly<Record<Rarity, RarityStyle>> = {
     dot: 'bg-blue-400',
   },
   EPIC: {
-    label: 'Epic',
+    get label() {
+      return t('rarities.EPIC');
+    },
     hex: '#a855f7',
     badge: 'bg-purple-500 text-white',
     card: 'border-purple-500/30 bg-zinc-900',
@@ -37,7 +44,9 @@ export const RARITY_STYLES: Readonly<Record<Rarity, RarityStyle>> = {
     dot: 'bg-purple-400',
   },
   LEGENDARY: {
-    label: 'Legendary',
+    get label() {
+      return t('rarities.LEGENDARY');
+    },
     hex: '#f59e0b',
     badge: 'bg-gradient-to-br from-yellow-400 to-orange-500 text-white',
     card: 'border-amber-500/50 bg-gradient-to-br from-amber-500/10 to-zinc-900',
@@ -63,25 +72,11 @@ export const FAMILY_ORDER: readonly AchievementFamily[] = [
   'ODDITY',
 ];
 
-export const FAMILY_LABELS: Readonly<Record<AchievementFamily, string>> = {
-  VOLUME: 'Volume',
-  STRENGTH: 'Strength',
-  CONSISTENCY: 'Consistency',
-  ENDURANCE: 'Endurance',
-  CARDIO: 'Cardio',
-  VARIETY: 'Variety',
-  MILESTONE: 'Milestone',
-  ODDITY: 'Oddity',
-};
+export const FAMILY_LABELS: Readonly<Record<AchievementFamily, string>> = translated(
+  FAMILY_ORDER,
+  (key) => `families.${key}`,
+);
 
-export const LADDER_LABELS: Readonly<Record<string, string>> = {
-  WORKOUT: 'Workouts logged',
-  VOLUME: 'Total volume',
-  BENCH: 'Bench press',
-  SQUAT: 'Squat',
-  DEADLIFT: 'Deadlift',
-  TIME: 'Time under the bar',
-  STREAK: 'Weekly streak',
-  CARDIO: 'Cardio distance',
-  EXPLORER: 'Exercises tried',
-};
+const LADDER_KEYS = ['WORKOUT', 'VOLUME', 'BENCH', 'SQUAT', 'DEADLIFT', 'TIME', 'STREAK', 'CARDIO', 'EXPLORER'] as const;
+
+export const LADDER_LABELS: Readonly<Record<string, string>> = translated(LADDER_KEYS, (key) => `ladders.${key}`);

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { Check, Lock } from 'lucide-vue-next';
 import { computed } from 'vue';
 import { RouterLink } from 'vue-router';
@@ -73,7 +74,9 @@ function workoutOf(tier: AchievementItem) {
           </span>
           <span class="block text-[11px]" :class="state(tier) === 'next' ? 'text-zinc-600' : 'text-zinc-400'">
             {{ tier.description }}
-            <template v-if="state(tier) === 'done' && tier.unlockedAt"> · unlocked {{ formatDay(tier.unlockedAt) }}</template>
+            <template v-if="state(tier) === 'done' && tier.unlockedAt">{{
+              t('trophies.unlockedStep', { date: formatDay(tier.unlockedAt) })
+            }}</template>
           </span>
         </span>
       </component>

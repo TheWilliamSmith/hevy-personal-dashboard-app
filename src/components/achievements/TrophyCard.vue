@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { Check } from 'lucide-vue-next';
 import { computed } from 'vue';
 import { RouterLink } from 'vue-router';
@@ -87,7 +88,7 @@ const target = computed(() =>
           {{ props.item.name }}
         </p>
         <p class="mt-0.5 text-[11px] font-medium" :class="negative ? NEGATIVE_STYLE.text : unlocked ? rarity.text : [rarity.text, 'opacity-60']">
-          <template v-if="negative">{{ unlocked ? 'Heads-up' : 'Warning' }}</template>
+          <template v-if="negative">{{ unlocked ? t('trophies.headsUp') : t('trophies.warning') }}</template>
           <template v-else>{{ rarity.label }} · {{ props.item.xp }} XP</template>
         </p>
       </div>
@@ -116,8 +117,8 @@ const target = computed(() =>
       </div>
 
       <p v-if="unlocked && props.item.unlockedAt" class="mt-auto text-[11px] text-zinc-500">
-        {{ negative ? 'Triggered' : 'Unlocked' }} {{ formatDay(props.item.unlockedAt) }}
-        <span v-if="target" class="font-medium text-zinc-300"> · View workout</span>
+        {{ t(negative ? 'trophies.triggeredOn' : 'trophies.unlockedOn', { date: formatDay(props.item.unlockedAt) }) }}
+        <span v-if="target" class="font-medium text-zinc-300">{{ t('trophies.viewWorkout') }}</span>
       </p>
     </div>
   </component>

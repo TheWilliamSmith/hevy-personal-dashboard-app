@@ -1,3 +1,4 @@
+import { t } from '@/i18n';
 import { computed, ref, watch, type ComputedRef, type Ref } from 'vue';
 
 import { useAuth } from '@/composables/useAuth';
@@ -23,7 +24,7 @@ async function load(): Promise<void> {
   try {
     accept(await apiGet<ProfileResponse>('/me/profile'));
   } catch (caught) {
-    error.value = caught instanceof ApiError ? caught.message : 'Could not load your profile.';
+    error.value = caught instanceof ApiError ? caught.message : t('errors.loadProfile');
   } finally {
     isLoading.value = false;
   }

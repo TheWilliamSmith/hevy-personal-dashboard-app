@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { CalendarDays, Camera, MapPin } from 'lucide-vue-next';
 import { computed, ref, type DeepReadonly } from 'vue';
 
@@ -13,10 +14,10 @@ const emit = defineEmits<{ upload: [file: File]; remove: [] }>();
 const fileInput = ref<HTMLInputElement | null>(null);
 
 const figures = computed(() => [
-  { label: 'Workouts', value: props.stats ? formatInteger(props.stats.workouts) : EMPTY },
-  { label: 'Level', value: props.stats ? formatInteger(props.stats.level) : EMPTY },
-  { label: 'Trophies', value: props.stats ? formatInteger(props.stats.trophies) : EMPTY },
-  { label: 'Streak', value: props.stats ? `${props.stats.streakWeeks} wk` : EMPTY },
+  { label: t('profile.workouts'), value: props.stats ? formatInteger(props.stats.workouts) : EMPTY },
+  { label: t('profile.level'), value: props.stats ? formatInteger(props.stats.level) : EMPTY },
+  { label: t('profile.trophies'), value: props.stats ? formatInteger(props.stats.trophies) : EMPTY },
+  { label: t('profile.streak'), value: props.stats ? t('profile.streakWeeks', { count: props.stats.streakWeeks }) : EMPTY },
 ]);
 
 function onFile(event: Event): void {
@@ -42,7 +43,7 @@ const discreet =
           type="button"
           class="group relative -mt-12 w-fit rounded-full ring-4 ring-zinc-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400"
           :disabled="isSaving"
-          aria-label="Change profile picture"
+          :aria-label="t('profile.changePicture')"
           @click="fileInput?.click()"
         >
           <ProfileAvatar :name="profile.displayName" :url="profile.avatarUrl" size="lg" />
@@ -67,10 +68,10 @@ const discreet =
           <p class="text-sm text-zinc-400">@{{ profile.username }}</p>
           <div class="-ml-2 mt-1 flex gap-1">
             <button type="button" :class="discreet" :disabled="isSaving" @click="fileInput?.click()">
-              {{ profile.avatarUrl ? 'Change photo' : 'Add a photo' }}
+              {{ profile.avatarUrl ? t('profile.changePhoto') : t('profile.addPhoto') }}
             </button>
             <button v-if="profile.avatarUrl" type="button" :class="discreet" :disabled="isSaving" @click="emit('remove')">
-              Remove
+              {{ t('profile.remove') }}
             </button>
           </div>
         </div>
@@ -93,7 +94,7 @@ const discreet =
         </span>
         <span class="flex items-center gap-1.5">
           <CalendarDays class="h-3.5 w-3.5" aria-hidden="true" />
-          Member since {{ formatDay(profile.memberSince) }}
+          {{ t('profile.memberSince', { date: formatDay(profile.memberSince) }) }}
         </span>
       </p>
     </div>

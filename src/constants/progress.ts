@@ -1,3 +1,4 @@
+import { t, translated } from '@/i18n';
 import type { MetricUsed, ProgressParams, ProgressStatus } from '@/types/progress';
 
 export interface StatusStyle {
@@ -18,39 +19,59 @@ export const STATUS_ORDER: readonly ProgressStatus[] = [
 
 export const STATUS_STYLES: Readonly<Record<ProgressStatus, StatusStyle>> = {
   REGRESSING: {
-    label: 'Regressing',
+    get label() {
+      return t('statuses.REGRESSING');
+    },
     hex: '#f87171',
     dot: 'bg-red-400',
     text: 'text-red-400',
-    empty: 'Nothing regressing — good.',
+    get empty() {
+      return t('statusEmpty.REGRESSING');
+    },
   },
   PLATEAU: {
-    label: 'Plateau',
+    get label() {
+      return t('statuses.PLATEAU');
+    },
     hex: '#fbbf24',
     dot: 'bg-amber-400',
     text: 'text-amber-400',
-    empty: 'No plateaus in this window.',
+    get empty() {
+      return t('statusEmpty.PLATEAU');
+    },
   },
   STALE: {
-    label: 'Stale',
+    get label() {
+      return t('statuses.STALE');
+    },
     hex: '#a1a1aa',
     dot: 'bg-zinc-400',
     text: 'text-zinc-400',
-    empty: 'Nothing stale — everything is still in rotation.',
+    get empty() {
+      return t('statusEmpty.STALE');
+    },
   },
   PROGRESSING: {
-    label: 'Progressing',
+    get label() {
+      return t('statuses.PROGRESSING');
+    },
     hex: '#34d399',
     dot: 'bg-emerald-400',
     text: 'text-emerald-400',
-    empty: 'Nothing is climbing past the threshold yet.',
+    get empty() {
+      return t('statusEmpty.PROGRESSING');
+    },
   },
   NOT_ENOUGH_DATA: {
-    label: 'Needs more sessions',
+    get label() {
+      return t('statuses.NOT_ENOUGH_DATA');
+    },
     hex: '#52525b',
     dot: 'bg-zinc-600',
     text: 'text-zinc-500',
-    empty: 'Every exercise has enough sessions to assess.',
+    get empty() {
+      return t('statusEmpty.NOT_ENOUGH_DATA');
+    },
   },
 };
 
@@ -67,12 +88,15 @@ export const WINDOWS: ReadonlyArray<{
   value: ProgressParams['window'];
   label: string;
   shortLabel: string;
-}> = [
-  { value: '8w', label: '8 weeks', shortLabel: '8W' },
-  { value: '12w', label: '12 weeks', shortLabel: '12W' },
-  { value: '26w', label: '26 weeks', shortLabel: '26W' },
-  { value: '52w', label: '52 weeks', shortLabel: '52W' },
-];
+}> = (['8w', '12w', '26w', '52w'] as const).map((value) => ({
+  value,
+  get label() {
+    return t(`windows.${value}`);
+  },
+  get shortLabel() {
+    return t(`windows.short${value}`);
+  },
+}));
 
 export const SESSIONS_RANGE = { min: 4, max: 10 } as const;
 export const STALE_RANGE = { min: 2, max: 8 } as const;
@@ -80,9 +104,7 @@ export const THRESHOLD_RANGE = { min: 0.1, max: 3, step: 0.1 } as const;
 
 export const LOW_WEEKLY_SETS = 2;
 
-export const METRIC_LABELS: Readonly<Record<MetricUsed, string>> = {
-  est1RM: 'est. 1RM',
-  totalReps: 'total reps',
-  distancePerMinute: 'distance per minute',
-  longestHoldSeconds: 'longest hold',
-};
+export const METRIC_LABELS: Readonly<Record<MetricUsed, string>> = translated(
+  ['est1RM', 'totalReps', 'distancePerMinute', 'longestHoldSeconds'],
+  (key) => `metricsUsed.${key}`,
+);

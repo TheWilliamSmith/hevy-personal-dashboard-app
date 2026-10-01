@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { computed } from 'vue';
 
 import EmptyState from '@/components/ui/EmptyState.vue';
@@ -6,7 +7,7 @@ import SectionError from '@/components/ui/SectionError.vue';
 import SectionHeader from '@/components/ui/SectionHeader.vue';
 import { MUSCLE_LABELS, MUSCLE_ORDER } from '@/constants/muscles';
 import type { MuscleHeatmap } from '@/types/stats';
-import { formatInteger } from '@/utils/format';
+import { formatDecimal, formatInteger } from '@/utils/format';
 
 const props = defineProps<{
   heatmap: MuscleHeatmap | null;
@@ -39,10 +40,10 @@ const rows = computed(() => {
 
 <template>
   <section class="flex h-full flex-col gap-5">
-    <SectionHeader title="Muscle focus" :subtitle="`Share of working sets · ${rangeLabel}`">
+    <SectionHeader :title="t('dashboard.muscleFocus')" :subtitle="t('dashboard.shareOfSets', { range: rangeLabel })">
       <p class="text-right">
         <span class="text-2xl font-semibold text-white tabular-nums">{{ formatInteger(totalSets) }}</span>
-        <span class="block text-[11px] leading-tight text-zinc-500">Working sets</span>
+        <span class="block text-[11px] leading-tight text-zinc-500">{{ t('dashboard.workingSets') }}</span>
       </p>
     </SectionHeader>
 
@@ -52,7 +53,7 @@ const rows = computed(() => {
       <li v-for="index in 5" :key="index" class="h-6 animate-pulse rounded bg-zinc-900" />
     </ul>
 
-    <EmptyState v-else-if="rows.length === 0" message="No working sets in this period." />
+    <EmptyState v-else-if="rows.length === 0" :message="t('dashboard.noWorkingSets')" />
 
     <ul v-else class="flex flex-col gap-4">
       <li v-for="(row, index) in rows" :key="row.muscle">
@@ -61,7 +62,7 @@ const rows = computed(() => {
             <span class="h-2 w-2 rounded-full" :class="DOT_COLORS[index]" aria-hidden="true" />
             {{ MUSCLE_LABELS[row.muscle] }}
           </span>
-          <span class="text-xs text-zinc-400 tabular-nums">{{ row.share.toFixed(1) }}%</span>
+          <span class="text-xs text-zinc-400 tabular-nums">{{ formatDecimal(row.share, 1) }} %</span>
         </div>
         <div class="mt-1.5 h-2 rounded-full bg-zinc-900">
           <div class="h-full rounded-full" :class="BAR_COLORS[index]" :style="{ width: `${row.share}%` }" />

@@ -1,13 +1,14 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { Activity, CalendarDays, TrendingUp, Trophy } from 'lucide-vue-next';
 import { RouterLink } from 'vue-router';
 
 defineProps<{ title: string; subtitle: string }>();
 
 const FEATURES = [
-  { icon: CalendarDays, text: 'Every session from Hevy, synced or imported, in one place.' },
-  { icon: TrendingUp, text: 'Plateaus and regressions flagged before they cost you a season.' },
-  { icon: Trophy, text: 'Trophies and levels for the work you already put in.' },
+  { icon: CalendarDays, key: 'auth.layout.featureSessions' },
+  { icon: TrendingUp, key: 'auth.layout.featurePlateaus' },
+  { icon: Trophy, key: 'auth.layout.featureTrophies' },
 ];
 </script>
 
@@ -21,7 +22,7 @@ const FEATURES = [
         <span class="flex h-7 w-7 items-center justify-center rounded-md bg-white text-zinc-950">
           <Activity class="h-4 w-4" :stroke-width="2.5" aria-hidden="true" />
         </span>
-        <span class="text-sm font-semibold text-white">Hevy Dashboard</span>
+        <span class="text-sm font-semibold text-white">{{ t('common.appName') }}</span>
       </RouterLink>
 
       <main class="flex flex-1 items-center justify-center py-10">
@@ -34,7 +35,7 @@ const FEATURES = [
         </div>
       </main>
 
-      <p class="text-xs text-zinc-600">Not affiliated with Hevy. Your data stays yours.</p>
+      <p class="text-xs text-zinc-600">{{ t('auth.layout.disclaimer') }}</p>
     </div>
 
     <aside
@@ -50,13 +51,13 @@ const FEATURES = [
         />
       </div>
       <div class="relative flex max-w-md flex-col gap-6">
-        <p class="text-4xl font-semibold tracking-tight text-white">Your training, measured.</p>
+        <p class="text-4xl font-semibold tracking-tight text-white">{{ t('auth.layout.tagline') }}</p>
         <ul class="flex flex-col gap-3">
-          <li v-for="feature in FEATURES" :key="feature.text" class="flex items-start gap-3 text-sm text-zinc-300">
+          <li v-for="feature in FEATURES" :key="feature.key" class="flex items-start gap-3 text-sm text-zinc-300">
             <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-zinc-700 bg-zinc-950/60">
               <component :is="feature.icon" class="h-4 w-4" />
             </span>
-            <span class="pt-1">{{ feature.text }}</span>
+            <span class="pt-1">{{ t(feature.key) }}</span>
           </li>
         </ul>
       </div>

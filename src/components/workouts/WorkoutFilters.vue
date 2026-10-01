@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { Search } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 
@@ -36,14 +37,14 @@ const label = 'mb-1 block text-xs text-zinc-400';
 <template>
   <form class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,2fr)_minmax(0,1.5fr)_repeat(2,minmax(0,1fr))_auto] lg:items-end" @submit.prevent>
     <div>
-      <label for="workout-search" :class="label">Search</label>
+      <label for="workout-search" :class="label">{{ t('workouts.search') }}</label>
       <div class="relative">
         <Search class="pointer-events-none absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2 text-zinc-500" aria-hidden="true" />
         <input
           id="workout-search"
           v-model="searchTerm"
           type="search"
-          placeholder="Workout title"
+          :placeholder="t('workouts.searchPlaceholder')"
           :class="[field, 'pl-8']"
           @input="emit('search', searchTerm)"
         />
@@ -51,14 +52,14 @@ const label = 'mb-1 block text-xs text-zinc-400';
     </div>
 
     <div>
-      <label for="workout-exercise" :class="label">Exercise</label>
+      <label for="workout-exercise" :class="label">{{ t('workouts.exercise') }}</label>
       <select
         id="workout-exercise"
         :value="filters.exercise"
         :class="field"
         @change="emit('exercise', ($event.target as HTMLSelectElement).value)"
       >
-        <option value="">All exercises</option>
+        <option value="">{{ t('workouts.allExercises') }}</option>
         <option v-for="option in exercises" :key="option.name" :value="option.name">
           {{ option.name }} ({{ option.workoutCount }})
         </option>
@@ -66,7 +67,7 @@ const label = 'mb-1 block text-xs text-zinc-400';
     </div>
 
     <div>
-      <label for="workout-from" :class="label">From</label>
+      <label for="workout-from" :class="label">{{ t('workouts.from') }}</label>
       <input
         id="workout-from"
         type="date"
@@ -78,7 +79,7 @@ const label = 'mb-1 block text-xs text-zinc-400';
     </div>
 
     <div>
-      <label for="workout-to" :class="label">To</label>
+      <label for="workout-to" :class="label">{{ t('workouts.to') }}</label>
       <input
         id="workout-to"
         type="date"
@@ -95,7 +96,7 @@ const label = 'mb-1 block text-xs text-zinc-400';
       class="rounded-md border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs font-medium text-zinc-100 transition-colors hover:bg-zinc-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400 sm:justify-self-start lg:mb-0.5"
       @click="emit('clear')"
     >
-      Clear filters
+      {{ t('common.clearFilters') }}
     </button>
   </form>
 </template>

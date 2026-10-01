@@ -1,26 +1,61 @@
+import { intlLocale, t } from '@/i18n';
+
 export const EMPTY = '—';
 
-const DATE_FORMATTER = new Intl.DateTimeFormat('fr-FR', {
-  weekday: 'short',
-  day: 'numeric',
-  month: 'short',
-  year: 'numeric',
-  hour: '2-digit',
-  minute: '2-digit',
-  timeZone: 'UTC',
-});
+const formatters = new Map<string, Intl.NumberFormat | Intl.DateTimeFormat>();
+
+function numberFormat(options: Intl.NumberFormatOptions): Intl.NumberFormat {
+  const key = `n:${intlLocale()}:${JSON.stringify(options)}`;
+  let formatter = formatters.get(key) as Intl.NumberFormat | undefined;
+  if (!formatter) {
+    formatter = new Intl.NumberFormat(intlLocale(), options);
+    formatters.set(key, formatter);
+  }
+  return formatter;
+}
+
+export function dateFormat(options: Intl.DateTimeFormatOptions): Intl.DateTimeFormat {
+  const key = `d:${intlLocale()}:${JSON.stringify(options)}`;
+  let formatter = formatters.get(key) as Intl.DateTimeFormat | undefined;
+  if (!formatter) {
+    formatter = new Intl.DateTimeFormat(intlLocale(), options);
+    formatters.set(key, formatter);
+  }
+  return formatter;
+}
+
+function tidySpaces(text: string): string {
+  return text.replace(/[  ]/g, ' ');
+}
+
+function toDate(value: string | Date | null | undefined): Date | null {
+  if (value === null || value === undefined || value === '') {
+    return null;
+  }
+  const date = value instanceof Date ? value : new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+export function formatDecimal(value: number, maximumFractionDigits: number): string {
+  return tidySpaces(numberFormat({ maximumFractionDigits }).format(value));
+}
 
 export function formatDate(value: string | Date | null | undefined): string {
-  if (value === null || value === undefined || value === '') {
+  const date = toDate(value);
+  if (!date) {
     return EMPTY;
   }
-
-  const date = value instanceof Date ? value : new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return EMPTY;
-  }
-
-  return DATE_FORMATTER.format(date).replace(/ /g, ' ');
+  return tidySpaces(
+    dateFormat({
+      weekday: 'short',
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'UTC',
+    }).format(date),
+  );
 }
 
 export function formatDuration(seconds: number | null | undefined): string {
@@ -39,31 +74,6 @@ export function formatDuration(seconds: number | null | undefined): string {
   return minutes > 0 ? `${minutes} min` : `${total} s`;
 }
 
-const NUMBER_FORMATTER = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 1 });
-
-export function formatVolume(value: number | string | null | undefined): string {
-  const amount = toNumber(value);
-  if (amount === null) {
-    return EMPTY;
-  }
-
-  return `${NUMBER_FORMATTER.format(amount).replace(/ | /g, ' ')} kg`;
-}
-
-export function formatWeight(value: number | string | null | undefined): string {
-  const amount = toNumber(value);
-  if (amount === null) {
-    return EMPTY;
-  }
-
-  return amount.toLocaleString('fr-FR', { maximumFractionDigits: 3 });
-}
-
-export function formatNumber(value: number | string | null | undefined): string {
-  const amount = toNumber(value);
-  return amount === null ? EMPTY : amount.toLocaleString('fr-FR', { maximumFractionDigits: 2 });
-}
-
 export function toNumber(value: number | string | null | undefined): number | null {
   if (value === null || value === undefined || value === '') {
     return null;
@@ -73,15 +83,24 @@ export function toNumber(value: number | string | null | undefined): number | nu
   return Number.isFinite(amount) ? amount : null;
 }
 
-const INTEGER_FORMATTER = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 });
+export function formatVolume(value: number | string | null | undefined): string {
+  const amount = toNumber(value);
+  return amount === null ? EMPTY : `${formatDecimal(amount, 1)} kg`;
+}
+
+export function formatWeight(value: number | string | null | undefined): string {
+  const amount = toNumber(value);
+  return amount === null ? EMPTY : formatDecimal(amount, 3);
+}
+
+export function formatNumber(value: number | string | null | undefined): string {
+  const amount = toNumber(value);
+  return amount === null ? EMPTY : formatDecimal(amount, 2);
+}
 
 export function formatInteger(value: number | string | null | undefined): string {
   const amount = toNumber(value);
-  if (amount === null) {
-    return EMPTY;
-  }
-
-  return INTEGER_FORMATTER.format(amount).replace(/\u202f|\u00a0/g, ' ');
+  return amount === null ? EMPTY : formatDecimal(amount, 0);
 }
 
 export function percentChange(
@@ -103,9 +122,7 @@ export function formatPercent(value: number | null | undefined): string {
   if (amount === null) {
     return EMPTY;
   }
-
-  const rendered = Math.abs(amount).toLocaleString('fr-FR', { maximumFractionDigits: 1 });
-  return `${amount >= 0 ? '+' : '-'}${rendered} %`;
+  return t('format.signedPercent', { sign: amount >= 0 ? '+' : '-', value: formatDecimal(Math.abs(amount), 1) });
 }
 
 export function formatDayKey(value: string | Date): string {
@@ -114,8 +131,8 @@ export function formatDayKey(value: string | Date): string {
 }
 
 export function formatBucket(value: string, granularity: 'day' | 'week' | 'month'): string {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
+  const date = toDate(value);
+  if (!date) {
     return EMPTY;
   }
 
@@ -124,16 +141,12 @@ export function formatBucket(value: string, granularity: 'day' | 'week' | 'month
       ? { month: 'short', year: 'numeric', timeZone: 'UTC' }
       : { day: 'numeric', month: 'short', timeZone: 'UTC' };
 
-  return new Intl.DateTimeFormat('fr-FR', options).format(date).replace(/\u202f/g, ' ');
+  return tidySpaces(dateFormat(options).format(date));
 }
 
 export function formatDistanceKm(value: number | string | null | undefined): string {
   const amount = toNumber(value);
-  if (amount === null) {
-    return EMPTY;
-  }
-
-  return `${amount.toLocaleString('fr-FR', { maximumFractionDigits: 2 })} km`;
+  return amount === null ? EMPTY : `${formatDecimal(amount, 2)} km`;
 }
 
 export function formatPace(minutesPerKm: number | null | undefined): string {
@@ -148,55 +161,38 @@ export function formatPace(minutesPerKm: number | null | undefined): string {
   return `${minutes + (carry ? 1 : 0)}:${String(carry ? 0 : seconds).padStart(2, '0')} /km`;
 }
 
-const DAY_FORMATTER = new Intl.DateTimeFormat('fr-FR', {
-  day: 'numeric',
-  month: 'short',
-  year: 'numeric',
-  timeZone: 'UTC',
-});
-
 export function formatRelativeTime(value: string | Date | null | undefined): string {
-  if (value === null || value === undefined || value === '') {
-    return EMPTY;
-  }
-
-  const date = value instanceof Date ? value : new Date(value);
-  if (Number.isNaN(date.getTime())) {
+  const date = toDate(value);
+  if (!date) {
     return EMPTY;
   }
 
   const diffSec = Math.round((Date.now() - date.getTime()) / 1000);
   if (diffSec < 60) {
-    return 'just now';
+    return t('format.justNow');
   }
 
   const diffMin = Math.round(diffSec / 60);
   if (diffMin < 60) {
-    return `${diffMin} minute${diffMin === 1 ? '' : 's'} ago`;
+    return t('format.minutesAgo', { count: diffMin }, diffMin);
   }
 
   const diffHour = Math.round(diffMin / 60);
   if (diffHour < 24) {
-    return `${diffHour} hour${diffHour === 1 ? '' : 's'} ago`;
+    return t('format.hoursAgo', { count: diffHour }, diffHour);
   }
 
   const diffDay = Math.round(diffHour / 24);
   if (diffDay < 30) {
-    return `${diffDay} day${diffDay === 1 ? '' : 's'} ago`;
+    return t('format.daysAgo', { count: diffDay }, diffDay);
   }
 
   return formatDate(date);
 }
 
 export function formatDay(value: string | Date | null | undefined): string {
-  if (value === null || value === undefined || value === '') {
-    return EMPTY;
-  }
-
-  const date = value instanceof Date ? value : new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return EMPTY;
-  }
-
-  return DAY_FORMATTER.format(date);
+  const date = toDate(value);
+  return date
+    ? tidySpaces(dateFormat({ day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(date))
+    : EMPTY;
 }

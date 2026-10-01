@@ -1,16 +1,17 @@
+import { t } from '@/i18n';
 import type { Goal, GoalStatus } from '@/types/goals';
 import { formatDay, formatInteger, formatVolume } from '@/utils/format';
 
 export function goalTitle(goal: Pick<Goal, 'type' | 'exercise'>): string {
   switch (goal.type) {
     case 'EXERCISE_1RM':
-      return `${goal.exercise?.name ?? 'Exercise'} · estimated 1RM`;
+      return t('goalText.oneRepMax', { exercise: goal.exercise?.name ?? t('goalText.exercise') });
     case 'EXERCISE_WEIGHT':
-      return `${goal.exercise?.name ?? 'Exercise'} · working weight`;
+      return t('goalText.workingWeight', { exercise: goal.exercise?.name ?? t('goalText.exercise') });
     case 'WEEKLY_WORKOUTS':
-      return 'Workouts per week';
+      return t('goalText.weeklyWorkouts');
     case 'PERIOD_VOLUME':
-      return 'Total volume';
+      return t('goalText.totalVolume');
   }
 }
 
@@ -22,20 +23,22 @@ export function goalTiming(goal: Goal): string {
   const { status, projectedDate, weeksMet, weeksConsidered } = goal.progress;
 
   if (goal.type === 'WEEKLY_WORKOUTS') {
-    const history = weeksConsidered ? `${weeksMet ?? 0} of the last ${weeksConsidered} weeks met.` : 'First week.';
-    return `This week · ${history}`;
+    const history = weeksConsidered
+      ? t('goalText.weeksMet', { met: weeksMet ?? 0, count: weeksConsidered })
+      : t('goalText.firstWeek');
+    return t('goalText.thisWeek', { history });
   }
   if (status === 'ACHIEVED') {
-    return goal.achievedAt ? `Reached on ${formatDay(goal.achievedAt)}.` : 'Reached.';
+    return goal.achievedAt ? t('goalText.reachedOn', { date: formatDay(goal.achievedAt) }) : t('goalText.reached');
   }
-  const deadline = goal.deadline ? ` Deadline ${formatDay(goal.deadline)}.` : '';
+  const deadline = goal.deadline ? t('goalText.deadline', { date: formatDay(goal.deadline) }) : '';
   if (status === 'NOT_ENOUGH_DATA') {
-    return `Needs a few more sessions to project.${deadline}`;
+    return t('goalText.needsSessions', { deadline });
   }
   if (projectedDate) {
-    return `Expected around ${formatDay(projectedDate)}.${deadline}`;
+    return t('goalText.expected', { date: formatDay(projectedDate), deadline });
   }
-  return `The current trend does not reach it.${deadline}`;
+  return t('goalText.notReaching', { deadline });
 }
 
 const STATUS_RANK: Readonly<Record<GoalStatus, number>> = {

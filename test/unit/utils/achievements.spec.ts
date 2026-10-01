@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
+import { setLocale } from '@/i18n';
 import type { AchievementItem } from '@/types/achievements';
 
 import {
@@ -14,6 +15,9 @@ import {
   orderWithLadders,
   progressPercent,
 } from '@/utils/achievements';
+
+beforeEach(() => setLocale('fr'));
+afterEach(() => setLocale('en'));
 
 function item(overrides: Partial<AchievementItem>): AchievementItem {
   return {
@@ -126,8 +130,8 @@ describe('describeAchievement', () => {
     const secret = item({ secret: true, name: '???', rarity: 'EPIC', xp: 400 });
     expect(isMasked(secret)).toBe(true);
     const label = describeAchievement(secret);
-    expect(label).toBe('Hidden achievement, locked');
-    expect(label).not.toContain('Epic');
+    expect(label).toBe('Succès caché, verrouillé');
+    expect(label).not.toContain('Épique');
     expect(label).not.toContain('400');
   });
 
@@ -136,14 +140,14 @@ describe('describeAchievement', () => {
       name: 'Fifty Tonnes', code: 'VOLUME_50T', tier: 5, rarity: 'RARE',
       progress: { value: 43200, target: 50000 },
     }));
-    expect(label).toContain('locked');
-    expect(label).toContain('tier 5');
-    expect(label).toContain('43,2 / 50 t, 86 percent');
+    expect(label).toContain('verrouillé');
+    expect(label).toContain('palier 5');
+    expect(label).toContain('43,2 / 50 t, 86 pour cent');
   });
 
   it('describes a negative achievement as a warning, without XP', () => {
     const label = describeAchievement(item({ name: 'Leg Day Denier', xp: 0, unlocked: true }));
-    expect(label).toContain('warning, triggered');
+    expect(label).toContain('avertissement, déclenché');
     expect(label).not.toContain('XP');
   });
 });

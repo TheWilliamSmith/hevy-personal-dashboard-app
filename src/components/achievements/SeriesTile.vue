@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { Check, Layers } from 'lucide-vue-next';
 import { computed } from 'vue';
 
@@ -29,7 +30,7 @@ const frame = computed(() =>
     type="button"
     class="relative flex h-full w-full flex-col gap-2 rounded-lg border p-4 text-left transition-colors hover:border-zinc-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400"
     :class="frame"
-    :aria-label="`${title}, level ${progress.unlockedCount} of ${tiers.length}. Show every step`"
+    :aria-label="t('trophies.seriesLabel', { title, level: progress.unlockedCount, total: tiers.length })"
     @click="emit('open')"
   >
     <span
@@ -53,17 +54,17 @@ const frame = computed(() =>
         </span>
         <span class="mt-0.5 flex items-center gap-1 text-[11px] font-medium text-zinc-400">
           <Layers class="h-3 w-3" />
-          Level {{ progress.unlockedCount }} of {{ tiers.length }}
+          {{ t('trophies.levelOfShort', { level: progress.unlockedCount, total: tiers.length }) }}
         </span>
       </span>
     </span>
 
     <span class="flex flex-1 flex-col gap-2" aria-hidden="true">
       <span v-if="next" class="text-xs text-zinc-400">
-        <span class="text-zinc-500">Next:</span> <span class="font-medium text-zinc-200">{{ next.name }}</span>
+        <span class="text-zinc-500">{{ t('trophies.next') }}</span> <span class="font-medium text-zinc-200">{{ next.name }}</span>
         — {{ next.description }}
       </span>
-      <span v-else class="text-xs text-emerald-400">Every level unlocked.</span>
+      <span v-else class="text-xs text-emerald-400">{{ t('trophies.everyLevel') }}</span>
 
       <span v-if="next?.progress" class="mt-auto block">
         <span class="flex items-baseline justify-between gap-2 text-[11px]">
@@ -79,7 +80,7 @@ const frame = computed(() =>
         </span>
       </span>
 
-      <span class="mt-auto text-[11px] font-medium text-zinc-300">View every step →</span>
+      <span class="mt-auto text-[11px] font-medium text-zinc-300">{{ t('trophies.viewSteps') }}</span>
     </span>
   </button>
 </template>

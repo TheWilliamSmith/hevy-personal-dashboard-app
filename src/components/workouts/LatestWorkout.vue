@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { RouterLink } from 'vue-router';
 
 import EmptyState from '@/components/ui/EmptyState.vue';
@@ -18,11 +19,11 @@ const emit = defineEmits<{ retry: [] }>();
 
 <template>
   <section class="flex h-full flex-col gap-4">
-    <SectionHeader title="Latest workout" subtitle="Your most recent session" />
+    <SectionHeader :title="t('workouts.latest')" :subtitle="t('workouts.latestSubtitle')" />
 
     <SectionError v-if="error" :message="error" @retry="emit('retry')" />
 
-    <EmptyState v-else-if="!isLoading && !workout" message="No workout yet." />
+    <EmptyState v-else-if="!isLoading && !workout" :message="t('workouts.noneYet')" />
 
     <template v-else>
       <div>
@@ -34,8 +35,13 @@ const emit = defineEmits<{ retry: [] }>();
         </p>
         <p v-if="workout" class="mt-2 max-w-xs text-sm text-zinc-400">
           <span class="font-medium text-zinc-200">{{ workout.title }}</span> ·
-          {{ formatDuration(workout.durationSec) }}, {{ formatInteger(workout.exerciseCount) }} exercises,
-          {{ formatInteger(workout.setCount) }} sets.
+          {{
+            t('workouts.latestSummary', {
+              duration: formatDuration(workout.durationSec),
+              exercises: formatInteger(workout.exerciseCount),
+              sets: formatInteger(workout.setCount),
+            })
+          }}
         </p>
       </div>
 
@@ -44,7 +50,7 @@ const emit = defineEmits<{ retry: [] }>();
           :to="{ name: 'home', query: { tab: 'workouts', workout: workout.id } }"
           class="flex w-full items-center justify-center rounded-md bg-white px-3 py-2 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
         >
-          Open workout
+          {{ t('workouts.open') }}
         </RouterLink>
         <p class="text-center text-xs text-zinc-500">
           <time :datetime="workout.startedAt">{{ formatDate(workout.startedAt) }}</time>

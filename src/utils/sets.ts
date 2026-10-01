@@ -1,11 +1,10 @@
+import { translated } from '@/i18n';
 import type { BestSet, ExerciseSet, SetType } from '@/types/workouts';
 
-export const SET_TYPE_LABELS: Readonly<Record<SetType, string>> = {
-  NORMAL: 'Normal',
-  WARMUP: 'Warm-up',
-  FAILURE: 'Failure',
-  DROP: 'Drop',
-};
+export const SET_TYPE_LABELS: Readonly<Record<SetType, string>> = translated(
+  ['NORMAL', 'WARMUP', 'FAILURE', 'DROP'],
+  (key) => `setTypes.${key}`,
+);
 
 export const SET_TYPE_DOT_CLASSES: Readonly<Record<SetType, string>> = {
   NORMAL: 'bg-zinc-500',

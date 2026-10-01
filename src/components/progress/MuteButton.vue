@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { t } from '@/i18n';
 import { nextTick, onBeforeUnmount, ref } from 'vue';
 
 const props = defineProps<{
@@ -53,43 +54,43 @@ const focus = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visi
       :class="focus"
       :aria-pressed="muted"
       :aria-expanded="muted ? undefined : open"
-      :aria-label="`${muted ? 'Unmute' : 'Mute'} ${exerciseName}`"
+      :aria-label="t(muted ? 'progress.mute.unmuteName' : 'progress.mute.muteName', { name: exerciseName })"
       :disabled="busy"
       @click="onClick"
     >
-      {{ muted ? 'Unmute' : 'Mute' }}
+      {{ muted ? t('progress.mute.unmute') : t('progress.mute.mute') }}
     </button>
 
     <div
       v-if="open"
       class="absolute right-0 z-30 mt-1 w-64 rounded-lg border border-zinc-800 bg-zinc-900 p-3 shadow-xl shadow-black/40"
       role="dialog"
-      :aria-label="`Mute ${exerciseName}`"
+      :aria-label="t('progress.mute.muteName', { name: exerciseName })"
       @keydown.escape="open = false"
     >
-      <label :for="`mute-reason-${exerciseId}`" class="text-xs text-zinc-400">Reason (optional)</label>
+      <label :for="`mute-reason-${exerciseId}`" class="text-xs text-zinc-400">{{ t('progress.mute.reason') }}</label>
       <input
         :id="`mute-reason-${exerciseId}`"
         ref="input"
         v-model="reason"
         type="text"
         maxlength="200"
-        placeholder="Injury, off-season, not a priority…"
+        :placeholder="t('progress.mute.placeholder')"
         class="mt-1 w-full rounded-md border border-zinc-700 bg-zinc-950 px-2 py-1.5 text-sm text-zinc-100 placeholder:text-zinc-600"
         :class="focus"
         @keydown.enter.prevent="confirm"
       />
-      <p class="mt-2 text-xs text-zinc-500">Muted exercises leave the counts and move to the Muted section.</p>
+      <p class="mt-2 text-xs text-zinc-500">{{ t('progress.mute.explanation') }}</p>
       <div class="mt-3 flex justify-end gap-2">
         <button type="button" class="rounded-md px-2 py-1 text-xs font-medium text-zinc-400 hover:text-zinc-100" :class="focus" @click="open = false">
-          Cancel
+          {{ t('common.cancel') }}
         </button>
         <button
           type="button"
           class="rounded-md bg-white px-3 py-1 text-xs font-medium text-zinc-900 hover:bg-zinc-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
           @click="confirm"
         >
-          Mute
+          {{ t('progress.mute.mute') }}
         </button>
       </div>
     </div>
