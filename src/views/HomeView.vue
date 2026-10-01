@@ -7,6 +7,7 @@ import { useActiveTab } from '@/composables/useActiveTab';
 const DashboardPanel = defineAsyncComponent(() => import('@/views/DashboardView.vue'));
 const WorkoutsPanel = defineAsyncComponent(() => import('@/views/WorkoutsView.vue'));
 const WorkoutDetailPanel = defineAsyncComponent(() => import('@/views/WorkoutDetailView.vue'));
+const WorkoutComparePanel = defineAsyncComponent(() => import('@/views/WorkoutCompareView.vue'));
 const SettingsPanel = defineAsyncComponent(() => import('@/views/SettingsView.vue'));
 const BodyPanel = defineAsyncComponent(() => import('@/views/BodyView.vue'));
 const ProgressPanel = defineAsyncComponent(() => import('@/views/ProgressView.vue'));
@@ -20,6 +21,10 @@ const { tab } = useActiveTab();
 
 const workoutId = computed(() =>
   typeof route.query.workout === 'string' ? route.query.workout : '',
+);
+
+const compareId = computed(() =>
+  typeof route.query.compare === 'string' ? route.query.compare : '',
 );
 
 const exerciseSlug = computed(() =>
@@ -43,7 +48,10 @@ const panel = computed(() => {
     return TrophiesPanel;
   }
   if (tab.value === 'workouts') {
-    return workoutId.value ? WorkoutDetailPanel : WorkoutsPanel;
+    if (!workoutId.value) {
+      return WorkoutsPanel;
+    }
+    return compareId.value ? WorkoutComparePanel : WorkoutDetailPanel;
   }
   if (tab.value === 'exercises') {
     return exerciseSlug.value ? ExerciseDetailPanel : ExercisesPanel;
@@ -53,5 +61,5 @@ const panel = computed(() => {
 </script>
 
 <template>
-  <component :is="panel" :key="`${tab}-${workoutId}-${exerciseSlug}`" />
+  <component :is="panel" :key="`${tab}-${workoutId}-${compareId}-${exerciseSlug}`" />
 </template>
