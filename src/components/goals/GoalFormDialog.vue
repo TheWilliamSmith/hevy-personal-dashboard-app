@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue';
 
+import ExercisePicker from '@/components/exercises/ExercisePicker.vue';
 import BaseDialog from '@/components/ui/BaseDialog.vue';
 import SegmentedControl from '@/components/ui/SegmentedControl.vue';
 import { GOAL_TYPES, isExerciseGoal } from '@/constants/goals';
 import { ApiError, apiGet } from '@/lib/api';
 import type { ExerciseCatalog } from '@/types/exercises';
 import type { Goal, GoalChanges, GoalInput, GoalType } from '@/types/goals';
+import type { SearchableExercise } from '@/utils/exercise-search';
 import { goalTitle, todayKey } from '@/utils/goals';
 
 export type GoalSubmission = { kind: 'create'; input: GoalInput } | { kind: 'update'; id: string; changes: GoalChanges };
@@ -18,17 +20,11 @@ const props = defineProps<{
 }>();
 const emit = defineEmits<{ close: [] }>();
 
-interface ExerciseOption {
-  id: string;
-  name: string;
-  sessions: number;
-}
-
 const form = reactive({ type: 'EXERCISE_1RM' as GoalType, exerciseId: '', target: '', startsAt: todayKey(), deadline: '' });
 const fieldErrors = reactive<Record<string, string | null>>({ exerciseId: null, target: null, deadline: null, startsAt: null });
 const formError = ref<string | null>(null);
 const isSaving = ref(false);
-const exercises = ref<ExerciseOption[]>([]);
+const exercises = ref<SearchableExercise[]>([]);
 const exercisesError = ref<string | null>(null);
 
 const isEdit = computed(() => props.goal !== null);
@@ -43,8 +39,7 @@ async function loadExercises(): Promise<void> {
     const catalog = await apiGet<ExerciseCatalog>('/exercises');
     exercises.value = catalog.groups
       .flatMap((group) => group.exercises)
-      .map((exercise) => ({ id: exercise.id, name: exercise.name, sessions: exercise.sessions }))
-      .sort((a, b) => b.sessions - a.sessions || a.name.localeCompare(b.name));
+      .map((exercise) => ({ id: exercise.id, name: exercise.name, sessions: exercise.sessions }));
   } catch (caught) {
     exercisesError.value = caught instanceof ApiError ? caught.message : 'Could not load your exercises.';
   }
@@ -128,7 +123,6 @@ function showError(caught: unknown): void {
 const label = 'mb-1 block text-xs text-zinc-400';
 const focus = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400';
 const field = `w-full rounded-md border border-zinc-700 bg-zinc-950 px-2 py-1.5 text-sm text-zinc-100 placeholder:text-zinc-600 [color-scheme:dark] ${focus}`;
-const select = `w-full rounded-md border border-zinc-800 bg-zinc-900 px-2 py-1.5 text-sm text-zinc-100 ${focus}`;
 const errorText = 'mt-1 text-xs text-red-400';
 </script>
 
@@ -149,18 +143,13 @@ const errorText = 'mt-1 text-xs text-red-400';
 
         <div v-if="!goal && isExerciseGoal(form.type)">
           <label for="goal-exercise" :class="label">Exercise</label>
-          <select
+          <ExercisePicker
             id="goal-exercise"
             v-model="form.exerciseId"
-            :class="select"
-            :aria-invalid="Boolean(fieldErrors.exerciseId)"
-            aria-describedby="goal-exercise-help"
-          >
-            <option value="" disabled>Choose an exercise</option>
-            <option v-for="exercise in exercises" :key="exercise.id" :value="exercise.id">
-              {{ exercise.name }}{{ exercise.sessions ? ` · ${exercise.sessions} sessions` : '' }}
-            </option>
-          </select>
+            :exercises="exercises"
+            :invalid="Boolean(fieldErrors.exerciseId)"
+            described-by="goal-exercise-help"
+          />
           <p id="goal-exercise-help" :class="errorText">{{ fieldErrors.exerciseId ?? exercisesError ?? '' }}</p>
         </div>
 
