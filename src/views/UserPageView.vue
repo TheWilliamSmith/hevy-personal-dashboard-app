@@ -33,10 +33,10 @@ async function load(): Promise<void> {
   notFound.value = false;
   try {
     page.value = await apiGet<UserPage>(`/users/${encodeURIComponent(username.value)}`);
-  } catch (caught) {
+  } catch (error_) {
     page.value = null;
-    notFound.value = caught instanceof ApiError && caught.status === 404;
-    error.value = caught instanceof ApiError ? caught.message : t('errors.generic');
+    notFound.value = error_ instanceof ApiError && error_.status === 404;
+    error.value = error_ instanceof ApiError ? error_.message : t('errors.generic');
   } finally {
     isLoading.value = false;
   }

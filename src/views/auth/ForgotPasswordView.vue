@@ -29,8 +29,8 @@ async function submit(): Promise<void> {
   try {
     await auth.requestPasswordReset(email.value.trim());
     sentTo.value = email.value.trim();
-  } catch (caught) {
-    formError.value = errorMessage(caught);
+  } catch (error_) {
+    formError.value = errorMessage(error_);
   }
 }
 </script>

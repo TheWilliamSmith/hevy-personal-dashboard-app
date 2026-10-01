@@ -24,6 +24,7 @@ export const errors: Messages<typeof en.errors> = {
   fileEmpty: 'Ce fichier est vide.',
   malformed: 'Le serveur a renvoyé une réponse invalide.',
   uploadTimeout: 'L’envoi a expiré. Réessayez.',
+  syncNotFound: 'Une synchro est déjà en cours, mais elle est introuvable. Réessayez dans un instant.',
   oauthUnavailable:
     'La connexion avec {provider} n’est pas encore disponible. Utilisez votre e-mail et votre mot de passe.',
 };

@@ -106,11 +106,13 @@ const workoutsAtRisk = computed(() => props.batch?.workoutsStillPresent ?? 0);
       </fieldset>
 
       <div v-if="needsTypedName" class="mt-4">
-        <i18n-t keypath="imports.delete.typeToConfirm" tag="label" scope="global" for="confirm-file-name" class="block text-xs text-zinc-400">
-          <template #name>
-            <span class="font-mono text-zinc-100">{{ props.batch?.fileName }}</span>
-          </template>
-        </i18n-t>
+        <label for="confirm-file-name" class="block text-xs text-zinc-400">
+          <i18n-t keypath="imports.delete.typeToConfirm" tag="span" scope="global">
+            <template #name>
+              <span class="font-mono text-zinc-100">{{ props.batch?.fileName }}</span>
+            </template>
+          </i18n-t>
+        </label>
         <input
           id="confirm-file-name"
           v-model="typedName"

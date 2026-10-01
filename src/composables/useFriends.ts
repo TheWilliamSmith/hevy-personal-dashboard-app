@@ -63,8 +63,8 @@ export function useFriends(): UseFriends {
       ]);
       overview.value = nextOverview;
       leaderboard.value = nextLeaderboard;
-    } catch (caught) {
-      error.value = caught instanceof ApiError ? caught.message : t('errors.generic');
+    } catch (error_) {
+      error.value = error_ instanceof ApiError ? error_.message : t('errors.generic');
     } finally {
       isLoading.value = false;
     }

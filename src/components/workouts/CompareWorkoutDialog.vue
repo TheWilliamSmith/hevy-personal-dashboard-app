@@ -62,11 +62,11 @@ async function load(term: string): Promise<void> {
   try {
     results.value = await search(term);
     isLoading.value = false;
-  } catch (caught) {
-    if (caught instanceof DOMException && caught.name === 'AbortError') {
+  } catch (error_) {
+    if (error_ instanceof DOMException && error_.name === 'AbortError') {
       return;
     }
-    error.value = caught instanceof ApiError ? caught.message : t('errors.generic');
+    error.value = error_ instanceof ApiError ? error_.message : t('errors.generic');
     isLoading.value = false;
   }
 }

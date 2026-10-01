@@ -41,8 +41,8 @@ async function loadExercises(): Promise<void> {
     exercises.value = catalog.groups
       .flatMap((group) => group.exercises)
       .map((exercise) => ({ id: exercise.id, name: exercise.name, sessions: exercise.sessions }));
-  } catch (caught) {
-    exercisesError.value = caught instanceof ApiError ? caught.message : t('goals.form.loadExercises');
+  } catch (error_) {
+    exercisesError.value = error_ instanceof ApiError ? error_.message : t('goals.form.loadExercises');
   }
 }
 
@@ -101,21 +101,21 @@ async function onSubmit(): Promise<void> {
           },
     );
     emit('close');
-  } catch (caught) {
-    showError(caught);
+  } catch (error_) {
+    showError(error_);
   } finally {
     isSaving.value = false;
   }
 }
 
-function showError(caught: unknown): void {
-  if (caught instanceof ApiError) {
-    const { field } = (caught.body ?? {}) as { field?: unknown };
+function showError(error_: unknown): void {
+  if (error_ instanceof ApiError) {
+    const { field } = (error_.body ?? {}) as { field?: unknown };
     if (typeof field === 'string' && field in fieldErrors) {
-      fieldErrors[field] = caught.message;
+      fieldErrors[field] = error_.message;
       return;
     }
-    formError.value = caught.message;
+    formError.value = error_.message;
     return;
   }
   formError.value = t('common.somethingWrong');

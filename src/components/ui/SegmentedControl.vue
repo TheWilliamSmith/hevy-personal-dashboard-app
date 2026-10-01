@@ -15,7 +15,8 @@ const emit = defineEmits<{ 'update:modelValue': [value: T] }>();
 </script>
 
 <template>
-  <div class="inline-flex rounded-md border border-zinc-800 bg-zinc-900 p-0.5" role="group" :aria-label="label">
+  <fieldset class="inline-flex rounded-md border border-zinc-800 bg-zinc-900 p-0.5">
+    <legend class="sr-only">{{ label }}</legend>
     <button
       v-for="option in options"
       :key="option.value"
@@ -31,5 +32,5 @@ const emit = defineEmits<{ 'update:modelValue': [value: T] }>();
       </template>
       <template v-else>{{ option.label }}</template>
     </button>
-  </div>
+  </fieldset>
 </template>

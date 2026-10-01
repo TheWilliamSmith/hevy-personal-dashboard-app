@@ -34,11 +34,11 @@ async function run(action: FriendAction): Promise<void> {
     push({ tone: 'success', title: t(key, { name: props.user.displayName }) });
     confirmingRemove.value = false;
     emit('changed', next);
-  } catch (caught) {
+  } catch (error_) {
     push({
       tone: 'error',
       title: t('friends.toasts.failed'),
-      description: caught instanceof ApiError ? caught.message : undefined,
+      description: error_ instanceof ApiError ? error_.message : undefined,
     });
   } finally {
     busy.value = null;

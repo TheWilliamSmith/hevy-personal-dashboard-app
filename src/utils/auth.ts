@@ -4,7 +4,17 @@ export type PasswordStrength = 0 | 1 | 2 | 3 | 4;
 export const MIN_PASSWORD_LENGTH = 8;
 
 export function isEmail(value: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value.trim());
+  const email = value.trim();
+  if (/\s/.test(email)) {
+    return false;
+  }
+  const at = email.indexOf('@');
+  if (at < 1 || at !== email.lastIndexOf('@')) {
+    return false;
+  }
+  const domain = email.slice(at + 1);
+  const dot = domain.lastIndexOf('.');
+  return dot > 0 && domain.length - dot - 1 >= 2;
 }
 
 export function passwordStrength(password: string): PasswordStrength {

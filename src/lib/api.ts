@@ -101,6 +101,13 @@ interface RequestOptions {
   cache?: RequestCache;
 }
 
+function requestBody(body: unknown, isForm: boolean): BodyInit | undefined {
+  if (body === undefined) {
+    return undefined;
+  }
+  return isForm ? (body as FormData) : JSON.stringify(body);
+}
+
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const auth = authHeaders();
   const headers: Record<string, string> = { ...auth };
@@ -114,7 +121,7 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
     response = await fetch(apiUrl(path) + buildQuery(options.params ?? {}), {
       method: options.method,
       headers,
-      body: options.body === undefined ? undefined : isForm ? (options.body as FormData) : JSON.stringify(options.body),
+      body: requestBody(options.body, isForm),
       signal: options.signal,
       cache: options.cache,
     });

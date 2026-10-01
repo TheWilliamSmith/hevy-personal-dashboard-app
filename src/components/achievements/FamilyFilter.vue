@@ -25,7 +25,8 @@ const emit = defineEmits<{ select: [family: AchievementFamily | null] }>();
       </button>
     </SectionHeader>
 
-    <div class="grid grid-cols-2 gap-1 sm:grid-cols-4 xl:grid-cols-8" role="group" :aria-label="t('trophies.filterFamily')">
+    <fieldset class="grid min-w-0 grid-cols-2 gap-1 sm:grid-cols-4 xl:grid-cols-8">
+      <legend class="sr-only">{{ t('trophies.filterFamily') }}</legend>
       <button
         v-for="entry in families"
         :key="entry.family"
@@ -46,6 +47,6 @@ const emit = defineEmits<{ select: [family: AchievementFamily | null] }>();
           />
         </span>
       </button>
-    </div>
+    </fieldset>
   </section>
 </template>

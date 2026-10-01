@@ -63,8 +63,8 @@ async function setArchived(goal: Goal, archived: boolean): Promise<void> {
   try {
     await goals.update(goal.id, { archived });
     push({ tone: 'success', title: archived ? t('goals.archived') : t('goals.restored'), description: goalTitle(goal) });
-  } catch (caught) {
-    push({ tone: 'error', title: t('goals.updateFailed'), description: caught instanceof ApiError ? caught.message : undefined });
+  } catch (error_) {
+    push({ tone: 'error', title: t('goals.updateFailed'), description: error_ instanceof ApiError ? error_.message : undefined });
   } finally {
     busyId.value = null;
   }
@@ -81,8 +81,8 @@ async function confirmDelete(): Promise<void> {
     await goals.remove(goal.id);
     deleting.value = null;
     push({ tone: 'success', title: t('goals.deleted'), description: goalTitle(goal) });
-  } catch (caught) {
-    deleteError.value = caught instanceof ApiError ? caught.message : t('goals.deleteFailed');
+  } catch (error_) {
+    deleteError.value = error_ instanceof ApiError ? error_.message : t('goals.deleteFailed');
   } finally {
     busyId.value = null;
   }

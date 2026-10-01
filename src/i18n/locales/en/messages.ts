@@ -21,6 +21,7 @@ export const errors = {
   fileEmpty: 'This file is empty.',
   malformed: 'The server returned a malformed response.',
   uploadTimeout: 'The upload timed out. Try again.',
+  syncNotFound: 'A sync is already running, but it could not be found. Try again in a moment.',
   oauthUnavailable: '{provider} sign-in is not available yet. Use your email and password.',
 };
 

@@ -2,86 +2,29 @@ import { t } from '@/i18n';
 import { computed, type ComputedRef } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
-export type TabName =
-  | 'dashboard'
-  | 'body'
-  | 'progress'
-  | 'goals'
-  | 'trophies'
-  | 'workouts'
-  | 'exercises'
-  | 'friends'
-  | 'settings';
+const TAB_NAMES = [
+  'dashboard',
+  'body',
+  'progress',
+  'goals',
+  'trophies',
+  'workouts',
+  'exercises',
+  'friends',
+  'settings',
+] as const;
 
-export const TABS: ReadonlyArray<{ name: TabName; label: string }> = [
-  {
-    name: 'dashboard',
-    get label() {
-      return t('nav.dashboard');
-    },
+export type TabName = (typeof TAB_NAMES)[number];
+
+export const TABS: ReadonlyArray<{ name: TabName; label: string }> = TAB_NAMES.map((name) => ({
+  name,
+  get label() {
+    return t(`nav.${name}`);
   },
-  {
-    name: 'body',
-    get label() {
-      return t('nav.body');
-    },
-  },
-  {
-    name: 'progress',
-    get label() {
-      return t('nav.progress');
-    },
-  },
-  {
-    name: 'goals',
-    get label() {
-      return t('nav.goals');
-    },
-  },
-  {
-    name: 'trophies',
-    get label() {
-      return t('nav.trophies');
-    },
-  },
-  {
-    name: 'workouts',
-    get label() {
-      return t('nav.workouts');
-    },
-  },
-  {
-    name: 'exercises',
-    get label() {
-      return t('nav.exercises');
-    },
-  },
-  {
-    name: 'friends',
-    get label() {
-      return t('nav.friends');
-    },
-  },
-  {
-    name: 'settings',
-    get label() {
-      return t('nav.settings');
-    },
-  },
-];
+}));
 
 function isTab(value: unknown): value is TabName {
-  return (
-    value === 'dashboard' ||
-    value === 'body' ||
-    value === 'progress' ||
-    value === 'goals' ||
-    value === 'trophies' ||
-    value === 'workouts' ||
-    value === 'exercises' ||
-    value === 'friends' ||
-    value === 'settings'
-  );
+  return TAB_NAMES.includes(value as TabName);
 }
 
 export interface UseActiveTab {

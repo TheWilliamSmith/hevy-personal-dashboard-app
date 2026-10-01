@@ -130,7 +130,8 @@ const label = 'text-xs text-zinc-400';
       </button>
     </div>
 
-    <div class="flex flex-wrap gap-1.5" role="group" :aria-label="t('exercises.toolbar.filterMuscle')">
+    <fieldset class="flex min-w-0 flex-wrap gap-1.5">
+      <legend class="sr-only">{{ t('exercises.toolbar.filterMuscle') }}</legend>
       <button
         v-for="group in MUSCLE_ORDER"
         :key="group"
@@ -148,6 +149,6 @@ const label = 'text-xs text-zinc-400';
         <span class="h-1.5 w-1.5 rounded-full" :style="{ backgroundColor: MUSCLE_STYLES[group].hex }" aria-hidden="true" />
         {{ MUSCLE_LABELS[group] }}
       </button>
-    </div>
+    </fieldset>
   </div>
 </template>

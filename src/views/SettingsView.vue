@@ -47,8 +47,8 @@ function setSection(next: Section): void {
   void router.replace({ name: 'home', query: { tab: 'settings', ...(next === 'profile' ? {} : { section: next }) } });
 }
 
-function messageOf(caught: unknown): string {
-  return caught instanceof ApiError ? caught.message : t('common.somethingWrong');
+function messageOf(error_: unknown): string {
+  return error_ instanceof ApiError ? error_.message : t('common.somethingWrong');
 }
 
 async function onSave(next: UserProfile): Promise<void> {
@@ -63,13 +63,13 @@ async function onSave(next: UserProfile): Promise<void> {
       heightCm: next.heightCm,
     });
     push({ tone: 'success', title: t('settings.profileSaved') });
-  } catch (caught) {
-    const field = caught instanceof ApiError ? (caught.body as { field?: unknown } | null)?.field : null;
+  } catch (error_) {
+    const field = error_ instanceof ApiError ? (error_.body as { field?: unknown } | null)?.field : null;
     if (field === 'username') {
-      usernameError.value = messageOf(caught);
+      usernameError.value = messageOf(error_);
       return;
     }
-    push({ tone: 'error', title: t('settings.saveFailed'), description: messageOf(caught) });
+    push({ tone: 'error', title: t('settings.saveFailed'), description: messageOf(error_) });
   }
 }
 
@@ -77,8 +77,8 @@ async function onPreferences(changes: ProfileChanges): Promise<void> {
   try {
     await profileState.save(changes);
     push({ tone: 'success', title: t('preferences.saved') });
-  } catch (caught) {
-    push({ tone: 'error', title: t('preferences.saveFailed'), description: messageOf(caught) });
+  } catch (error_) {
+    push({ tone: 'error', title: t('preferences.saveFailed'), description: messageOf(error_) });
   }
 }
 
@@ -86,8 +86,8 @@ async function onUpload(file: File): Promise<void> {
   try {
     await profileState.uploadAvatar(file);
     push({ tone: 'success', title: t('settings.pictureUpdated') });
-  } catch (caught) {
-    push({ tone: 'error', title: t('settings.pictureUpdateFailed'), description: messageOf(caught) });
+  } catch (error_) {
+    push({ tone: 'error', title: t('settings.pictureUpdateFailed'), description: messageOf(error_) });
   }
 }
 
@@ -95,8 +95,8 @@ async function onRemoveAvatar(): Promise<void> {
   try {
     await profileState.removeAvatar();
     push({ tone: 'success', title: t('settings.pictureRemoved') });
-  } catch (caught) {
-    push({ tone: 'error', title: t('settings.pictureRemoveFailed'), description: messageOf(caught) });
+  } catch (error_) {
+    push({ tone: 'error', title: t('settings.pictureRemoveFailed'), description: messageOf(error_) });
   }
 }
 </script>

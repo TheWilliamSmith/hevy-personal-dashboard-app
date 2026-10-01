@@ -49,8 +49,8 @@ async function submit(): Promise<void> {
   try {
     await auth.signIn(form.email.trim(), form.password, form.remember);
     enterApp();
-  } catch (caught) {
-    formError.value = errorMessage(caught);
+  } catch (error_) {
+    formError.value = errorMessage(error_);
   }
 }
 
@@ -59,8 +59,8 @@ async function withProvider(provider: OAuthProvider): Promise<void> {
   try {
     await auth.signInWith(provider);
     enterApp();
-  } catch (caught) {
-    formError.value = errorMessage(caught);
+  } catch (error_) {
+    formError.value = errorMessage(error_);
   }
 }
 </script>
@@ -70,10 +70,10 @@ async function withProvider(provider: OAuthProvider): Promise<void> {
     <AuthError :message="formError" />
     <OAuthButtons :action="t('auth.signIn.continue')" :pending="auth.pendingProvider.value" :disabled="busy" @select="withProvider" />
 
-    <div class="flex items-center gap-3 text-xs text-zinc-600" role="separator">
-      <span class="h-px flex-1 bg-zinc-800" />
+    <div class="flex items-center gap-3 text-xs text-zinc-600">
+      <hr class="flex-1 border-zinc-800" />
       {{ t('auth.orWithEmail') }}
-      <span class="h-px flex-1 bg-zinc-800" />
+      <hr class="flex-1 border-zinc-800" />
     </div>
 
     <form class="flex flex-col gap-4" novalidate @submit.prevent="submit">

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { t } from '@/i18n';
 import { CalendarDays, Layers, Repeat, Target, TrendingUp, Weight } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { computed, ref, type Component } from 'vue';
 import { useRouter } from 'vue-router';
 
 import BalanceSpotlight from '@/components/body/BalanceSpotlight.vue';
@@ -61,9 +61,10 @@ const heatmap = useMuscleHeatmap(
 
 const data = computed(() => heatmap.data.value);
 const metricLabel = computed(() => metrics.value.find((option) => option.value === metric.value)?.label ?? '');
-const unit = computed(() =>
-  metric.value === 'volume' ? 'kg' : metric.value === 'reps' ? t('body.unitReps') : t('body.unitSets'),
-);
+const UNIT_KEYS: Readonly<Record<Exclude<HeatmapMetric, 'volume'>, string>> = { sets: 'body.unitSets', reps: 'body.unitReps' };
+const METRIC_ICONS: Readonly<Record<HeatmapMetric, Component>> = { sets: Layers, volume: Weight, reps: Repeat };
+
+const unit = computed(() => (metric.value === 'volume' ? 'kg' : t(UNIT_KEYS[metric.value])));
 const isEmpty = computed(() => data.value !== null && data.value.max <= 0);
 
 function format(value: number): string {
@@ -128,7 +129,7 @@ const highlights = computed<MetricItem[]>(() => {
     {
       label: t('body.totalOf', { metric: metricLabel.value.toLowerCase() }),
       value: total.value === null ? '—' : format(total.value),
-      icon: metric.value === 'volume' ? Weight : metric.value === 'reps' ? Repeat : Layers,
+      icon: METRIC_ICONS[metric.value],
     },
     {
       label: t('body.weeklyAvg'),

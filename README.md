@@ -9,7 +9,7 @@ Cette application ne fonctionne pas seule. Elle consomme l'API NestJS [`hevy-per
 - Vue 3 + Vue Router, TypeScript
 - Vite 8, Tailwind CSS 4
 - ECharts (`vue-echarts`), icônes `lucide-vue-next`
-- Vitest (tests unitaires, couverture v8)
+- Vitest et `@vue/test-utils` (tests unitaires et de composants, couverture v8 sur les `.ts` et les `.vue`)
 
 ## Développement
 

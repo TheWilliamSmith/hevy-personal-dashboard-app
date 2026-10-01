@@ -88,10 +88,9 @@ export function layoutSection(
   const unlockedTiers = (ladder: { tiers: AchievementItem[] }) =>
     ladder.tiers.filter((tier) => tier.unlocked).length;
 
-  return {
-    ladders: ladders.sort((a, b) => Number(unlockedTiers(b) > 0) - Number(unlockedTiers(a) > 0)),
-    singles: singles.sort((a, b) => Number(b.unlocked) - Number(a.unlocked)),
-  };
+  ladders.sort((a, b) => Number(unlockedTiers(b) > 0) - Number(unlockedTiers(a) > 0));
+  singles.sort((a, b) => Number(b.unlocked) - Number(a.unlocked));
+  return { ladders, singles };
 }
 
 interface UnitRule {
@@ -128,7 +127,11 @@ export function formatProgress(item: AchievementItem): string {
   const decimals = rule?.decimals ?? 0;
   const value = formatDecimal(item.progress.value / divide, decimals);
   const target = formatDecimal(item.progress.target / divide, decimals);
-  return rule ? `${value} / ${target} ${rule.unit === 'weeks' ? t('achievementText.weeks') : rule.unit}` : `${value} / ${target}`;
+  if (!rule) {
+    return `${value} / ${target}`;
+  }
+  const unit = rule.unit === 'weeks' ? t('achievementText.weeks') : rule.unit;
+  return `${value} / ${target} ${unit}`;
 }
 
 export function progressPercent(item: AchievementItem): number {

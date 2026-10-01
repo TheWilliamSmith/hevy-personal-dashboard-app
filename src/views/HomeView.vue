@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed, defineAsyncComponent } from 'vue';
+import { computed, defineAsyncComponent, type Component } from 'vue';
 import { useRoute } from 'vue-router';
 
-import { useActiveTab } from '@/composables/useActiveTab';
+import { useActiveTab, type TabName } from '@/composables/useActiveTab';
 
 const DashboardPanel = defineAsyncComponent(() => import('@/views/DashboardView.vue'));
 const WorkoutsPanel = defineAsyncComponent(() => import('@/views/WorkoutsView.vue'));
@@ -35,35 +35,32 @@ const exerciseSlug = computed(() =>
   typeof route.query.exercise === 'string' ? route.query.exercise : '',
 );
 
-const panel = computed(() => {
-  if (tab.value === 'settings') {
-    return SettingsPanel;
+const PANELS: Partial<Record<TabName, Component>> = {
+  settings: SettingsPanel,
+  body: BodyPanel,
+  progress: ProgressPanel,
+  goals: GoalsPanel,
+  trophies: TrophiesPanel,
+};
+
+function workoutsPanel(): Component {
+  if (!workoutId.value) {
+    return WorkoutsPanel;
   }
-  if (tab.value === 'body') {
-    return BodyPanel;
+  return compareId.value ? WorkoutComparePanel : WorkoutDetailPanel;
+}
+
+const panel = computed<Component>(() => {
+  switch (tab.value) {
+    case 'workouts':
+      return workoutsPanel();
+    case 'friends':
+      return username.value ? UserPagePanel : FriendsPanel;
+    case 'exercises':
+      return exerciseSlug.value ? ExerciseDetailPanel : ExercisesPanel;
+    default:
+      return PANELS[tab.value] ?? DashboardPanel;
   }
-  if (tab.value === 'progress') {
-    return ProgressPanel;
-  }
-  if (tab.value === 'goals') {
-    return GoalsPanel;
-  }
-  if (tab.value === 'trophies') {
-    return TrophiesPanel;
-  }
-  if (tab.value === 'workouts') {
-    if (!workoutId.value) {
-      return WorkoutsPanel;
-    }
-    return compareId.value ? WorkoutComparePanel : WorkoutDetailPanel;
-  }
-  if (tab.value === 'friends') {
-    return username.value ? UserPagePanel : FriendsPanel;
-  }
-  if (tab.value === 'exercises') {
-    return exerciseSlug.value ? ExerciseDetailPanel : ExercisesPanel;
-  }
-  return DashboardPanel;
 });
 </script>
 

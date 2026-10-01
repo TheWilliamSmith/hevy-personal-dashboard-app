@@ -38,8 +38,8 @@ async function submit(): Promise<void> {
   }
   try {
     stage.value = (await auth.resetPassword(token.value, form.password)) ? 'done' : 'invalid';
-  } catch (caught) {
-    formError.value = errorMessage(caught);
+  } catch (error_) {
+    formError.value = errorMessage(error_);
   }
 }
 
@@ -94,10 +94,10 @@ const primary =
     </form>
 
     <div v-else-if="stage === 'done'" class="flex flex-col gap-4">
-      <div class="flex items-start gap-3 rounded-md border border-emerald-500/30 bg-emerald-500/10 p-4" role="status">
+      <output class="flex items-start gap-3 rounded-md border border-emerald-500/30 bg-emerald-500/10 p-4">
         <CircleCheck class="mt-0.5 h-5 w-5 shrink-0 text-emerald-400" aria-hidden="true" />
-        <p class="text-sm text-zinc-200">{{ t('auth.reset.signedOut') }}</p>
-      </div>
+        <span class="text-sm text-zinc-200">{{ t('auth.reset.signedOut') }}</span>
+      </output>
       <RouterLink :to="{ name: 'sign-in' }" :class="primary">{{ t('auth.reset.goToSignIn') }}</RouterLink>
     </div>
 

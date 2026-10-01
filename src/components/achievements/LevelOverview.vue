@@ -44,14 +44,8 @@ const xpPercent = computed(() =>
             {{ formatInteger(level?.into ?? 0) }} / {{ formatInteger(level?.needed ?? 0) }} XP
           </span>
         </p>
-        <div
-          class="mt-2 h-2 rounded-full bg-zinc-900"
-          role="progressbar"
-          :aria-label="t('trophies.levelProgress')"
-          :aria-valuenow="Math.round(xpPercent)"
-          aria-valuemin="0"
-          aria-valuemax="100"
-        >
+        <progress class="sr-only" :value="Math.round(xpPercent)" max="100" :aria-label="t('trophies.levelProgress')" />
+        <div class="mt-2 h-2 rounded-full bg-zinc-900" aria-hidden="true">
           <div class="h-full rounded-full bg-blue-500" :style="{ width: `${xpPercent}%` }" />
         </div>
       </div>

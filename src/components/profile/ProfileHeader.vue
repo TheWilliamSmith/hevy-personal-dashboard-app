@@ -54,7 +54,9 @@ const discreet =
             <Camera class="h-5 w-5" />
           </span>
         </button>
+        <label for="profile-avatar-file" class="sr-only">{{ t('profile.changePicture') }}</label>
         <input
+          id="profile-avatar-file"
           ref="fileInput"
           type="file"
           accept="image/png,image/jpeg,image/webp"

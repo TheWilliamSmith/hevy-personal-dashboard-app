@@ -7,7 +7,7 @@ describe('useToasts', () => {
     const { toasts, push } = useToasts();
     const before = toasts.value.length;
     const id = push({ tone: 'error', title: 'Failed' });
-    expect(toasts.value.length).toBe(before + 1);
+    expect(toasts.value).toHaveLength(before + 1);
     expect(toasts.value.at(-1)).toMatchObject({ id, tone: 'error', title: 'Failed' });
   });
 

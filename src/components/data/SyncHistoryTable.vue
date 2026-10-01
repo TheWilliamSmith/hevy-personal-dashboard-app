@@ -7,10 +7,9 @@ import EmptyState from '@/components/ui/EmptyState.vue';
 import Pagination from '@/components/ui/Pagination.vue';
 import SectionError from '@/components/ui/SectionError.vue';
 import SectionHeader from '@/components/ui/SectionHeader.vue';
-import type { HevySyncRun } from '@/types/hevy';
+import type { HevySyncRun, HevySyncWarning } from '@/types/hevy';
 import type { PaginationMeta } from '@/types/workouts';
 import { formatDate, formatDuration, formatInteger } from '@/utils/format';
-import type { HevySyncWarning } from '@/types/hevy';
 
 defineProps<{
   runs: HevySyncRun[];

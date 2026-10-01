@@ -2,6 +2,9 @@ import { intlLocale, t } from '@/i18n';
 
 export const EMPTY = '—';
 
+export type DateInput = string | Date | null | undefined;
+export type NumericInput = number | string | null | undefined;
+
 const formatters = new Map<string, Intl.NumberFormat | Intl.DateTimeFormat>();
 
 function numberFormat(options: Intl.NumberFormatOptions): Intl.NumberFormat {
@@ -28,7 +31,7 @@ function tidySpaces(text: string): string {
   return text.replace(/[  ]/g, ' ');
 }
 
-function toDate(value: string | Date | null | undefined): Date | null {
+function toDate(value: DateInput): Date | null {
   if (value === null || value === undefined || value === '') {
     return null;
   }
@@ -40,7 +43,7 @@ export function formatDecimal(value: number, maximumFractionDigits: number): str
   return tidySpaces(numberFormat({ maximumFractionDigits }).format(value));
 }
 
-export function formatDate(value: string | Date | null | undefined): string {
+export function formatDate(value: DateInput): string {
   const date = toDate(value);
   if (!date) {
     return EMPTY;
@@ -74,7 +77,7 @@ export function formatDuration(seconds: number | null | undefined): string {
   return minutes > 0 ? `${minutes} min` : `${total} s`;
 }
 
-export function toNumber(value: number | string | null | undefined): number | null {
+export function toNumber(value: NumericInput): number | null {
   if (value === null || value === undefined || value === '') {
     return null;
   }
@@ -83,22 +86,22 @@ export function toNumber(value: number | string | null | undefined): number | nu
   return Number.isFinite(amount) ? amount : null;
 }
 
-export function formatVolume(value: number | string | null | undefined): string {
+export function formatVolume(value: NumericInput): string {
   const amount = toNumber(value);
   return amount === null ? EMPTY : `${formatDecimal(amount, 1)} kg`;
 }
 
-export function formatWeight(value: number | string | null | undefined): string {
+export function formatWeight(value: NumericInput): string {
   const amount = toNumber(value);
   return amount === null ? EMPTY : formatDecimal(amount, 3);
 }
 
-export function formatNumber(value: number | string | null | undefined): string {
+export function formatNumber(value: NumericInput): string {
   const amount = toNumber(value);
   return amount === null ? EMPTY : formatDecimal(amount, 2);
 }
 
-export function formatInteger(value: number | string | null | undefined): string {
+export function formatInteger(value: NumericInput): string {
   const amount = toNumber(value);
   return amount === null ? EMPTY : formatDecimal(amount, 0);
 }
@@ -144,7 +147,7 @@ export function formatBucket(value: string, granularity: 'day' | 'week' | 'month
   return tidySpaces(dateFormat(options).format(date));
 }
 
-export function formatDistanceKm(value: number | string | null | undefined): string {
+export function formatDistanceKm(value: NumericInput): string {
   const amount = toNumber(value);
   return amount === null ? EMPTY : `${formatDecimal(amount, 2)} km`;
 }
@@ -161,7 +164,7 @@ export function formatPace(minutesPerKm: number | null | undefined): string {
   return `${minutes + (carry ? 1 : 0)}:${String(carry ? 0 : seconds).padStart(2, '0')} /km`;
 }
 
-export function formatRelativeTime(value: string | Date | null | undefined): string {
+export function formatRelativeTime(value: DateInput): string {
   const date = toDate(value);
   if (!date) {
     return EMPTY;
@@ -190,7 +193,7 @@ export function formatRelativeTime(value: string | Date | null | undefined): str
   return formatDate(date);
 }
 
-export function formatDay(value: string | Date | null | undefined): string {
+export function formatDay(value: DateInput): string {
   const date = toDate(value);
   return date
     ? tidySpaces(dateFormat({ day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(date))

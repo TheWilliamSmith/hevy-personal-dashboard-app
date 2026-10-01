@@ -19,11 +19,11 @@ const { push } = useToasts();
 type Pending = 'email' | 'password' | null;
 const pending = ref<Pending>(null);
 
-function fieldOf(caught: unknown): string | null {
-  if (!(caught instanceof ApiError)) {
+function fieldOf(error_: unknown): string | null {
+  if (!(error_ instanceof ApiError)) {
     return null;
   }
-  const { field } = (caught.body ?? {}) as { field?: unknown };
+  const { field } = (error_.body ?? {}) as { field?: unknown };
   return typeof field === 'string' ? field : null;
 }
 
@@ -58,14 +58,14 @@ async function changePassword(): Promise<void> {
       title: t('security.passwordChanged'),
       description: t('security.passwordChangedDescription'),
     });
-  } catch (caught) {
-    const field = fieldOf(caught);
+  } catch (error_) {
+    const field = fieldOf(error_);
     if (field === 'currentPassword') {
-      passwordServer.current = errorMessage(caught);
+      passwordServer.current = errorMessage(error_);
     } else if (field === 'newPassword') {
-      passwordServer.next = errorMessage(caught);
+      passwordServer.next = errorMessage(error_);
     } else {
-      passwordServer.form = errorMessage(caught);
+      passwordServer.form = errorMessage(error_);
     }
   } finally {
     pending.value = null;
@@ -97,14 +97,14 @@ async function changeEmail(): Promise<void> {
     Object.assign(email, { next: '', current: '' });
     emailSubmitted.value = false;
     push({ tone: 'success', title: t('security.emailChanged'), description: t('security.emailChangedDescription') });
-  } catch (caught) {
-    const field = fieldOf(caught);
+  } catch (error_) {
+    const field = fieldOf(error_);
     if (field === 'email') {
-      emailServer.next = errorMessage(caught);
+      emailServer.next = errorMessage(error_);
     } else if (field === 'currentPassword') {
-      emailServer.current = errorMessage(caught);
+      emailServer.current = errorMessage(error_);
     } else {
-      emailServer.form = errorMessage(caught);
+      emailServer.form = errorMessage(error_);
     }
   } finally {
     pending.value = null;

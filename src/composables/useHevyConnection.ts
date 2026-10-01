@@ -34,26 +34,26 @@ function stopPolling(): void {
   }
 }
 
-function connectErrorFor(caught: unknown): ConnectHevyError {
-  if (!(caught instanceof ApiError)) {
+function connectErrorFor(error_: unknown): ConnectHevyError {
+  if (!(error_ instanceof ApiError)) {
     return { kind: 'unknown', message: t('errors.generic') };
   }
-  if (caught.status === null) {
+  if (error_.status === null) {
     return { kind: 'network', message: t('errors.network') };
   }
-  if (caught.status === 401 || caught.status === 403) {
+  if (error_.status === 401 || error_.status === 403) {
     return { kind: 'rejected', message: t('errors.hevyRejected') };
   }
-  if (caught.status === 402) {
+  if (error_.status === 402) {
     return {
       kind: 'not-pro',
       message: t('errors.hevyNotPro'),
     };
   }
-  if (caught.status === 400 || caught.status === 422) {
+  if (error_.status === 400 || error_.status === 422) {
     return { kind: 'invalid-format', message: t('errors.hevyKeyFormat') };
   }
-  return { kind: 'unknown', message: caught.message };
+  return { kind: 'unknown', message: error_.message };
 }
 
 async function fetchConnection(): Promise<void> {
@@ -63,8 +63,8 @@ async function fetchConnection(): Promise<void> {
   try {
     const response = await apiGet<HevyConnectionState>('/hevy/connection');
     state.value = response;
-  } catch (caught) {
-    loadError.value = caught instanceof ApiError ? caught.message : t('errors.generic');
+  } catch (error_) {
+    loadError.value = error_ instanceof ApiError ? error_.message : t('errors.generic');
   } finally {
     isLoading.value = false;
   }
@@ -82,9 +82,9 @@ async function pollRun(id: string): Promise<void> {
       }
       void fetchConnection();
     }
-  } catch (caught) {
+  } catch (error_) {
     stopPolling();
-    syncError.value = caught instanceof ApiError ? caught.message : t('errors.generic');
+    syncError.value = error_ instanceof ApiError ? error_.message : t('errors.generic');
   }
 }
 
@@ -105,9 +105,9 @@ async function attachToRunningRun(): Promise<void> {
       startPolling(running.id);
       return;
     }
-    syncError.value = 'A sync is already running, but it could not be found. Try again in a moment.';
-  } catch (caught) {
-    syncError.value = caught instanceof ApiError ? caught.message : t('errors.generic');
+    syncError.value = t('errors.syncNotFound');
+  } catch (error_) {
+    syncError.value = error_ instanceof ApiError ? error_.message : t('errors.generic');
   }
 }
 
@@ -119,8 +119,8 @@ async function connect(apiKey: string): Promise<boolean> {
     const response = await apiPost<HevyConnectionState>('/hevy/connection', { apiKey });
     state.value = response;
     return true;
-  } catch (caught) {
-    connectError.value = connectErrorFor(caught);
+  } catch (error_) {
+    connectError.value = connectErrorFor(error_);
     return false;
   } finally {
     isConnecting.value = false;
@@ -137,8 +137,8 @@ async function disconnect(): Promise<boolean> {
     activeRun.value = null;
     state.value = { connected: false };
     return true;
-  } catch (caught) {
-    disconnectError.value = caught instanceof ApiError ? caught.message : t('errors.generic');
+  } catch (error_) {
+    disconnectError.value = error_ instanceof ApiError ? error_.message : t('errors.generic');
     return false;
   } finally {
     isDisconnecting.value = false;
@@ -152,12 +152,12 @@ async function sync(full: boolean): Promise<void> {
     const run = await apiPost<HevySyncRun>(`/hevy/sync${full ? '?full=true' : ''}`, {});
     activeRun.value = run;
     startPolling(run.id);
-  } catch (caught) {
-    if (caught instanceof ApiError && caught.status === 409) {
+  } catch (error_) {
+    if (error_ instanceof ApiError && error_.status === 409) {
       await attachToRunningRun();
       return;
     }
-    syncError.value = caught instanceof ApiError ? caught.message : t('errors.generic');
+    syncError.value = error_ instanceof ApiError ? error_.message : t('errors.generic');
   }
 }
 

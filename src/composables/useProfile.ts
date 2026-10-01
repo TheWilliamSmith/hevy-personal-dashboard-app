@@ -23,8 +23,8 @@ async function load(): Promise<void> {
   error.value = null;
   try {
     accept(await apiGet<ProfileResponse>('/me/profile'));
-  } catch (caught) {
-    error.value = caught instanceof ApiError ? caught.message : t('errors.loadProfile');
+  } catch (error_) {
+    error.value = error_ instanceof ApiError ? error_.message : t('errors.loadProfile');
   } finally {
     isLoading.value = false;
   }

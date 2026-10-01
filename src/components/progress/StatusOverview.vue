@@ -55,7 +55,8 @@ function toggle(status: ProgressStatus): void {
       />
     </div>
 
-    <div class="grid grid-cols-2 gap-1 sm:grid-cols-5" role="group" :aria-label="t('progress.status.filter')">
+    <fieldset class="grid min-w-0 grid-cols-2 gap-1 sm:grid-cols-5">
+      <legend class="sr-only">{{ t('progress.status.filter') }}</legend>
       <button
         v-for="row in rows"
         :key="row.status"
@@ -71,6 +72,6 @@ function toggle(status: ProgressStatus): void {
           {{ STATUS_STYLES[row.status].label }}
         </span>
       </button>
-    </div>
+    </fieldset>
   </section>
 </template>

@@ -95,7 +95,7 @@ const link = 'font-medium text-zinc-200 underline decoration-zinc-600 underline-
 
 <template>
   <section class="flex flex-col gap-5">
-    <p role="status" aria-live="polite" class="sr-only">{{ announcement }}</p>
+    <output class="sr-only" aria-live="polite">{{ announcement }}</output>
 
     <SectionHeader
       :title="t('data.hevy.title')"
@@ -178,7 +178,9 @@ const link = 'font-medium text-zinc-200 underline decoration-zinc-600 underline-
           {{ t('data.hevy.connect') }}
         </button>
       </form>
+    </template>
 
+    <template v-else-if="connectedState">
       <div v-if="offerFirstSync" class="max-w-xl rounded-md border border-blue-500/40 bg-blue-500/10 p-4">
         <p class="text-sm text-zinc-200">
           {{ t('data.hevy.firstSync') }}
@@ -188,9 +190,7 @@ const link = 'font-medium text-zinc-200 underline decoration-zinc-600 underline-
           <button type="button" :class="secondary" @click="offerFirstSync = false">{{ t('data.hevy.notNow') }}</button>
         </div>
       </div>
-    </template>
 
-    <template v-else-if="connectedState">
       <dl class="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-4">
         <div class="flex flex-col-reverse">
           <dt class="mt-0.5 text-xs text-zinc-500">{{ t('data.hevy.account') }}</dt>

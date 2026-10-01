@@ -30,8 +30,8 @@ export function useGoals(options: { includeArchived?: boolean } = {}): UseGoals 
     try {
       goals.value = await apiGet<Goal[]>('/goals', options.includeArchived ? { archived: 'true' } : {});
       hasLoaded.value = true;
-    } catch (caught) {
-      error.value = caught instanceof ApiError ? caught.message : t('errors.loadGoals');
+    } catch (error_) {
+      error.value = error_ instanceof ApiError ? error_.message : t('errors.loadGoals');
     } finally {
       isLoading.value = false;
     }

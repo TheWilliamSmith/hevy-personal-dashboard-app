@@ -46,21 +46,25 @@ const normalized = computed(() => ({
   username: normalizeUsername(form.username),
 }));
 
+function usernameError(): string | null {
+  if (taken.username !== null && taken.username === normalized.value.username) {
+    return t('auth.signUp.usernameTaken');
+  }
+  return (touched.username || submitted.value) && !isUsername(form.username) ? t('auth.signUp.usernameInvalid') : null;
+}
+
+function emailError(): string | null {
+  if (taken.email !== null && taken.email === normalized.value.email) {
+    return t('auth.signUp.emailTaken');
+  }
+  return (touched.email || submitted.value) && !isEmail(form.email) ? t('validation.email') : null;
+}
+
 const errors = computed(() => ({
   displayName:
     (touched.displayName || submitted.value) && !form.displayName.trim() ? t('auth.signUp.displayNameRequired') : null,
-  username:
-    taken.username !== null && taken.username === normalized.value.username
-      ? t('auth.signUp.usernameTaken')
-      : (touched.username || submitted.value) && !isUsername(form.username)
-        ? t('auth.signUp.usernameInvalid')
-        : null,
-  email:
-    taken.email !== null && taken.email === normalized.value.email
-      ? t('auth.signUp.emailTaken')
-      : (touched.email || submitted.value) && !isEmail(form.email)
-        ? t('validation.email')
-        : null,
+  username: usernameError(),
+  email: emailError(),
   password: (touched.password || submitted.value) ? passwordProblem(form.password) : null,
   terms: submitted.value && !form.terms ? t('auth.signUp.termsRequired') : null,
 }));
@@ -74,11 +78,11 @@ const isValid = computed(
     form.terms,
 );
 
-function takenField(caught: unknown): TakenField | null {
-  if (!(caught instanceof ApiError) || caught.status !== 409) {
+function takenField(error_: unknown): TakenField | null {
+  if (!(error_ instanceof ApiError) || error_.status !== 409) {
     return null;
   }
-  const { field } = (caught.body ?? {}) as { field?: unknown };
+  const { field } = (error_.body ?? {}) as { field?: unknown };
   return field === 'username' ? 'username' : 'email';
 }
 
@@ -103,13 +107,13 @@ async function submit(): Promise<void> {
       description: t('auth.signUp.welcome', { name: form.displayName.trim() }),
     });
     void router.replace({ name: 'home', query: { tab: 'settings' } });
-  } catch (caught) {
-    const field = takenField(caught);
+  } catch (error_) {
+    const field = takenField(error_);
     if (field) {
       taken[field] = normalized.value[field];
       return;
     }
-    formError.value = errorMessage(caught);
+    formError.value = errorMessage(error_);
   }
 }
 
@@ -118,8 +122,8 @@ async function withProvider(provider: OAuthProvider): Promise<void> {
   try {
     await auth.signInWith(provider);
     void router.replace({ name: 'home', query: { tab: 'settings' } });
-  } catch (caught) {
-    formError.value = errorMessage(caught);
+  } catch (error_) {
+    formError.value = errorMessage(error_);
   }
 }
 </script>
@@ -129,10 +133,10 @@ async function withProvider(provider: OAuthProvider): Promise<void> {
     <AuthError :message="formError" />
     <OAuthButtons :action="t('auth.signUp.action')" :pending="auth.pendingProvider.value" :disabled="busy" @select="withProvider" />
 
-    <div class="flex items-center gap-3 text-xs text-zinc-600" role="separator">
-      <span class="h-px flex-1 bg-zinc-800" />
+    <div class="flex items-center gap-3 text-xs text-zinc-600">
+      <hr class="flex-1 border-zinc-800" />
       {{ t('auth.orWithEmail') }}
-      <span class="h-px flex-1 bg-zinc-800" />
+      <hr class="flex-1 border-zinc-800" />
     </div>
 
     <form class="flex flex-col gap-4" novalidate @submit.prevent="submit">
@@ -140,6 +144,7 @@ async function withProvider(provider: OAuthProvider): Promise<void> {
         id="signup-display-name"
         v-model="form.displayName"
         :label="t('auth.signUp.displayName')"
+        type="text"
         autocomplete="name"
         :maxlength="80"
         :error="errors.displayName"
@@ -150,6 +155,7 @@ async function withProvider(provider: OAuthProvider): Promise<void> {
         :model-value="form.username"
         :label="t('auth.signUp.username')"
         prefix="@"
+        type="text"
         autocomplete="username"
         :maxlength="30"
         :error="errors.username"

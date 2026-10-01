@@ -33,11 +33,11 @@ function simulate<T>(result: T): Promise<T> {
   return submitting(() => new Promise<T>((resolve) => setTimeout(() => resolve(result), DEMO_DELAY_MS)));
 }
 
-function isInvalidResetLink(caught: unknown): boolean {
-  if (!(caught instanceof ApiError) || caught.status !== 400) {
+function isInvalidResetLink(error_: unknown): boolean {
+  if (!(error_ instanceof ApiError) || error_.status !== 400) {
     return false;
   }
-  const { message } = (caught.body ?? {}) as { message?: unknown };
+  const { message } = (error_.body ?? {}) as { message?: unknown };
   return typeof message === 'string';
 }
 
@@ -66,8 +66,8 @@ async function restore(): Promise<void> {
   }
   try {
     user.value = await apiGet<AuthUser>('/auth/me');
-  } catch (caught) {
-    if (caught instanceof ApiError && caught.status === 401) {
+  } catch (error_) {
+    if (error_ instanceof ApiError && error_.status === 401) {
       signOut();
     }
   }
@@ -138,11 +138,11 @@ export function useAuth(): UseAuth {
       submitting(async () => {
         try {
           await apiPost('/auth/password/reset', { token, password });
-        } catch (caught) {
-          if (isInvalidResetLink(caught)) {
+        } catch (error_) {
+          if (isInvalidResetLink(error_)) {
             return false;
           }
-          throw caught;
+          throw error_;
         }
         signOut();
         return true;

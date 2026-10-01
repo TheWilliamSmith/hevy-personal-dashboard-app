@@ -46,11 +46,11 @@ async function search(term: string): Promise<void> {
     results.value = await apiGet<UserCard[]>('/users/search', { q: term }, controller.signal);
     searched.value = term;
     isSearching.value = false;
-  } catch (caught) {
-    if (caught instanceof DOMException && caught.name === 'AbortError') {
+  } catch (error_) {
+    if (error_ instanceof DOMException && error_.name === 'AbortError') {
       return;
     }
-    searchError.value = caught instanceof ApiError ? caught.message : t('errors.generic');
+    searchError.value = error_ instanceof ApiError ? error_.message : t('errors.generic');
     isSearching.value = false;
   }
 }
@@ -124,10 +124,10 @@ const focus = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visi
 
           <p v-if="searchError" class="text-sm text-red-400" role="alert">{{ searchError }}</p>
           <p v-else-if="query.trim().replace(/^@/, '').length < 2" class="text-xs text-zinc-500">{{ t('friends.searchHint') }}</p>
-          <p v-else-if="isSearching && results.length === 0" class="text-sm text-zinc-500" role="status">{{ t('friends.searching') }}</p>
-          <p v-else-if="searched && results.length === 0" class="text-sm text-zinc-500" role="status">
+          <output v-else-if="isSearching && results.length === 0" class="block text-sm text-zinc-500">{{ t('friends.searching') }}</output>
+          <output v-else-if="searched && results.length === 0" class="block text-sm text-zinc-500">
             {{ t('friends.noResult', { query: searched }) }}
-          </p>
+          </output>
           <ul v-else class="flex flex-col divide-y divide-zinc-800" :aria-busy="isSearching">
             <UserRow v-for="user in results" :key="user.id" :user="user">
               <FriendActions :user="user" @changed="onChanged" />

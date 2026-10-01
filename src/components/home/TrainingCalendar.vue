@@ -77,11 +77,11 @@ function cellTitle(day: CalendarCell): string | undefined {
     <SectionError v-if="error" :message="error" @retry="emit('retry')" />
 
     <div v-else ref="scroller" class="overflow-x-auto">
+      <p class="sr-only">{{ t('dashboard.calendar.summary', { count: workoutCount, weeks: weekCount }) }}</p>
       <div
         class="grid gap-[3px]"
         :style="{ gridTemplateColumns: columns }"
-        role="img"
-        :aria-label="t('dashboard.calendar.summary', { count: workoutCount, weeks: weekCount })"
+        aria-hidden="true"
       >
         <span />
         <span

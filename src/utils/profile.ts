@@ -4,7 +4,7 @@ export function initialsOf(name: string): string {
     return '?';
   }
   const first = words[0]?.[0] ?? '';
-  const last = words.length > 1 ? (words[words.length - 1]?.[0] ?? '') : '';
+  const last = words.length > 1 ? (words.at(-1)?.[0] ?? '') : '';
   return `${first}${last}`.toUpperCase();
 }
 
@@ -27,6 +27,8 @@ export function suggestUsername(displayName: string): string {
     .replace(/\s+/g, '.')
     .replace(/[^a-z0-9._]/g, '')
     .replace(/\.{2,}/g, '.')
-    .replace(/^\.+|\.+$/g, '')
+    .split('.')
+    .filter(Boolean)
+    .join('.')
     .slice(0, 30);
 }
