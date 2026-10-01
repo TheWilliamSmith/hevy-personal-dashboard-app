@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
+import GoalsCard from '@/components/goals/GoalsCard.vue';
 import KeyMetrics from '@/components/home/KeyMetrics.vue';
 import MuscleFocusCard from '@/components/home/MuscleFocusCard.vue';
 import RangeSwitch from '@/components/ui/RangeSwitch.vue';
@@ -14,6 +15,7 @@ import {
   useStatsTimeseries,
 } from '@/composables/stats';
 import { RANGE_PRESETS, type RangePreset } from '@/composables/stats/useDashboardFilters';
+import { useGoals } from '@/composables/useGoals';
 import { useStatsResource } from '@/composables/stats/useStatsResource';
 import { apiGet } from '@/lib/api';
 import type { AchievementsSummary } from '@/types/achievements';
@@ -95,6 +97,7 @@ const calendar = useStatsResource(
   },
   () => calendarYears.value,
 );
+const goals = useGoals();
 const trophies = useStatsResource(
   (signal) => apiGet<AchievementsSummary>('/achievements/summary', {}, signal),
   () => null,
@@ -125,6 +128,13 @@ const trophies = useStatsResource(
           @retry="trophies.refresh"
         />
       </div>
+
+      <GoalsCard
+        :goals="goals.active.value"
+        :is-loading="goals.isLoading.value"
+        :error="goals.error.value"
+        @retry="goals.load"
+      />
 
       <div class="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:gap-0">
         <MuscleFocusCard

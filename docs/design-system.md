@@ -31,6 +31,8 @@ Toujours les classes Tailwind ci-dessous, jamais de couleur en dur dans un templ
 
 **Statuts de progression** (`STATUS_STYLES`, `src/constants/progress.ts`) : Regressing `red-400`, Plateau `amber-400`, Stale `zinc-400`, Progressing `emerald-400`, Needs more sessions `zinc-600`. Un statut s'affiche en pastille + texte de la même couleur, jamais en badge plein.
 
+**Statuts d'objectif** (`GOAL_STATUS_STYLES`, `src/constants/goals.ts`) : Achieved `emerald-400`, On track `blue-400`, Off track `amber-400`, Needs more sessions `zinc-400` ; même règle pastille + texte, la barre de progression prend la couleur du statut.
+
 **Raretés** (`RARITY_STYLES`, `src/constants/achievements.ts`) : Common `emerald-400`, Rare `blue-400`, Epic `purple-400`, Legendary `amber-400` ; pastille `dot`, texte `text`, badge plein `badge` pour l'icône d'un trophée obtenu.
 
 **Séries multiples** (ex. top 5 des muscles), dans cet ordre : `emerald-500`, `orange-400`, `teal-600`, `zinc-400`, `indigo-400`.

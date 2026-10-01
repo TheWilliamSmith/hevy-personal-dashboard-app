@@ -5,6 +5,7 @@ export type TabName =
   | 'dashboard'
   | 'body'
   | 'progress'
+  | 'goals'
   | 'trophies'
   | 'workouts'
   | 'exercises'
@@ -14,6 +15,7 @@ export const TABS: ReadonlyArray<{ name: TabName; label: string }> = [
   { name: 'dashboard', label: 'Dashboard' },
   { name: 'body', label: 'Body' },
   { name: 'progress', label: 'Progress' },
+  { name: 'goals', label: 'Goals' },
   { name: 'trophies', label: 'Trophies' },
   { name: 'workouts', label: 'Workouts' },
   { name: 'exercises', label: 'Exercises' },
@@ -25,6 +27,7 @@ function isTab(value: unknown): value is TabName {
     value === 'dashboard' ||
     value === 'body' ||
     value === 'progress' ||
+    value === 'goals' ||
     value === 'trophies' ||
     value === 'workouts' ||
     value === 'exercises' ||

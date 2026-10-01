@@ -10,6 +10,7 @@ const WorkoutDetailPanel = defineAsyncComponent(() => import('@/views/WorkoutDet
 const SettingsPanel = defineAsyncComponent(() => import('@/views/SettingsView.vue'));
 const BodyPanel = defineAsyncComponent(() => import('@/views/BodyView.vue'));
 const ProgressPanel = defineAsyncComponent(() => import('@/views/ProgressView.vue'));
+const GoalsPanel = defineAsyncComponent(() => import('@/views/GoalsView.vue'));
 const TrophiesPanel = defineAsyncComponent(() => import('@/views/TrophyRoomView.vue'));
 const ExercisesPanel = defineAsyncComponent(() => import('@/views/ExercisesView.vue'));
 const ExerciseDetailPanel = defineAsyncComponent(() => import('@/views/ExerciseDetailView.vue'));
@@ -34,6 +35,9 @@ const panel = computed(() => {
   }
   if (tab.value === 'progress') {
     return ProgressPanel;
+  }
+  if (tab.value === 'goals') {
+    return GoalsPanel;
   }
   if (tab.value === 'trophies') {
     return TrophiesPanel;
