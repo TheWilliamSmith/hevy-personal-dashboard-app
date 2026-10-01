@@ -81,6 +81,10 @@ function messageForStatus(status: number, apiMessage: string | null): string {
     return apiMessage ?? 'This action is no longer possible.';
   }
 
+  if (status === 429) {
+    return apiMessage ?? 'Too many attempts. Wait a moment and try again.';
+  }
+
   if (status >= 500) {
     return 'The server failed to answer. Try again in a moment.';
   }
