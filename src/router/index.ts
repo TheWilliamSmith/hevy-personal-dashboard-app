@@ -39,6 +39,12 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/auth/ResetPasswordView.vue'),
     meta: { layout: 'auth' },
   },
+  {
+    path: '/recap/unsubscribe',
+    name: 'recap-unsubscribe',
+    component: () => import('@/views/auth/RecapUnsubscribeView.vue'),
+    meta: { layout: 'auth' },
+  },
   { path: '/data', redirect: () => ({ name: 'home', query: { tab: 'settings', section: 'data' } }) },
   { path: '/imports', redirect: () => ({ name: 'home', query: { tab: 'settings', section: 'data' } }) },
   { path: '/:pathMatch(.*)*', redirect: { name: 'home' } },

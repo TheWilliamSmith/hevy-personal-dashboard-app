@@ -397,6 +397,9 @@ export const profile: ProfileResponse = {
   weekStart: 'monday',
   bodyweightKg: 80,
   heightCm: 180,
+  recapFrequency: 'weekly',
+  recapWeekday: 1,
+  recapMonthDay: 1,
   stats: { workouts: 12, level: 3, trophies: 5, streakWeeks: 4 },
 };
 

@@ -75,6 +75,9 @@ const profile = computed<UserProfile | null>(() => {
         weekStart: 'monday',
         bodyweightKg: null,
         heightCm: null,
+        recapFrequency: 'weekly',
+        recapWeekday: 1,
+        recapMonthDay: 1,
       }
     : null;
 });

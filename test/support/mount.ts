@@ -14,6 +14,7 @@ const routes: RouteRecordRaw[] = [
   { path: '/sign-up', name: 'sign-up', component: blank, meta: { layout: 'auth' } },
   { path: '/forgot-password', name: 'forgot-password', component: blank, meta: { layout: 'auth' } },
   { path: '/reset-password', name: 'reset-password', component: blank, meta: { layout: 'auth' } },
+  { path: '/recap/unsubscribe', name: 'recap-unsubscribe', component: blank, meta: { layout: 'auth' } },
   { path: '/:pathMatch(.*)*', redirect: { name: 'home' } },
 ];
 
