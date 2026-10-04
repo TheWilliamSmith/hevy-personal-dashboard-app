@@ -77,7 +77,7 @@ async function withProvider(provider: OAuthProvider): Promise<void> {
     </div>
 
     <form class="flex flex-col gap-4" novalidate @submit.prevent="submit">
-      <AuthField
+      <auth-field
         id="signin-email"
         v-model="form.email"
         :label="t('auth.email')"
@@ -86,7 +86,7 @@ async function withProvider(provider: OAuthProvider): Promise<void> {
         :error="errors.email"
         @blur="touched.email = true"
       />
-      <AuthField
+      <auth-field
         id="signin-password"
         v-model="form.password"
         :label="t('auth.password')"
@@ -103,7 +103,7 @@ async function withProvider(provider: OAuthProvider): Promise<void> {
             {{ t('auth.signIn.forgot') }}
           </RouterLink>
         </template>
-      </AuthField>
+      </auth-field>
 
       <label class="flex items-center gap-2 text-xs text-zinc-400">
         <input v-model="form.remember" type="checkbox" class="h-3.5 w-3.5 accent-blue-600" />

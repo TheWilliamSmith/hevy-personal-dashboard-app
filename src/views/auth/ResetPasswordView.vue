@@ -57,7 +57,7 @@ const primary =
   <AuthLayout :title="t(TITLES[stage].title)" :subtitle="t(TITLES[stage].subtitle)">
     <form v-if="stage === 'form'" class="flex flex-col gap-4" novalidate @submit.prevent="submit">
       <AuthError :message="formError" />
-      <AuthField
+      <auth-field
         id="reset-password"
         v-model="form.password"
         :label="t('auth.reset.newPassword')"
@@ -68,8 +68,8 @@ const primary =
         @blur="touched.password = true"
       >
         <PasswordStrengthMeter :password="form.password" />
-      </AuthField>
-      <AuthField
+      </auth-field>
+      <auth-field
         id="reset-confirm"
         v-model="form.confirm"
         :label="t('auth.reset.confirmPassword')"

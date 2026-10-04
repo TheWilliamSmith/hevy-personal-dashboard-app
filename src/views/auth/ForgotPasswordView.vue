@@ -64,7 +64,7 @@ async function submit(): Promise<void> {
 
     <form v-else class="flex flex-col gap-4" novalidate @submit.prevent="submit">
       <AuthError :message="formError" />
-      <AuthField
+      <auth-field
         id="forgot-email"
         v-model="email"
         :label="t('auth.email')"

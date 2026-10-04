@@ -140,7 +140,7 @@ async function withProvider(provider: OAuthProvider): Promise<void> {
     </div>
 
     <form class="flex flex-col gap-4" novalidate @submit.prevent="submit">
-      <AuthField
+      <auth-field
         id="signup-display-name"
         v-model="form.displayName"
         :label="t('auth.signUp.displayName')"
@@ -150,7 +150,7 @@ async function withProvider(provider: OAuthProvider): Promise<void> {
         :error="errors.displayName"
         @blur="touched.displayName = true"
       />
-      <AuthField
+      <auth-field
         id="signup-username"
         :model-value="form.username"
         :label="t('auth.signUp.username')"
@@ -163,7 +163,7 @@ async function withProvider(provider: OAuthProvider): Promise<void> {
         @update:model-value="editUsername"
         @blur="touched.username = true"
       />
-      <AuthField
+      <auth-field
         id="signup-email"
         v-model="form.email"
         :label="t('auth.email')"
@@ -172,7 +172,7 @@ async function withProvider(provider: OAuthProvider): Promise<void> {
         :error="errors.email"
         @blur="touched.email = true"
       />
-      <AuthField
+      <auth-field
         id="signup-password"
         v-model="form.password"
         :label="t('auth.password')"
@@ -183,7 +183,7 @@ async function withProvider(provider: OAuthProvider): Promise<void> {
         @blur="touched.password = true"
       >
         <PasswordStrengthMeter :password="form.password" />
-      </AuthField>
+      </auth-field>
 
       <div class="flex flex-col gap-1">
         <label class="flex items-start gap-2 text-xs text-zinc-400">

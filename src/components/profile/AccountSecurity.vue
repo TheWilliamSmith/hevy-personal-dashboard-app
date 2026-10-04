@@ -126,7 +126,7 @@ const spinner = 'h-3.5 w-3.5 animate-spin rounded-full border-2 border-zinc-900/
         <p class="mt-1.5 truncate text-sm font-medium text-zinc-100">{{ auth.user.value?.email }}</p>
       </div>
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <AuthField
+        <auth-field
           id="security-new-email"
           v-model="email.next"
           :label="t('security.newEmail')"
@@ -134,7 +134,7 @@ const spinner = 'h-3.5 w-3.5 animate-spin rounded-full border-2 border-zinc-900/
           autocomplete="email"
           :error="emailErrors.next"
         />
-        <AuthField
+        <auth-field
           id="security-email-password"
           v-model="email.current"
           :label="t('security.currentPassword')"
@@ -153,7 +153,7 @@ const spinner = 'h-3.5 w-3.5 animate-spin rounded-full border-2 border-zinc-900/
       <SectionHeader :title="t('security.passwordTitle')" :subtitle="t('security.passwordSubtitle')" />
       <AuthError :message="passwordServer.form" />
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <AuthField
+        <auth-field
           id="security-current-password"
           v-model="password.current"
           :label="t('security.currentPassword')"
@@ -163,7 +163,7 @@ const spinner = 'h-3.5 w-3.5 animate-spin rounded-full border-2 border-zinc-900/
         />
       </div>
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <AuthField
+        <auth-field
           id="security-new-password"
           v-model="password.next"
           :label="t('auth.reset.newPassword')"
@@ -173,8 +173,8 @@ const spinner = 'h-3.5 w-3.5 animate-spin rounded-full border-2 border-zinc-900/
           :hint="t('auth.passwordHint')"
         >
           <PasswordStrengthMeter :password="password.next" />
-        </AuthField>
-        <AuthField
+        </auth-field>
+        <auth-field
           id="security-confirm-password"
           v-model="password.confirm"
           :label="t('auth.reset.confirmPassword')"

@@ -129,7 +129,7 @@ describe('useHevyConnection', () => {
     const callsAfterDone = fetchMock.mock.calls.length;
     await vi.advanceTimersByTimeAsync(6000);
     expect(fetchMock.mock.calls.filter(([url]) => String(url).includes('/runs/run9'))).toHaveLength(2);
-    expect(fetchMock.mock.calls.length).toBe(callsAfterDone);
+    expect(fetchMock.mock.calls).toHaveLength(callsAfterDone);
   });
 
   it('stops polling when the run cannot be read', async () => {
