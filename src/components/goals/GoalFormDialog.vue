@@ -10,6 +10,7 @@ import { ApiError, apiGet } from '@/lib/api';
 import type { ExerciseCatalog } from '@/types/exercises';
 import type { Goal, GoalChanges, GoalInput, GoalType } from '@/types/goals';
 import type { SearchableExercise } from '@/utils/exercise-search';
+import { fromDisplayWeight, toDisplayWeight, weightUnitLabel } from '@/utils/format';
 import { goalTitle, todayKey } from '@/utils/goals';
 
 export type GoalSubmission = { kind: 'create'; input: GoalInput } | { kind: 'update'; id: string; changes: GoalChanges };
@@ -30,7 +31,11 @@ const exercisesError = ref<string | null>(null);
 
 const isEdit = computed(() => props.goal !== null);
 const typeHint = computed(() => GOAL_TYPES.find((option) => option.value === form.type)?.hint ?? '');
-const unit = computed(() => (form.type === 'WEEKLY_WORKOUTS' ? t('goals.form.workouts') : 'kg'));
+const unit = computed(() => (form.type === 'WEEKLY_WORKOUTS' ? t('goals.form.workouts') : weightUnitLabel()));
+
+function displayTarget(goal: Goal): string {
+  return goal.type === 'WEEKLY_WORKOUTS' ? String(goal.target) : String(Math.round(toDisplayWeight(goal.target) * 10) / 10);
+}
 
 async function loadExercises(): Promise<void> {
   if (exercises.value.length > 0) {
@@ -58,7 +63,7 @@ watch(
     Object.assign(form, {
       type: goal?.type ?? 'EXERCISE_1RM',
       exerciseId: goal?.exercise?.id ?? '',
-      target: goal ? String(goal.target) : '',
+      target: goal ? displayTarget(goal) : '',
       startsAt: goal ? goal.startsAt.slice(0, 10) : todayKey(),
       deadline: goal?.deadline ? goal.deadline.slice(0, 10) : '',
     });
@@ -75,7 +80,10 @@ function validate(): number | null {
     fieldErrors.target = t('goals.form.wholeWorkouts');
   }
   fieldErrors.exerciseId = !isEdit.value && isExerciseGoal(form.type) && !form.exerciseId ? t('goals.form.chooseExercise') : null;
-  return fieldErrors.target || fieldErrors.exerciseId ? null : target;
+  if (fieldErrors.target || fieldErrors.exerciseId) {
+    return null;
+  }
+  return form.type === 'WEEKLY_WORKOUTS' ? target : Math.round(fromDisplayWeight(target) * 100) / 100;
 }
 
 async function onSubmit(): Promise<void> {

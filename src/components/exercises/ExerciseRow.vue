@@ -7,7 +7,7 @@ import { RouterLink } from 'vue-router';
 import ExerciseSparkline from '@/components/exercises/ExerciseSparkline.vue';
 import { EQUIPMENT_LABELS, MUSCLE_LABELS } from '@/constants/muscles';
 import type { ExerciseCard } from '@/types/exercises';
-import { EMPTY, formatDistanceKm, formatDuration, formatInteger, formatWeight } from '@/utils/format';
+import { EMPTY, formatDistanceKm, formatDuration, formatInteger, formatLoad } from '@/utils/format';
 import { formatDaysAgo } from '@/utils/progress';
 
 const props = defineProps<{ exercise: ExerciseCard }>();
@@ -27,7 +27,7 @@ const best = computed(() => {
   if (exercise.kind === 'BODYWEIGHT_HOLD') {
     return { label: t('exercises.hold'), value: exercise.totalDurationSec === null ? EMPTY : formatDuration(exercise.totalDurationSec) };
   }
-  return { label: t('exercises.max'), value: exercise.maxWeightKg === null ? EMPTY : `${formatWeight(exercise.maxWeightKg)} kg` };
+  return { label: t('exercises.max'), value: exercise.maxWeightKg === null ? EMPTY : formatLoad(exercise.maxWeightKg) };
 });
 
 const meta = computed(() =>

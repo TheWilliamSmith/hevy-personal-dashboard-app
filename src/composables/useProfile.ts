@@ -4,6 +4,7 @@ import { computed, ref, watch, type ComputedRef, type Ref } from 'vue';
 import { useAuth } from '@/composables/useAuth';
 import { ApiError, apiDelete, apiGet, apiPatch, apiUpload, apiUrl } from '@/lib/api';
 import type { ProfileChanges, ProfileResponse, ProfileStats, UserProfile } from '@/types/profile';
+import { applyPreferences } from '@/utils/preferences';
 
 const loaded = ref<ProfileResponse | null>(null);
 const isLoading = ref(false);
@@ -15,6 +16,7 @@ const auth = useAuth();
 
 function accept(response: ProfileResponse): void {
   loaded.value = response;
+  applyPreferences({ weightUnit: response.weightUnit, weekStart: response.weekStart });
   auth.updateUser({ displayName: response.displayName, username: response.username });
 }
 

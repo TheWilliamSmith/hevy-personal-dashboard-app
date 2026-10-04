@@ -2,7 +2,7 @@ import { t } from '@/i18n';
 import { FAMILY_ORDER, RARITY_STYLES } from '@/constants/achievements';
 import type { AchievementItem } from '@/types/achievements';
 
-import { formatDay, formatDecimal } from './format';
+import { formatDay, formatDecimal, toDisplayWeight, weightUnitLabel } from './format';
 
 export function isMasked(item: AchievementItem): boolean {
   return item.secret && !item.unlocked;
@@ -97,16 +97,17 @@ interface UnitRule {
   divide: number;
   unit: string;
   decimals: number;
+  weight?: boolean;
 }
 
 const UNIT_RULES: Readonly<Record<string, UnitRule>> = {
-  VOLUME: { divide: 1000, unit: 't', decimals: 1 },
-  SESSION_VOLUME: { divide: 1000, unit: 't', decimals: 1 },
+  VOLUME: { divide: 1000, unit: 't', decimals: 1, weight: true },
+  SESSION_VOLUME: { divide: 1000, unit: 't', decimals: 1, weight: true },
   TIME: { divide: 3600, unit: 'h', decimals: 1 },
   CARDIO: { divide: 1, unit: 'km', decimals: 1 },
-  BENCH: { divide: 1, unit: 'kg', decimals: 1 },
-  SQUAT: { divide: 1, unit: 'kg', decimals: 1 },
-  DEADLIFT: { divide: 1, unit: 'kg', decimals: 1 },
+  BENCH: { divide: 1, unit: 'kg', decimals: 1, weight: true },
+  SQUAT: { divide: 1, unit: 'kg', decimals: 1, weight: true },
+  DEADLIFT: { divide: 1, unit: 'kg', decimals: 1, weight: true },
   STREAK: { divide: 1, unit: 'weeks', decimals: 0 },
 };
 
@@ -118,6 +119,13 @@ function unitFor(item: AchievementItem): UnitRule | null {
   return prefix ? (UNIT_RULES[prefix] ?? null) : null;
 }
 
+function weightedUnit(rule: UnitRule): string {
+  if (!rule.weight || weightUnitLabel() === 'kg') {
+    return rule.unit;
+  }
+  return rule.divide === 1000 ? 'k lb' : 'lb';
+}
+
 export function formatProgress(item: AchievementItem): string {
   if (!item.progress) {
     return '';
@@ -125,12 +133,13 @@ export function formatProgress(item: AchievementItem): string {
   const rule = unitFor(item);
   const divide = rule?.divide ?? 1;
   const decimals = rule?.decimals ?? 0;
-  const value = formatDecimal(item.progress.value / divide, decimals);
-  const target = formatDecimal(item.progress.target / divide, decimals);
+  const scale = (amount: number) => (rule?.weight ? toDisplayWeight(amount) : amount) / divide;
+  const value = formatDecimal(scale(item.progress.value), decimals);
+  const target = formatDecimal(scale(item.progress.target), decimals);
   if (!rule) {
     return `${value} / ${target}`;
   }
-  const unit = rule.unit === 'weeks' ? t('achievementText.weeks') : rule.unit;
+  const unit = rule.unit === 'weeks' ? t('achievementText.weeks') : weightedUnit(rule);
   return `${value} / ${target} ${unit}`;
 }
 

@@ -12,6 +12,7 @@ export default defineConfig({
     include: ['test/**/*.spec.ts'],
     environment: 'node',
     env: { VITE_API_URL: '/api' },
+    setupFiles: ['test/support/setup.ts'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html', 'lcov'],

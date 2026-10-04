@@ -7,6 +7,7 @@ import SectionHeader from '@/components/ui/SectionHeader.vue';
 import type { CalendarDay } from '@/types/stats';
 import { buildCalendarGrid, type CalendarCell } from '@/utils/calendar';
 import { dateFormat, formatInteger } from '@/utils/format';
+import { weekStart } from '@/utils/preferences';
 
 const props = defineProps<{
   weekCount: number;
@@ -17,12 +18,14 @@ const props = defineProps<{
 
 const emit = defineEmits<{ retry: [] }>();
 
-const DAY_KEYS = ['dashboard.calendar.mon', '', 'dashboard.calendar.wed', '', 'dashboard.calendar.fri', '', ''];
+const MONDAY_FIRST = ['dashboard.calendar.mon', '', 'dashboard.calendar.wed', '', 'dashboard.calendar.fri', '', ''];
+const SUNDAY_FIRST = ['', 'dashboard.calendar.mon', '', 'dashboard.calendar.wed', '', 'dashboard.calendar.fri', ''];
+const dayKeys = computed(() => (weekStart.value === 'sunday' ? SUNDAY_FIRST : MONDAY_FIRST));
 
 
 const grid = computed(() => {
   const byDate = new Map((props.days ?? []).map((day) => [day.date, day.workouts]));
-  return buildCalendarGrid(new Date(), props.weekCount, byDate);
+  return buildCalendarGrid(new Date(), props.weekCount, byDate, weekStart.value);
 });
 
 const workoutCount = computed(() =>
@@ -94,7 +97,7 @@ function cellTitle(day: CalendarCell): string | undefined {
           </span>
         </span>
 
-        <template v-for="(key, weekday) in DAY_KEYS" :key="`row-${weekday}`">
+        <template v-for="(key, weekday) in dayKeys" :key="`row-${weekday}`">
           <span class="flex items-center text-[11px] leading-none text-zinc-400">{{ key ? t(key) : '' }}</span>
           <span
             v-for="week in grid.weeks"

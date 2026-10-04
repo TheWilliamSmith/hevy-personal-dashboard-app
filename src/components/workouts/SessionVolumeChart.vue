@@ -8,7 +8,7 @@ import EmptyState from '@/components/ui/EmptyState.vue';
 import SectionHeader from '@/components/ui/SectionHeader.vue';
 import { baseOption, categoryAxis, formatAxisValue, resolveTheme, valueAxis } from '@/charts/theme';
 import type { WorkoutSummary } from '@/types/workouts';
-import { formatBucket, formatDuration, formatVolume } from '@/utils/format';
+import { formatBucket, formatDuration, formatVolume, toDisplayWeight } from '@/utils/format';
 
 const props = defineProps<{
   workouts: WorkoutSummary[];
@@ -68,7 +68,7 @@ const option = computed<EChartsOption>(() => ({
       cursor: 'pointer',
       itemStyle: { color: BAR_COLOR, borderRadius: [4, 4, 0, 0] },
       emphasis: { itemStyle: { color: '#60a5fa' } },
-      data: sessions.value.map((workout) => workout.totalVolumeKg),
+      data: sessions.value.map((workout) => toDisplayWeight(workout.totalVolumeKg)),
     },
   ],
 }));

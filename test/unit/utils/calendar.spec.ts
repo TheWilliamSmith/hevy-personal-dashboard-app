@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildCalendarGrid, rollingSum, yearsBetween } from '@/utils/calendar';
+import { buildCalendarGrid, rollingSum, startOfWeek, yearsBetween } from '@/utils/calendar';
 
 const TUESDAY = new Date('2026-09-29T15:00:00.000Z');
 
@@ -43,10 +43,7 @@ describe('buildCalendarGrid', () => {
     const grid = buildCalendarGrid(new Date('2026-03-03T12:00:00.000Z'), 6, new Map());
 
     expect(grid.weeks[0]?.[6]?.date).toBe('2026-02-01');
-    expect(grid.monthLabels).toEqual([
-      { week: 1, label: 'Feb' },
-      { week: 5, label: 'Mar' },
-    ]);
+    expect(grid.monthLabels).toEqual([{ week: 1, label: 'Feb' }]);
   });
 
   it('never labels a month that has not started yet', () => {
@@ -91,5 +88,42 @@ describe('rollingSum', () => {
 
   it('returns nothing when there are fewer points than the window', () => {
     expect(rollingSum([{ value: 1 }], 7)).toEqual([]);
+  });
+});
+
+describe('startOfWeek', () => {
+  it.each([
+    ['2026-09-27T23:00:00.000Z', '2026-09-21', '2026-09-27'],
+    ['2026-09-28T00:00:00.000Z', '2026-09-28', '2026-09-27'],
+    ['2026-10-03T23:59:59.000Z', '2026-09-28', '2026-09-27'],
+    ['2026-10-04T08:00:00.000Z', '2026-09-28', '2026-10-04'],
+    ['2027-01-01T08:00:00.000Z', '2026-12-28', '2026-12-27'],
+  ])('%s starts on %s (Monday) or %s (Sunday)', (iso, monday, sunday) => {
+    expect(startOfWeek(new Date(iso)).toISOString().slice(0, 10)).toBe(monday);
+    expect(startOfWeek(new Date(iso), 'sunday').toISOString().slice(0, 10)).toBe(sunday);
+  });
+});
+
+describe('buildCalendarGrid with a Sunday week start', () => {
+  it('starts each column on Sunday', () => {
+    const grid = buildCalendarGrid(TUESDAY, 2, new Map([['2026-09-27', 1]]), 'sunday');
+
+    expect(grid.weeks[1]?.[0]?.date).toBe('2026-09-27');
+    expect(grid.weeks[1]?.[0]?.workouts).toBe(1);
+    expect(grid.weeks[0]?.[0]?.date).toBe('2026-09-20');
+    expect(grid.weeks[1]?.map((day) => day.isFuture)).toEqual([false, false, false, true, true, true, true]);
+  });
+
+  it('leaves out a month label that has no room in the last columns', () => {
+    const grid = buildCalendarGrid(new Date('2026-10-04T08:00:00.000Z'), 12, new Map(), 'sunday');
+
+    expect(grid.weeks[11]?.[0]?.date).toBe('2026-10-04');
+    expect(grid.monthLabels.map((month) => month.label)).not.toContain('Oct');
+    expect(grid.monthLabels.every((month) => month.week + 3 <= 12)).toBe(true);
+  });
+
+  it('puts Sunday at the end of the week by default', () => {
+    const grid = buildCalendarGrid(TUESDAY, 2, new Map());
+    expect(grid.weeks[0]?.[6]?.date).toBe('2026-09-27');
   });
 });

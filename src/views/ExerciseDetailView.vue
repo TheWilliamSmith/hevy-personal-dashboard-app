@@ -17,7 +17,7 @@ import { useExercises } from '@/composables/useExercises';
 import { useToasts } from '@/composables/useToasts';
 import { EQUIPMENT_LABELS, KIND_LABELS, MUSCLE_LABELS, MUSCLE_STYLES } from '@/constants/muscles';
 import type { UpdateExercisePayload } from '@/types/exercises';
-import { EMPTY, formatInteger, formatNumber, formatVolume, formatWeight } from '@/utils/format';
+import { EMPTY, formatInteger, formatLoad, formatNumber, formatVolume } from '@/utils/format';
 import { formatDaysAgo } from '@/utils/progress';
 
 const route = useRoute();
@@ -65,7 +65,7 @@ const metrics = computed<MetricItem[]>(() => {
     { label: t('exercises.repsPerSet'), value: formatNumber(value?.avgRepsPerSet), icon: Dumbbell },
     {
       label: t('exercises.avgWeight'),
-      value: value?.avgWeightKg === null || value?.avgWeightKg === undefined ? EMPTY : `${formatWeight(value.avgWeightKg)} kg`,
+      value: value?.avgWeightKg === null || value?.avgWeightKg === undefined ? EMPTY : formatLoad(value.avgWeightKg),
       icon: Scale,
     },
     { label: t('exercises.lastPerformed'), value: lastPerformed.value, icon: CalendarClock },

@@ -23,7 +23,7 @@ export const profile: Messages<typeof en.profile> = {
   location: 'Localisation',
   body: 'Corps',
   bodySubtitle: 'Vos mensurations',
-  bodyweight: 'Poids de corps (kg)',
+  bodyweight: 'Poids de corps ({unit})',
   height: 'Taille (cm)',
   unsaved: 'Modifications non enregistrées',
   discard: 'Annuler',

@@ -1,4 +1,5 @@
 import { intlLocale, t } from '@/i18n';
+import { weightUnit } from '@/utils/preferences';
 
 export const EMPTY = '—';
 
@@ -86,14 +87,33 @@ export function toNumber(value: NumericInput): number | null {
   return Number.isFinite(amount) ? amount : null;
 }
 
+export const LB_PER_KG = 2.20462262185;
+
+export function weightUnitLabel(): string {
+  return weightUnit.value;
+}
+
+export function toDisplayWeight(kg: number): number {
+  return weightUnit.value === 'lb' ? kg * LB_PER_KG : kg;
+}
+
+export function fromDisplayWeight(value: number): number {
+  return weightUnit.value === 'lb' ? value / LB_PER_KG : value;
+}
+
 export function formatVolume(value: NumericInput): string {
   const amount = toNumber(value);
-  return amount === null ? EMPTY : `${formatDecimal(amount, 1)} kg`;
+  return amount === null ? EMPTY : `${formatDecimal(toDisplayWeight(amount), 1)} ${weightUnit.value}`;
 }
 
 export function formatWeight(value: NumericInput): string {
   const amount = toNumber(value);
-  return amount === null ? EMPTY : formatDecimal(amount, 3);
+  return amount === null ? EMPTY : formatDecimal(toDisplayWeight(amount), weightUnit.value === 'lb' ? 1 : 3);
+}
+
+export function formatLoad(value: NumericInput): string {
+  const amount = toNumber(value);
+  return amount === null ? EMPTY : `${formatWeight(amount)} ${weightUnit.value}`;
 }
 
 export function formatNumber(value: NumericInput): string {

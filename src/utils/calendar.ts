@@ -1,3 +1,5 @@
+import type { WeekStart } from '@/types/profile';
+
 import { dateFormat } from './format';
 
 export interface CalendarCell {
@@ -14,6 +16,7 @@ export interface CalendarGrid {
 }
 
 const DAY_MS = 24 * 60 * 60 * 1000;
+const MONTH_LABEL_WEEKS = 3;
 
 function isoDay(date: Date): string {
   return date.toISOString().slice(0, 10);
@@ -23,14 +26,21 @@ function startOfUtcDay(date: Date): Date {
   return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
 }
 
+export function startOfWeek(date: Date, weekStart: WeekStart = 'monday'): Date {
+  const day = startOfUtcDay(date);
+  const weekday = day.getUTCDay();
+  const offset = weekStart === 'sunday' ? weekday : (weekday + 6) % 7;
+  return new Date(day.getTime() - offset * DAY_MS);
+}
+
 export function buildCalendarGrid(
   today: Date,
   weekCount: number,
   workoutsByDate: ReadonlyMap<string, number>,
+  weekStart: WeekStart = 'monday',
 ): CalendarGrid {
   const end = startOfUtcDay(today);
-  const mondayOffset = (end.getUTCDay() + 6) % 7;
-  const firstMonday = new Date(end.getTime() - (mondayOffset + (weekCount - 1) * 7) * DAY_MS);
+  const firstDay = new Date(startOfWeek(end, weekStart).getTime() - (weekCount - 1) * 7 * DAY_MS);
 
   const weeks: CalendarCell[][] = [];
   const monthLabels: CalendarGrid['monthLabels'] = [];
@@ -38,7 +48,7 @@ export function buildCalendarGrid(
   for (let week = 0; week < weekCount; week += 1) {
     const days: CalendarCell[] = [];
     for (let weekday = 0; weekday < 7; weekday += 1) {
-      const date = new Date(firstMonday.getTime() + (week * 7 + weekday) * DAY_MS);
+      const date = new Date(firstDay.getTime() + (week * 7 + weekday) * DAY_MS);
       const key = isoDay(date);
       days.push({
         date: key,
@@ -48,7 +58,7 @@ export function buildCalendarGrid(
     }
     weeks.push(days);
 
-    const monday = new Date(firstMonday.getTime() + week * 7 * DAY_MS);
+    const monday = new Date(firstDay.getTime() + week * 7 * DAY_MS);
     const previousMonday = new Date(monday.getTime() - 7 * DAY_MS);
     if (week > 0 && monday.getUTCMonth() !== previousMonday.getUTCMonth()) {
       monthLabels.push({ week, label: dateFormat({ month: 'short', timeZone: 'UTC' }).format(monday) });
@@ -56,10 +66,11 @@ export function buildCalendarGrid(
   }
 
   if ((monthLabels[0]?.week ?? weekCount) >= 3) {
-    monthLabels.unshift({ week: 0, label: dateFormat({ month: 'short', timeZone: 'UTC' }).format(firstMonday) });
+    monthLabels.unshift({ week: 0, label: dateFormat({ month: 'short', timeZone: 'UTC' }).format(firstDay) });
   }
 
-  return { weeks, monthLabels, from: isoDay(firstMonday), to: isoDay(end) };
+  const fitting = monthLabels.filter((month) => month.week + MONTH_LABEL_WEEKS <= weekCount);
+  return { weeks, monthLabels: fitting, from: isoDay(firstDay), to: isoDay(end) };
 }
 
 export function yearsBetween(from: string, to: string): number[] {

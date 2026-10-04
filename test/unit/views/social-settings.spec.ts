@@ -8,6 +8,7 @@ import { useAuth } from '@/composables/useAuth';
 import { useToasts } from '@/composables/useToasts';
 import { locale, setLocale } from '@/i18n';
 import { saveSession } from '@/lib/auth-session';
+import { weightUnit } from '@/utils/preferences';
 import FriendsView from '@/views/FriendsView.vue';
 import GoalsView from '@/views/GoalsView.vue';
 import SettingsView from '@/views/SettingsView.vue';
@@ -261,6 +262,7 @@ describe('SettingsView', () => {
     await button(wrapper, 'Pounds').trigger('click');
     await settle();
     expect(requestsTo(fetchMock, '/me/profile').find((call) => call.method === 'PATCH')?.body).toEqual({ weightUnit: 'lb' });
+    expect(weightUnit.value).toBe('lb');
     expect(useToasts().toasts.value.at(-1)?.title).toBe('Preferences saved');
 
     await button(wrapper, 'Sunday').trigger('click');

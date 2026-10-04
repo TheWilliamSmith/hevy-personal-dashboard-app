@@ -7,7 +7,7 @@ import { RouterLink } from 'vue-router';
 import EmptyState from '@/components/ui/EmptyState.vue';
 import SectionHeader from '@/components/ui/SectionHeader.vue';
 import type { HistoryEntry } from '@/types/exercises';
-import { EMPTY, formatDate, formatNumber, formatVolume, formatWeight } from '@/utils/format';
+import { EMPTY, formatDate, formatLoad, formatNumber, formatVolume } from '@/utils/format';
 import { SET_TYPE_DOT_CLASSES, SET_TYPE_LABELS } from '@/utils/sets';
 
 defineProps<{
@@ -39,7 +39,7 @@ function bestSetSummary(entry: HistoryEntry): string {
   if (weightKg === null && reps === null) {
     return formatVolume(entry.bestSet.volumeKg);
   }
-  return `${formatWeight(weightKg)} kg × ${reps ?? EMPTY}`;
+  return `${formatLoad(weightKg)} × ${reps ?? EMPTY}`;
 }
 
 const focus = 'focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-zinc-400';
@@ -134,10 +134,10 @@ const cell = 'px-2 py-2 text-sm text-zinc-100 tabular-nums';
                 </td>
                 <td :class="cell">
                   <template v-if="set.weightKg === null && set.reps === null">{{ EMPTY }}</template>
-                  <template v-else>{{ formatWeight(set.weightKg) }} kg × {{ set.reps ?? EMPTY }}</template>
+                  <template v-else>{{ formatLoad(set.weightKg) }} × {{ set.reps ?? EMPTY }}</template>
                 </td>
                 <td :class="cell">{{ set.volumeKg === null ? EMPTY : formatVolume(set.volumeKg) }}</td>
-                <td :class="cell">{{ set.est1RM === null ? EMPTY : `${formatWeight(set.est1RM)} kg` }}</td>
+                <td :class="cell">{{ set.est1RM === null ? EMPTY : formatLoad(set.est1RM) }}</td>
                 <td :class="[cell, 'text-zinc-400']">{{ formatNumber(set.rpe) }}</td>
               </tr>
             </tbody>

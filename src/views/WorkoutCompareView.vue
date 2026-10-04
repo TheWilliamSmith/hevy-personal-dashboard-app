@@ -15,9 +15,9 @@ import {
   formatDate,
   formatDuration,
   formatInteger,
+  formatLoad,
   formatPercent,
   formatVolume,
-  formatWeight,
   percentChange,
 } from '@/utils/format';
 import { matchExercises } from '@/utils/workout-compare';
@@ -96,7 +96,7 @@ function bestSet(set: BestSet | null): string {
   if (!set || (set.weightKg === null && set.reps === null)) {
     return EMPTY;
   }
-  return `${formatWeight(set.weightKg)} kg × ${set.reps ?? EMPTY}`;
+  return `${formatLoad(set.weightKg)} × ${set.reps ?? EMPTY}`;
 }
 
 function changeClass(change: number | null): string {

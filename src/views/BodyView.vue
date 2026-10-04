@@ -18,7 +18,7 @@ import { useDashboardFilters, useMuscleHeatmap } from '@/composables/stats';
 import { RANGE_PRESETS, type RangePreset } from '@/composables/stats/useDashboardFilters';
 import { MUSCLE_LABELS, MUSCLE_ORDER } from '@/constants/muscles';
 import type { HeatmapMetric, MuscleGroup } from '@/types/stats';
-import { formatInteger, formatPercent, formatVolume, percentChange } from '@/utils/format';
+import { formatInteger, formatPercent, formatVolume, percentChange, weightUnitLabel } from '@/utils/format';
 
 type FigureView = 'both' | 'front' | 'back';
 
@@ -64,7 +64,7 @@ const metricLabel = computed(() => metrics.value.find((option) => option.value =
 const UNIT_KEYS: Readonly<Record<Exclude<HeatmapMetric, 'volume'>, string>> = { sets: 'body.unitSets', reps: 'body.unitReps' };
 const METRIC_ICONS: Readonly<Record<HeatmapMetric, Component>> = { sets: Layers, volume: Weight, reps: Repeat };
 
-const unit = computed(() => (metric.value === 'volume' ? 'kg' : t(UNIT_KEYS[metric.value])));
+const unit = computed(() => (metric.value === 'volume' ? weightUnitLabel() : t(UNIT_KEYS[metric.value])));
 const isEmpty = computed(() => data.value !== null && data.value.max <= 0);
 
 function format(value: number): string {

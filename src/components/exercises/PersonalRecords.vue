@@ -13,9 +13,9 @@ import {
   formatDistanceKm,
   formatDuration,
   formatInteger,
+  formatLoad,
   formatPace,
   formatVolume,
-  formatWeight,
 } from '@/utils/format';
 
 const props = defineProps<{ records: ExerciseRecords; kind: ExerciseKind }>();
@@ -66,12 +66,12 @@ const tiles = computed<Tile[]>(() => {
   if (records.best1RM) {
     result.push({
       label: t('exercises.records.oneRepMax'),
-      value: `${formatWeight(records.best1RM.value)} kg`,
+      value: formatLoad(records.best1RM.value),
       detail:
         records.best1RM.weightKg === null
           ? null
           : t('exercises.records.fromSet', {
-              weight: formatWeight(records.best1RM.weightKg),
+              weight: formatLoad(records.best1RM.weightKg),
               reps: records.best1RM.reps ?? EMPTY,
             }),
       date: records.best1RM.date,
@@ -81,7 +81,7 @@ const tiles = computed<Tile[]>(() => {
   if (records.maxWeight) {
     result.push({
       label: t('exercises.records.maxWeight'),
-      value: `${formatWeight(records.maxWeight.weightKg)} kg`,
+      value: formatLoad(records.maxWeight.weightKg),
       detail: t('exercises.records.timesReps', { reps: records.maxWeight.reps ?? EMPTY }),
       date: records.maxWeight.date,
       workoutId: records.maxWeight.workoutId,
@@ -103,7 +103,7 @@ const tiles = computed<Tile[]>(() => {
       detail:
         records.maxReps.weightKg === null
           ? null
-          : t('exercises.records.atWeight', { weight: formatWeight(records.maxReps.weightKg) }),
+          : t('exercises.records.atWeight', { weight: formatLoad(records.maxReps.weightKg) }),
       date: records.maxReps.date,
       workoutId: records.maxReps.workoutId,
     });

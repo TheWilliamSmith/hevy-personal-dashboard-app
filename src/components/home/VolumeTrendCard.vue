@@ -9,7 +9,7 @@ import SectionError from '@/components/ui/SectionError.vue';
 import SectionHeader from '@/components/ui/SectionHeader.vue';
 import { baseOption, categoryAxis, formatAxisValue, resolveTheme, valueAxis } from '@/charts/theme';
 import type { Granularity, TimeseriesPoint } from '@/types/stats';
-import { formatBucket, formatInteger, formatVolume } from '@/utils/format';
+import { formatBucket, formatInteger, formatVolume, toDisplayWeight } from '@/utils/format';
 
 const props = defineProps<{
   points: TimeseriesPoint[] | null;
@@ -80,7 +80,7 @@ const option = computed<EChartsOption>(() => ({
           ],
         },
       },
-      data: rows.value.map((point) => point.value),
+      data: rows.value.map((point) => toDisplayWeight(point.value)),
     },
   ],
 }));

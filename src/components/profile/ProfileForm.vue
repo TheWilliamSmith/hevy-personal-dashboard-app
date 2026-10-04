@@ -4,6 +4,8 @@ import { computed, reactive, watch, type DeepReadonly } from 'vue';
 import SectionHeader from '@/components/ui/SectionHeader.vue';
 import { t } from '@/i18n';
 import type { UserProfile } from '@/types/profile';
+import { fromDisplayWeight, toDisplayWeight, weightUnitLabel } from '@/utils/format';
+import { weightUnit } from '@/utils/preferences';
 import { USERNAME_PATTERN } from '@/utils/profile';
 
 const props = defineProps<{ profile: DeepReadonly<UserProfile>; isSaving: boolean; usernameError?: string | null }>();
@@ -40,6 +42,21 @@ function submit(): void {
 function toNumber(value: string): number | null {
   const parsed = Number.parseFloat(value);
   return Number.isFinite(parsed) ? parsed : null;
+}
+
+const bodyweightLimits = computed(() => (weightUnit.value === 'lb' ? { min: 44, max: 880, step: 1 } : { min: 20, max: 400, step: 0.1 }));
+
+const bodyweight = computed(() => {
+  if (draft.bodyweightKg === null) {
+    return '';
+  }
+  const value = toDisplayWeight(draft.bodyweightKg);
+  return String(weightUnit.value === 'lb' ? Math.round(value) : value);
+});
+
+function onBodyweight(value: string): void {
+  const amount = toNumber(value);
+  draft.bodyweightKg = amount === null ? null : Math.round(fromDisplayWeight(amount) * 10) / 10;
 }
 
 const focus = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400';
@@ -101,16 +118,16 @@ const label = 'mb-1 block text-xs text-zinc-400';
 
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label for="profile-bodyweight" :class="label">{{ t('profile.bodyweight') }}</label>
+            <label for="profile-bodyweight" :class="label">{{ t('profile.bodyweight', { unit: weightUnitLabel() }) }}</label>
             <input
               id="profile-bodyweight"
-              :value="draft.bodyweightKg ?? ''"
+              :value="bodyweight"
               type="number"
-              min="20"
-              max="400"
-              step="0.1"
+              :min="bodyweightLimits.min"
+              :max="bodyweightLimits.max"
+              :step="bodyweightLimits.step"
               :class="field"
-              @input="draft.bodyweightKg = toNumber(($event.target as HTMLInputElement).value)"
+              @input="onBodyweight(($event.target as HTMLInputElement).value)"
             />
           </div>
           <div>

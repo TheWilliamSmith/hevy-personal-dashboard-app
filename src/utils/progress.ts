@@ -1,7 +1,7 @@
 import { t } from '@/i18n';
 import type { MetricUsed, ProgressItem } from '@/types/progress';
 
-import { EMPTY, formatDecimal, formatWeight, toNumber } from './format';
+import { EMPTY, formatDecimal, formatLoad, toNumber } from './format';
 
 export function formatMetricValue(metric: MetricUsed, value: number | null | undefined): string {
   const amount = toNumber(value);
@@ -11,7 +11,7 @@ export function formatMetricValue(metric: MetricUsed, value: number | null | und
 
   switch (metric) {
     case 'est1RM':
-      return `${formatWeight(amount)} kg`;
+      return formatLoad(amount);
     case 'totalReps':
       return t('progressText.reps', { count: Math.round(amount) });
     case 'distancePerMinute':

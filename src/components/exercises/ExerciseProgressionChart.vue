@@ -16,9 +16,10 @@ import {
   formatDistanceKm,
   formatDuration,
   formatInteger,
+  formatLoad,
   formatPace,
   formatVolume,
-  formatWeight,
+  toDisplayWeight,
 } from '@/utils/format';
 
 const props = defineProps<{ points: ProgressionPoint[]; kind: ExerciseKind }>();
@@ -101,7 +102,7 @@ function render(value: number | null): string {
     case 'pace':
       return formatPace(value);
     default:
-      return `${formatWeight(value)} kg`;
+      return formatLoad(value);
   }
 }
 
@@ -114,7 +115,12 @@ const filtered = computed(() => {
   return props.points.filter((point) => Date.parse(point.date) >= cutoff);
 });
 
-const values = computed(() => filtered.value.map(valueOf));
+const WEIGHT_METRICS: ReadonlySet<Metric> = new Set(['maxWeight', 'est1RM', 'volume']);
+
+const raw = computed(() => filtered.value.map(valueOf));
+const values = computed(() =>
+  WEIGHT_METRICS.has(activeMetric.value) ? raw.value.map((value) => (value === null ? null : toDisplayWeight(value))) : raw.value,
+);
 const labels = computed(() => filtered.value.map((point) => formatDay(point.date)));
 const trend = computed(() => (showTrend.value ? linearTrend(values.value) : null));
 const hasData = computed(() => values.value.some((value) => value !== null));
@@ -131,7 +137,7 @@ const option = computed<EChartsOption>(() => ({
       if (!point) {
         return '';
       }
-      const lines = [`<strong>${labels.value[index] ?? ''}</strong>`, render(values.value[index] ?? null)];
+      const lines = [`<strong>${labels.value[index] ?? ''}</strong>`, render(raw.value[index] ?? null)];
       if (point.isPR) {
         lines.push(`<span style="color:${PR_COLOR}">${t('exercises.chart.personalRecord')}</span>`);
       }

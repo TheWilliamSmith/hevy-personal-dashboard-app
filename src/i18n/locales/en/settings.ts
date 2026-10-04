@@ -20,7 +20,7 @@ export const profile = {
   location: 'Location',
   body: 'Body',
   bodySubtitle: 'Your body measurements',
-  bodyweight: 'Bodyweight (kg)',
+  bodyweight: 'Bodyweight ({unit})',
   height: 'Height (cm)',
   unsaved: 'Unsaved changes',
   discard: 'Discard',
