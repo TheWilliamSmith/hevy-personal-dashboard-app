@@ -5,6 +5,7 @@ import { useRoute, useRouter } from 'vue-router';
 const TAB_NAMES = [
   'dashboard',
   'body',
+  'measurements',
   'progress',
   'goals',
   'trophies',

@@ -10,6 +10,7 @@ import {
   EMPTY,
   formatDate,
   formatDay,
+  formatDecimal,
   formatDistanceKm,
   formatDuration,
   formatInteger,
@@ -18,7 +19,9 @@ import {
   formatVolume,
 } from '@/utils/format';
 
-const props = defineProps<{ records: ExerciseRecords; kind: ExerciseKind }>();
+import { relativeStrength } from '@/utils/measurements';
+
+const props = defineProps<{ records: ExerciseRecords; kind: ExerciseKind; bodyweightKg?: number | null }>();
 
 interface Tile {
   label: string;
@@ -77,6 +80,16 @@ const tiles = computed<Tile[]>(() => {
       date: records.best1RM.date,
       workoutId: records.best1RM.workoutId,
     });
+    const ratio = relativeStrength(records.best1RM.value, props.bodyweightKg ?? null);
+    if (ratio !== null && props.bodyweightKg) {
+      result.push({
+        label: t('exercises.records.relativeStrength'),
+        value: t('exercises.records.timesBodyweight', { ratio: formatDecimal(ratio, 2) }),
+        detail: t('exercises.records.atBodyweight', { weight: formatLoad(props.bodyweightKg) }),
+        date: records.best1RM.date,
+        workoutId: records.best1RM.workoutId,
+      });
+    }
   }
   if (records.maxWeight) {
     result.push({

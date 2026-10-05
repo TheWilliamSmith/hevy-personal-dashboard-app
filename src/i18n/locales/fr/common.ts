@@ -22,6 +22,7 @@ export const common: Messages<typeof en.common> = {
 export const nav: Messages<typeof en.nav> = {
   dashboard: 'Tableau de bord',
   body: 'Corps',
+  measurements: 'Mensurations',
   progress: 'Progression',
   goals: 'Objectifs',
   trophies: 'Trophées',

@@ -131,7 +131,7 @@ function showError(error_: unknown): void {
 
 const label = 'mb-1 block text-xs text-zinc-400';
 const focus = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400';
-const field = `w-full rounded-md border border-zinc-700 bg-zinc-950 px-2 py-1.5 text-sm text-zinc-100 placeholder:text-zinc-600 [color-scheme:dark] ${focus}`;
+const field = `w-full rounded-md border border-zinc-700 bg-zinc-950 px-2 py-1.5 text-sm text-zinc-100 placeholder:text-zinc-600 ${focus}`;
 const errorText = 'mt-1 text-xs text-red-400';
 </script>
 

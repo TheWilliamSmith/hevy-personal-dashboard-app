@@ -160,6 +160,7 @@ describe('HevySyncCard and ConnectionIndicator', () => {
 describe('HomeView', () => {
   it.each([
     [{ tab: 'body' }, 'Muscle map'],
+    [{ tab: 'measurements' }, 'Bodyweight and measurements'],
     [{ tab: 'friends' }, 'Find people'],
     [{ tab: 'friends', user: 'lea.martin' }, 'Latest trophies'],
     [{ tab: 'workouts' }, 'All workouts'],

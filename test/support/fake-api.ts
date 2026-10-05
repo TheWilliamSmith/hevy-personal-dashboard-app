@@ -4,6 +4,7 @@ import type { FriendsOverview, LeaderboardEntry, UserCard, UserPage } from '@/ty
 import type { Goal } from '@/types/goals';
 import type { HevyConnectionState, HevySyncRun } from '@/types/hevy';
 import type { ImportBatchSummary } from '@/types/imports';
+import type { Measurement } from '@/types/measurements';
 import type { ProfileResponse } from '@/types/profile';
 import type { ProgressAlertsResponse, ProgressItem } from '@/types/progress';
 import type { CalendarDay, MuscleGroupValues, MuscleHeatmap, Overview, TimeseriesPoint, TrainingBalance } from '@/types/stats';
@@ -73,6 +74,12 @@ export const heatmap: MuscleHeatmap = {
   weeklyAverage: muscles({ CHEST: 3, BACK: 2.2, QUADS: 3.8, BICEPS: 1, CARDIO: 0.5 }),
   previous: muscles({ CHEST: 8, BACK: 10, QUADS: 12, CALVES: 3 }),
 };
+
+export const measurements: Measurement[] = [
+  { id: 'm1', measuredOn: '2026-08-01', weightKg: 82, armCm: 37, waistCm: 86, thighCm: null, chestCm: null },
+  { id: 'm2', measuredOn: '2026-09-01', weightKg: 80.5, armCm: null, waistCm: 84.5, thighCm: 58, chestCm: 102 },
+  { id: 'm3', measuredOn: '2026-09-28', weightKg: 79.8, armCm: 37.5, waistCm: null, thighCm: null, chestCm: null },
+];
 
 export function trainingBalance(overrides: Partial<TrainingBalance> = {}): TrainingBalance {
   return {
@@ -572,6 +579,7 @@ export function fakeApi(overrides: Overrides = {}) {
     if (path === '/friends') return friendsOverview;
     if (path === '/friends/leaderboard') return leaderboard;
     if (path === '/friends/requests/count') return { incoming: 0 };
+    if (path === '/me/measurements') return measurements;
     if (path === '/users/search') return [userCard()];
     if (path.startsWith('/users/')) return userPage;
     if (path === '/auth/me') return authUser;

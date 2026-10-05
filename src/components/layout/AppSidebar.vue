@@ -8,6 +8,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   PersonStanding,
+  Ruler,
   Settings,
   Target,
   TrendingUp,
@@ -28,6 +29,7 @@ import { useSidebar } from '@/composables/useSidebar';
 const ICONS: Readonly<Record<TabName, Component>> = {
   dashboard: LayoutDashboard,
   body: PersonStanding,
+  measurements: Ruler,
   progress: TrendingUp,
   goals: Target,
   trophies: Trophy,

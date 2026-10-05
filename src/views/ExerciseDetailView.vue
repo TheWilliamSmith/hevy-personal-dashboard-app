@@ -14,10 +14,13 @@ import MetricGrid, { type MetricItem } from '@/components/ui/MetricGrid.vue';
 import SectionError from '@/components/ui/SectionError.vue';
 import { useExercise } from '@/composables/useExercise';
 import { useExercises } from '@/composables/useExercises';
+import { useMeasurements } from '@/composables/useMeasurements';
+import { useProfile } from '@/composables/useProfile';
 import { useToasts } from '@/composables/useToasts';
 import { EQUIPMENT_LABELS, KIND_LABELS, MUSCLE_LABELS, MUSCLE_STYLES } from '@/constants/muscles';
 import type { UpdateExercisePayload } from '@/types/exercises';
 import { EMPTY, formatInteger, formatLoad, formatNumber, formatVolume } from '@/utils/format';
+import { bodyweightOn } from '@/utils/measurements';
 import { formatDaysAgo } from '@/utils/progress';
 
 const route = useRoute();
@@ -42,6 +45,13 @@ const {
 
 const catalog = useExercises();
 const mergeCandidates = computed(() => catalog.groups.value.flatMap((group) => group.exercises));
+
+const measurements = useMeasurements();
+const { profile } = useProfile();
+const bodyweightAtBest = computed(() => {
+  const best = detail.value?.records.best1RM;
+  return best ? bodyweightOn(best.date, measurements.entries.value, profile.value?.bodyweightKg ?? null) : null;
+});
 
 const isEditing = ref(false);
 const isMerging = ref(false);
@@ -160,7 +170,7 @@ const focus = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visi
 
         <div class="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)] lg:gap-0">
           <ExerciseProgressionChart class="lg:pr-8" :points="detail.progression" :kind="info.kind" />
-          <PersonalRecords class="border-zinc-800 lg:border-l lg:pl-8" :records="detail.records" :kind="info.kind" />
+          <PersonalRecords class="border-zinc-800 lg:border-l lg:pl-8" :records="detail.records" :kind="info.kind" :bodyweight-kg="bodyweightAtBest" />
         </div>
 
         <MetricGrid :items="metrics" :is-loading="false" />

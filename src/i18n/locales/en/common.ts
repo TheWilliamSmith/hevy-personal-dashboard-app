@@ -19,6 +19,7 @@ export const common = {
 export const nav = {
   dashboard: 'Dashboard',
   body: 'Body',
+  measurements: 'Measurements',
   progress: 'Progress',
   goals: 'Goals',
   trophies: 'Trophies',
