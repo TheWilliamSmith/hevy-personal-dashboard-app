@@ -160,3 +160,7 @@ export function apiPatch<T>(path: string, body: unknown, signal?: AbortSignal): 
 export function apiDelete<T>(path: string, params: QueryParams = {}, signal?: AbortSignal): Promise<T> {
   return request<T>(path, { method: 'DELETE', params, signal });
 }
+
+export function apiDeleteWithBody<T>(path: string, body: unknown, signal?: AbortSignal): Promise<T> {
+  return request<T>(path, { method: 'DELETE', body, signal });
+}

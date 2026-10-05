@@ -5,18 +5,20 @@ import { computed, reactive, ref } from 'vue';
 import AuthError from '@/components/auth/AuthError.vue';
 import AuthField from '@/components/auth/AuthField.vue';
 import PasswordStrengthMeter from '@/components/auth/PasswordStrengthMeter.vue';
+import ConfirmDialog from '@/components/ui/ConfirmDialog.vue';
 import SectionHeader from '@/components/ui/SectionHeader.vue';
 import { useAuth } from '@/composables/useAuth';
 import { useToasts } from '@/composables/useToasts';
 import { ApiError } from '@/lib/api';
 import { errorMessage, isEmail, passwordProblem } from '@/utils/auth';
+import { downloadJson } from '@/utils/download';
 
 const emit = defineEmits<{ signOut: [] }>();
 
 const auth = useAuth();
 const { push } = useToasts();
 
-type Pending = 'email' | 'password' | 'resend' | 'cancel' | null;
+type Pending = 'email' | 'password' | 'resend' | 'cancel' | 'export' | null;
 const pending = ref<Pending>(null);
 
 function fieldOf(error_: unknown): string | null {
@@ -84,6 +86,49 @@ const emailErrors = computed(() => ({
   next: emailServer.next ?? (emailSubmitted.value && !isEmail(email.next) ? t('validation.email') : null),
   current: emailServer.current ?? (emailSubmitted.value && !email.current ? t('security.currentPasswordRequired') : null),
 }));
+
+async function exportData(): Promise<void> {
+  pending.value = 'export';
+  try {
+    const data = await auth.exportData();
+    const day = new Date().toISOString().slice(0, 10);
+    downloadJson(data, `hevy-dashboard-${auth.user.value?.username ?? 'export'}-${day}.json`);
+    push({ tone: 'success', title: t('security.exported') });
+  } catch (error_) {
+    push({ tone: 'error', title: t('security.exportFailed'), description: errorMessage(error_) });
+  } finally {
+    pending.value = null;
+  }
+}
+
+const deleting = ref(false);
+const deletePassword = ref('');
+const deleteError = ref<string | null>(null);
+const isDeleting = ref(false);
+
+function openDelete(): void {
+  deletePassword.value = '';
+  deleteError.value = null;
+  deleting.value = true;
+}
+
+async function confirmDelete(): Promise<void> {
+  if (!deletePassword.value) {
+    deleteError.value = t('security.currentPasswordRequired');
+    return;
+  }
+  isDeleting.value = true;
+  deleteError.value = null;
+  try {
+    await auth.deleteAccount(deletePassword.value);
+    deleting.value = false;
+    emit('signOut');
+  } catch (error_) {
+    deleteError.value = errorMessage(error_);
+  } finally {
+    isDeleting.value = false;
+  }
+}
 
 async function resendLink(): Promise<void> {
   pending.value = 'resend';
@@ -241,5 +286,53 @@ const spinner = 'h-3.5 w-3.5 animate-spin rounded-full border-2 border-zinc-900/
         {{ t('security.signOut') }}
       </button>
     </div>
+    <section class="flex max-w-3xl flex-col gap-5 border-t border-zinc-800 pt-8">
+      <SectionHeader :title="t('security.dangerTitle')" :subtitle="t('security.dangerSubtitle')" />
+      <div class="flex flex-wrap items-center justify-between gap-3 rounded-md border border-zinc-800 p-4">
+        <div class="min-w-0">
+          <p class="text-sm font-medium text-zinc-100">{{ t('security.exportTitle') }}</p>
+          <p class="mt-0.5 text-xs text-zinc-500">{{ t('security.exportHint') }}</p>
+        </div>
+        <button type="button" :class="secondary" :disabled="pending !== null" :aria-busy="pending === 'export'" @click="exportData">
+          {{ t('security.exportButton') }}
+        </button>
+      </div>
+      <div class="flex flex-wrap items-center justify-between gap-3 rounded-md border border-red-900/60 bg-red-950/40 p-4">
+        <div class="min-w-0">
+          <p class="text-sm font-medium text-zinc-100">{{ t('security.deleteTitle') }}</p>
+          <p class="mt-0.5 text-xs text-zinc-400">{{ t('security.deleteHint') }}</p>
+        </div>
+        <button
+          type="button"
+          class="rounded-md bg-red-600 px-3 py-1.5 text-xs font-medium text-on-accent transition-colors hover:bg-red-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-400"
+          @click="openDelete"
+        >
+          {{ t('security.deleteButton') }}
+        </button>
+      </div>
+    </section>
+
+    <ConfirmDialog
+      :open="deleting"
+      labelled-by="delete-account-title"
+      :title="t('security.deleteConfirmTitle')"
+      :confirm-label="t('security.deleteConfirm')"
+      tone="danger"
+      :is-busy="isDeleting"
+      :error="deleteError"
+      @cancel="deleting = false"
+      @confirm="confirmDelete"
+    >
+      <p>{{ t('security.deleteConfirmBody') }}</p>
+      <div class="mt-4">
+        <auth-field
+          id="delete-account-password"
+          v-model="deletePassword"
+          :label="t('security.currentPassword')"
+          type="password"
+          autocomplete="current-password"
+        />
+      </div>
+    </ConfirmDialog>
   </div>
 </template>

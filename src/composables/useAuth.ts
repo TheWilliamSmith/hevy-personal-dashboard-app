@@ -1,7 +1,7 @@
 import { t } from '@/i18n';
 import { computed, readonly, ref, type ComputedRef, type DeepReadonly, type Ref } from 'vue';
 
-import { ApiError, apiDelete, apiGet, apiPatch, apiPost } from '@/lib/api';
+import { ApiError, apiDelete, apiDeleteWithBody, apiGet, apiPatch, apiPost } from '@/lib/api';
 import { clearSession, isRememberedSession, loadSession, saveSession } from '@/lib/auth-session';
 import type { AuthSession, AuthUser } from '@/types/auth';
 
@@ -87,6 +87,8 @@ export interface UseAuth {
   cancelEmailChange: () => Promise<void>;
   resendVerification: () => Promise<string>;
   verifyEmail: (token: string) => Promise<AuthUser>;
+  exportData: () => Promise<unknown>;
+  deleteAccount: (currentPassword: string) => Promise<void>;
   updateUser: (changes: Partial<Pick<AuthUser, 'displayName' | 'username'>>) => void;
   changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
   requestPasswordReset: (email: string) => Promise<void>;
@@ -133,6 +135,11 @@ export function useAuth(): UseAuth {
         rememberUser(verified);
       }
       return verified;
+    },
+    exportData: () => apiGet<unknown>('/me/export'),
+    deleteAccount: async (currentPassword) => {
+      await apiDeleteWithBody('/me', { currentPassword });
+      signOut();
     },
     updateUser: (changes) => {
       if (user.value) {
