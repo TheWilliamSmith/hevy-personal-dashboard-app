@@ -6,7 +6,7 @@ import type { HevyConnectionState, HevySyncRun } from '@/types/hevy';
 import type { ImportBatchSummary } from '@/types/imports';
 import type { ProfileResponse } from '@/types/profile';
 import type { ProgressAlertsResponse, ProgressItem } from '@/types/progress';
-import type { CalendarDay, MuscleGroupValues, MuscleHeatmap, Overview, TimeseriesPoint } from '@/types/stats';
+import type { CalendarDay, MuscleGroupValues, MuscleHeatmap, Overview, TimeseriesPoint, TrainingBalance } from '@/types/stats';
 import type { Paginated, WorkoutDetail, WorkoutSummary } from '@/types/workouts';
 
 const MUSCLES = [
@@ -73,6 +73,40 @@ export const heatmap: MuscleHeatmap = {
   weeklyAverage: muscles({ CHEST: 3, BACK: 2.2, QUADS: 3.8, BICEPS: 1, CARDIO: 0.5 }),
   previous: muscles({ CHEST: 8, BACK: 10, QUADS: 12, CALVES: 3 }),
 };
+
+export function trainingBalance(overrides: Partial<TrainingBalance> = {}): TrainingBalance {
+  return {
+    from: '2026-09-01T00:00:00.000Z',
+    to: '2026-09-30T23:59:59.999Z',
+    split: {
+      push: 40,
+      pull: 20,
+      legs: 10,
+      core: 6,
+      totalSets: 76,
+      pushPullRatio: 2,
+      pushPullVerdict: 'PUSH_HEAVY',
+      lowerShare: 0.143,
+      upperLowerVerdict: 'UPPER_HEAVY',
+    },
+    neglected: {
+      weeks: 3,
+      muscles: [
+        { muscleGroup: 'ADDUCTORS', lastTrainedAt: null, weeksSince: null },
+        { muscleGroup: 'CALVES', lastTrainedAt: '2026-08-01T10:00:00.000Z', weeksSince: 9 },
+      ],
+    },
+    consistency: {
+      minWorkouts: 2,
+      weeksMet: 2,
+      weeks: Array.from({ length: 12 }, (_, index) => ({
+        weekStart: new Date(Date.UTC(2026, 6, 13 + index * 7)).toISOString().slice(0, 10),
+        workouts: [0, 1, 0, 2, 0, 0, 1, 0, 3, 0, 1, 0][index] ?? 0,
+      })),
+    },
+    ...overrides,
+  };
+}
 
 export function achievement(overrides: Partial<AchievementItem> = {}): AchievementItem {
   return {
@@ -518,6 +552,7 @@ export function fakeApi(overrides: Overrides = {}) {
     if (path.startsWith('/stats/calendar')) return calendar;
     if (path.startsWith('/stats/muscle-heatmap')) return heatmap;
     if (path.startsWith('/stats/distribution')) return [];
+    if (path.startsWith('/stats/balance')) return trainingBalance();
     if (path === '/achievements/summary') return achievementsSummary;
     if (path === '/achievements/unseen') return [];
     if (path === '/achievements') return achievementCatalog;

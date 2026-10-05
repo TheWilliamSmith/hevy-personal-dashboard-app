@@ -107,3 +107,32 @@ export interface MuscleHeatmap {
   weeklyAverage: MuscleGroupValues;
   previous: MuscleGroupValues;
 }
+
+export type PushPullVerdict = 'BALANCED' | 'PUSH_HEAVY' | 'PULL_HEAVY' | 'NOT_ENOUGH_DATA';
+export type UpperLowerVerdict = 'BALANCED' | 'UPPER_HEAVY' | 'LOWER_HEAVY' | 'NOT_ENOUGH_DATA';
+
+export interface TrainingSplit {
+  push: number;
+  pull: number;
+  legs: number;
+  core: number;
+  totalSets: number;
+  pushPullRatio: number | null;
+  pushPullVerdict: PushPullVerdict;
+  lowerShare: number | null;
+  upperLowerVerdict: UpperLowerVerdict;
+}
+
+export interface NeglectedMuscle {
+  muscleGroup: MuscleGroup;
+  lastTrainedAt: string | null;
+  weeksSince: number | null;
+}
+
+export interface TrainingBalance {
+  from: string;
+  to: string;
+  split: TrainingSplit;
+  neglected: { weeks: number; muscles: NeglectedMuscle[] };
+  consistency: { minWorkouts: number; weeksMet: number; weeks: Array<{ weekStart: string; workouts: number }> };
+}

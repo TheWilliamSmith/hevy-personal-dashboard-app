@@ -43,7 +43,7 @@ function changeClass(change: number | null): string {
 
 <template>
   <section class="flex h-full flex-col gap-4">
-    <SectionHeader :title="t('body.balance')" :subtitle="t('body.balanceSubtitle')" />
+    <SectionHeader :title="t('body.coverage')" :subtitle="t('body.balanceSubtitle')" />
 
     <div>
       <p

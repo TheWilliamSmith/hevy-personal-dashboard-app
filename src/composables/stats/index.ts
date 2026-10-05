@@ -10,6 +10,7 @@ import type {
   StatsRange,
   TimeseriesMetric,
   TimeseriesPoint,
+  TrainingBalance,
 } from '@/types/stats';
 
 import { useStatsResource, type StatsResource } from './useStatsResource';
@@ -64,6 +65,22 @@ export function useStatsCalendar(year: MaybeRefOrGetter<number>): StatsResource<
   return useStatsResource(
     (signal) => apiGet<CalendarDay[]>('/stats/calendar', { year: toValue(year) }, signal),
     () => toValue(year),
+  );
+}
+
+export function useTrainingBalance(
+  range: MaybeRefOrGetter<StatsRange>,
+  neglectWeeks: MaybeRefOrGetter<number>,
+  minWorkouts: MaybeRefOrGetter<number>,
+): StatsResource<TrainingBalance> {
+  return useStatsResource(
+    (signal) =>
+      apiGet<TrainingBalance>(
+        '/stats/balance',
+        { ...rangeParams(toValue(range)), neglectWeeks: toValue(neglectWeeks), minWorkouts: toValue(minWorkouts) },
+        signal,
+      ),
+    () => [toValue(range), toValue(neglectWeeks), toValue(minWorkouts)],
   );
 }
 

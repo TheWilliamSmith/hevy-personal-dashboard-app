@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { t } from '@/i18n';
 import { CalendarDays, Layers, Repeat, Target, TrendingUp, Weight } from 'lucide-vue-next';
-import { computed, ref, type Component } from 'vue';
+import { computed, ref, watch, type Component } from 'vue';
 import { useRouter } from 'vue-router';
 
 import BalanceSpotlight from '@/components/body/BalanceSpotlight.vue';
 import MuscleRanking, { type RankingEntry } from '@/components/body/MuscleRanking.vue';
 import PeriodComparisonChart from '@/components/body/PeriodComparisonChart.vue';
+import ProgramBalance from '@/components/body/ProgramBalance.vue';
 import BodyHeatmap from '@/components/charts/BodyHeatmap.vue';
 import EmptyState from '@/components/ui/EmptyState.vue';
 import MetricGrid, { type MetricItem } from '@/components/ui/MetricGrid.vue';
@@ -14,7 +15,7 @@ import RangeSwitch from '@/components/ui/RangeSwitch.vue';
 import SectionError from '@/components/ui/SectionError.vue';
 import SectionHeader from '@/components/ui/SectionHeader.vue';
 import SegmentedControl, { type SegmentedOption } from '@/components/ui/SegmentedControl.vue';
-import { useDashboardFilters, useMuscleHeatmap } from '@/composables/stats';
+import { useDashboardFilters, useMuscleHeatmap, useTrainingBalance } from '@/composables/stats';
 import { RANGE_PRESETS, type RangePreset } from '@/composables/stats/useDashboardFilters';
 import { MUSCLE_LABELS, MUSCLE_ORDER } from '@/constants/muscles';
 import type { HeatmapMetric, MuscleGroup } from '@/types/stats';
@@ -52,6 +53,38 @@ const rangeLabel = computed(() => {
   const found = RANGE_PRESETS.find((candidate) => candidate.value === preset.value);
   return found?.days ? t('ranges.last', { range: found.label }) : t('ranges.allTime');
 });
+
+const BALANCE_KEY = 'hevy-dashboard.balance';
+
+function storedBalanceSettings(): { neglectWeeks: number; minWorkouts: number } {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(BALANCE_KEY) ?? 'null') as { neglectWeeks?: unknown; minWorkouts?: unknown } | null;
+    return {
+      neglectWeeks: [2, 3, 4, 8].includes(Number(parsed?.neglectWeeks)) ? Number(parsed?.neglectWeeks) : 3,
+      minWorkouts: [1, 2, 3, 4].includes(Number(parsed?.minWorkouts)) ? Number(parsed?.minWorkouts) : 2,
+    };
+  } catch {
+    return { neglectWeeks: 3, minWorkouts: 2 };
+  }
+}
+
+const balanceSettings = storedBalanceSettings();
+const neglectWeeks = ref(balanceSettings.neglectWeeks);
+const minWorkouts = ref(balanceSettings.minWorkouts);
+
+watch([neglectWeeks, minWorkouts], ([weeks, workouts]) => {
+  try {
+    localStorage.setItem(BALANCE_KEY, JSON.stringify({ neglectWeeks: weeks, minWorkouts: workouts }));
+  } catch {
+    return;
+  }
+});
+
+const balance = useTrainingBalance(
+  () => filters.range.value,
+  () => neglectWeeks.value,
+  () => minWorkouts.value,
+);
 
 const heatmap = useMuscleHeatmap(
   () => filters.range.value,
@@ -237,6 +270,16 @@ function openExercises(group: MuscleGroup): void {
             </div>
           </section>
         </div>
+
+        <SectionError v-if="balance.error.value" :message="balance.error.value" @retry="balance.refresh" />
+        <ProgramBalance
+          v-else
+          v-model:neglect-weeks="neglectWeeks"
+          v-model:min-workouts="minWorkouts"
+          :balance="balance.data.value"
+          :is-loading="balance.isLoading.value"
+          :range-label="rangeLabel"
+        />
 
         <section class="flex flex-col gap-5">
           <SectionHeader :title="t('body.highlights')" :subtitle="t('body.highlightsSubtitle', { metric: metricLabel, range: rangeLabel })" />
