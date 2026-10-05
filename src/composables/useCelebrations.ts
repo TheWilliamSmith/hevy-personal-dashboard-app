@@ -21,8 +21,8 @@ async function markSeen(code: string): Promise<boolean> {
   try {
     await apiPost<unknown>(`/achievements/${encodeURIComponent(code)}/seen`, {});
     return true;
-  } catch (caught) {
-    if (caught instanceof ApiError && caught.status === 404) {
+  } catch (error_) {
+    if (error_ instanceof ApiError && error_.status === 404) {
       unavailable.value = true;
       return true;
     }
@@ -38,8 +38,8 @@ export function useCelebrations() {
     loaded = true;
     try {
       enqueue(await apiGet<UnseenAchievementsResponse>('/achievements/unseen'));
-    } catch (caught) {
-      if (caught instanceof ApiError && caught.status === 404) {
+    } catch (error_) {
+      if (error_ instanceof ApiError && error_.status === 404) {
         unavailable.value = true;
       }
     }

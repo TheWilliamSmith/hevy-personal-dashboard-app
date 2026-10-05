@@ -37,12 +37,12 @@ export function useStatsResource<T>(
         return;
       }
       data.value = result;
-    } catch (caught) {
-      if (signal.aborted || (caught instanceof DOMException && caught.name === 'AbortError')) {
+    } catch (error_) {
+      if (signal.aborted || (error_ instanceof DOMException && error_.name === 'AbortError')) {
         return;
       }
       data.value = null;
-      error.value = caught instanceof ApiError ? caught.message : t('errors.generic');
+      error.value = error_ instanceof ApiError ? error_.message : t('errors.generic');
     } finally {
       if (!signal.aborted) {
         isLoading.value = false;

@@ -205,16 +205,15 @@ function describe(group: MuscleGroup): string {
       </g>
     </svg>
 
-    <div
+    <output
       v-if="tooltip"
       class="body-heatmap__tooltip"
       :style="{ left: `${pointer.x}px`, top: `${pointer.y}px` }"
-      role="status"
     >
       <strong>{{ tooltip.label }}</strong>
       <span>{{ fmt(tooltip.value) }} {{ unit }}</span>
       <span class="body-heatmap__share">{{ t('body.shareOfTop', { share: tooltip.share }) }}</span>
-    </div>
+    </output>
 
     <div class="body-heatmap__footer">
       <div class="body-heatmap__legend" aria-hidden="true">

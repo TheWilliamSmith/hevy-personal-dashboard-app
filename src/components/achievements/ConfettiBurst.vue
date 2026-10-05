@@ -72,5 +72,5 @@ onBeforeUnmount(() => cancelAnimationFrame(frame));
 </script>
 
 <template>
-  <canvas ref="canvas" class="pointer-events-none absolute inset-0 h-full w-full" aria-hidden="true" />
+  <canvas ref="canvas" class="pointer-events-none absolute inset-0 h-full w-full" />
 </template>

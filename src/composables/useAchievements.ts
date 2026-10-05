@@ -77,9 +77,9 @@ export function useAchievements(): UseAchievements {
     try {
       const result = await apiGet<AchievementCatalog>('/achievements', {}, signal);
       if (!signal.aborted) catalog.value = result;
-    } catch (caught) {
+    } catch (error_) {
       if (!signal.aborted) {
-        error.value = caught instanceof ApiError ? caught.message : t('errors.generic');
+        error.value = error_ instanceof ApiError ? error_.message : t('errors.generic');
       }
     } finally {
       if (!signal.aborted) isLoading.value = false;

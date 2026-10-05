@@ -55,8 +55,15 @@ const change = computed(() => {
     return null;
   }
   const shown = field.value === 'weightKg' ? toDisplayWeight(value) : value;
-  return `${shown > 0 ? '+' : shown < 0 ? '−' : '±'}${formatDecimal(Math.abs(shown), 1)} ${unit.value}`;
+  return `${changeSign(shown)}${formatDecimal(Math.abs(shown), 1)} ${unit.value}`;
 });
+
+function changeSign(value: number): string {
+  if (value > 0) {
+    return '+';
+  }
+  return value < 0 ? '−' : '±';
+}
 
 const palette = computed(chartPalette);
 
@@ -128,7 +135,10 @@ async function confirmDelete(): Promise<void> {
 
 function values(entry: Measurement): string {
   return MEASUREMENT_FIELDS.filter((name) => entry[name] !== null)
-    .map((name) => `${t(`body.measurements.short.${name}`)} ${display(entry[name], name)}`)
+    .map((name) => {
+      const label = t(`body.measurements.short.${name}`);
+      return `${label} ${display(entry[name], name)}`;
+    })
     .join(' · ');
 }
 

@@ -114,6 +114,10 @@ export interface UseProgressAlerts {
   refresh: () => void;
 }
 
+async function patchMute(exerciseId: string, payload: MutePayload): Promise<void> {
+  await apiPatch<MuteResult>(`/progress/exercises/${encodeURIComponent(exerciseId)}/mute`, payload);
+}
+
 export function useProgressAlerts(): UseProgressAlerts {
   const route = useRoute();
   const router = useRouter();
@@ -190,11 +194,11 @@ export function useProgressAlerts(): UseProgressAlerts {
         return;
       }
       response.value = result;
-    } catch (caught) {
+    } catch (error_) {
       if (signal.aborted) {
         return;
       }
-      error.value = caught instanceof ApiError ? caught.message : t('errors.generic');
+      error.value = error_ instanceof ApiError ? error_.message : t('errors.generic');
     } finally {
       if (!signal.aborted) {
         isLoading.value = false;
@@ -272,10 +276,6 @@ export function useProgressAlerts(): UseProgressAlerts {
       params.value.muscleGroup === null,
   );
 
-  async function patchMute(exerciseId: string, payload: MutePayload): Promise<void> {
-    await apiPatch<MuteResult>(`/progress/exercises/${encodeURIComponent(exerciseId)}/mute`, payload);
-  }
-
   async function mute(item: ProgressItem, reason: string | null): Promise<boolean> {
     const current = response.value;
     if (!current) {
@@ -301,9 +301,9 @@ export function useProgressAlerts(): UseProgressAlerts {
       await patchMute(item.exerciseId, reason ? { muted: true, reason } : { muted: true });
       void fetchAlerts();
       return true;
-    } catch (caught) {
+    } catch (error_) {
       response.value = snapshot;
-      muteError.value = caught instanceof ApiError ? caught.message : t('errors.mute');
+      muteError.value = error_ instanceof ApiError ? error_.message : t('errors.mute');
       return false;
     } finally {
       mutingId.value = null;
@@ -328,9 +328,9 @@ export function useProgressAlerts(): UseProgressAlerts {
       await patchMute(entry.exerciseId, { muted: false });
       await fetchAlerts();
       return true;
-    } catch (caught) {
+    } catch (error_) {
       response.value = snapshot;
-      muteError.value = caught instanceof ApiError ? caught.message : t('errors.unmute');
+      muteError.value = error_ instanceof ApiError ? error_.message : t('errors.unmute');
       return false;
     } finally {
       mutingId.value = null;

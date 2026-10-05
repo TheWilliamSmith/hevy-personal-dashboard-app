@@ -107,7 +107,7 @@ function openWorkout(id: string): void {
           @clear="clearFilters"
         />
 
-        <p class="sr-only" role="status" aria-live="polite">{{ statusMessage }}</p>
+        <output class="sr-only" aria-live="polite">{{ statusMessage }}</output>
 
         <div :aria-busy="isLoading">
           <ul v-if="isLoading && workouts.length === 0" class="flex flex-col gap-3" aria-hidden="true">

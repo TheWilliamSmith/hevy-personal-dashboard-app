@@ -84,17 +84,13 @@ defineExpose({ focus: () => openPickerButton.value?.focus() });
 
       <p v-if="fileName" class="max-w-full truncate text-xs text-zinc-400">{{ fileName }}</p>
 
-      <div
+      <progress
         v-if="isBusy"
-        class="h-1.5 w-full max-w-sm overflow-hidden rounded-full bg-zinc-800"
-        role="progressbar"
+        class="h-1.5 w-full max-w-sm appearance-none overflow-hidden rounded-full bg-zinc-800 [&::-moz-progress-bar]:bg-blue-500 [&::-webkit-progress-bar]:bg-zinc-800 [&::-webkit-progress-value]:bg-blue-500 [&::-webkit-progress-value]:transition-[width] [&::-webkit-progress-value]:duration-150"
         :aria-label="t('imports.button.progress')"
-        :aria-valuenow="progress"
-        aria-valuemin="0"
-        aria-valuemax="100"
-      >
-        <div class="h-full bg-blue-500 transition-[width] duration-150" :style="{ width: `${progress}%` }" />
-      </div>
+        :value="progress"
+        max="100"
+      />
     </div>
 
     <div

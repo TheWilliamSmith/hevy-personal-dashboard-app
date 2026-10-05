@@ -41,14 +41,14 @@ export function useWorkout(id: MaybeRefOrGetter<string>): UseWorkout {
         {},
         signal,
       );
-    } catch (caught) {
+    } catch (error_) {
       if (signal.aborted) {
         return;
       }
       workout.value = null;
       notFound.value =
-        caught instanceof ApiError && (caught.status === 404 || caught.status === 400);
-      error.value = caught instanceof ApiError ? caught.message : t('errors.generic');
+        error_ instanceof ApiError && (error_.status === 404 || error_.status === 400);
+      error.value = error_ instanceof ApiError ? error_.message : t('errors.generic');
     } finally {
       if (!signal.aborted) {
         isLoading.value = false;

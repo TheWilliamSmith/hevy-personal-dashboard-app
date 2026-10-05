@@ -27,6 +27,13 @@ export interface UseExercise {
   mergeInto: (sourceExerciseId: string) => Promise<MergeExerciseResult | null>;
 }
 
+function withEarlierHistory(previous: ExerciseDetail, response: ExerciseDetail): ExerciseDetail {
+  return {
+    ...response,
+    history: { ...response.history, data: [...previous.history.data, ...response.history.data] },
+  };
+}
+
 export function useExercise(slug: MaybeRefOrGetter<string>): UseExercise {
   const detail = ref<ExerciseDetail | null>(null);
   const isLoading = ref(false);
@@ -70,29 +77,19 @@ export function useExercise(slug: MaybeRefOrGetter<string>): UseExercise {
         return;
       }
 
-      if (append && detail.value) {
-        detail.value = {
-          ...response,
-          history: {
-            ...response.history,
-            data: [...detail.value.history.data, ...response.history.data],
-          },
-        };
-      } else {
-        detail.value = response;
-      }
+      detail.value = append && detail.value ? withEarlierHistory(detail.value, response) : response;
 
       historyPage.value = response.history.meta.page;
       hasMoreHistory.value = response.history.meta.page < response.history.meta.totalPages;
-    } catch (caught) {
+    } catch (error_) {
       if (signal.aborted) {
         return;
       }
       if (!append) {
         detail.value = null;
-        notFound.value = caught instanceof ApiError && caught.status === 404;
+        notFound.value = error_ instanceof ApiError && error_.status === 404;
       }
-      error.value = caught instanceof ApiError ? caught.message : t('errors.generic');
+      error.value = error_ instanceof ApiError ? error_.message : t('errors.generic');
     } finally {
       if (!signal.aborted) {
         isLoading.value = false;
@@ -122,8 +119,8 @@ export function useExercise(slug: MaybeRefOrGetter<string>): UseExercise {
       invalidateWorkoutData();
       await fetchDetail(1);
       return true;
-    } catch (caught) {
-      mutationError.value = caught instanceof ApiError ? caught.message : t('errors.generic');
+    } catch (error_) {
+      mutationError.value = error_ instanceof ApiError ? error_.message : t('errors.generic');
       return false;
     } finally {
       isSaving.value = false;
@@ -147,8 +144,8 @@ export function useExercise(slug: MaybeRefOrGetter<string>): UseExercise {
       invalidateWorkoutData();
       await fetchDetail(1);
       return merged;
-    } catch (caught) {
-      mutationError.value = caught instanceof ApiError ? caught.message : t('errors.generic');
+    } catch (error_) {
+      mutationError.value = error_ instanceof ApiError ? error_.message : t('errors.generic');
       return null;
     } finally {
       isSaving.value = false;

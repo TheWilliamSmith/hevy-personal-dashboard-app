@@ -78,6 +78,23 @@ describe('BodyMeasurements', () => {
     expect(wrapper.text()).not.toContain('Change since');
   });
 
+  it('marks a gain with a plus and no change with a plus-minus', async () => {
+    stubFetch(
+      fakeApi({
+        '/me/measurements': [
+          { id: 'm1', measuredOn: '2026-09-01', weightKg: 80, armCm: 37, waistCm: null, thighCm: null, chestCm: null },
+          { id: 'm2', measuredOn: '2026-09-28', weightKg: 81.2, armCm: 37, waistCm: null, thighCm: null, chestCm: null },
+        ],
+      }),
+    );
+    const { wrapper } = await mountWith(BodyMeasurements);
+    await settle();
+
+    expect(wrapper.text()).toContain('+1.2 kg');
+    await button(wrapper, 'Arms').trigger('click');
+    expect(wrapper.text()).toContain('±0 cm');
+  });
+
   it('shows the weight in pounds when the user chose them', async () => {
     applyPreferences({ weightUnit: 'lb', weekStart: 'monday' });
     stubFetch(fakeApi());

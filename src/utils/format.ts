@@ -108,7 +108,11 @@ export function formatVolume(value: NumericInput): string {
 
 export function formatWeight(value: NumericInput): string {
   const amount = toNumber(value);
-  return amount === null ? EMPTY : formatDecimal(toDisplayWeight(amount), weightUnit.value === 'lb' ? 1 : 3);
+  if (amount === null) {
+    return EMPTY;
+  }
+  const digits = weightUnit.value === 'lb' ? 1 : 3;
+  return formatDecimal(toDisplayWeight(amount), digits);
 }
 
 export function formatLoad(value: NumericInput): string {

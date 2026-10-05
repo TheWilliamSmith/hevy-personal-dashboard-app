@@ -67,13 +67,13 @@ export function useImportBatches(): UseImportBatches {
       }
       batches.value = response.data;
       meta.value = response.meta;
-    } catch (caught) {
+    } catch (error_) {
       if (signal.aborted) {
         return;
       }
       batches.value = [];
       meta.value = null;
-      error.value = caught instanceof ApiError ? caught.message : t('errors.generic');
+      error.value = error_ instanceof ApiError ? error_.message : t('errors.generic');
     } finally {
       if (!signal.aborted) {
         isLoading.value = false;
@@ -96,11 +96,11 @@ export function useImportBatches(): UseImportBatches {
         return;
       }
       detail.value = response;
-    } catch (caught) {
+    } catch (error_) {
       if (signal.aborted) {
         return;
       }
-      detailError.value = caught instanceof ApiError ? caught.message : t('errors.generic');
+      detailError.value = error_ instanceof ApiError ? error_.message : t('errors.generic');
     } finally {
       if (!signal.aborted) {
         isDetailLoading.value = false;
@@ -144,8 +144,8 @@ export function useImportBatches(): UseImportBatches {
       await fetchList();
 
       return rolled;
-    } catch (caught) {
-      deleteError.value = caught instanceof ApiError ? caught.message : t('errors.generic');
+    } catch (error_) {
+      deleteError.value = error_ instanceof ApiError ? error_.message : t('errors.generic');
       return null;
     } finally {
       deletingId.value = null;

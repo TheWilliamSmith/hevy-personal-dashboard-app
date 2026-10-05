@@ -61,10 +61,10 @@ const focus = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visi
       {{ muted ? t('progress.mute.unmute') : t('progress.mute.mute') }}
     </button>
 
-    <div
+    <dialog
       v-if="open"
-      class="absolute right-0 z-30 mt-1 w-64 rounded-lg border border-zinc-800 bg-zinc-900 p-3 shadow-xl shadow-black/40"
-      role="dialog"
+      open
+      class="absolute right-0 left-auto z-30 m-0 mt-1 w-64 max-w-none max-h-none rounded-lg border border-zinc-800 bg-zinc-900 p-3 text-zinc-100 shadow-xl shadow-black/40"
       :aria-label="t('progress.mute.muteName', { name: exerciseName })"
       @keydown.escape="open = false"
     >
@@ -93,6 +93,6 @@ const focus = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visi
           {{ t('progress.mute.mute') }}
         </button>
       </div>
-    </div>
+    </dialog>
   </div>
 </template>

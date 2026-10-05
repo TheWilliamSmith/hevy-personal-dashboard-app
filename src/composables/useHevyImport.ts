@@ -24,6 +24,19 @@ export interface UseHevyImport {
   reset: () => void;
 }
 
+function messageForStatus(httpStatus: number, apiMessage: string | null): string {
+  if (httpStatus === 413) {
+    return apiMessage ?? t('errors.fileTooLarge');
+  }
+  if (httpStatus >= 500) {
+    return t('errors.importServer');
+  }
+  if (httpStatus >= 400) {
+    return apiMessage ?? t('errors.fileRejected');
+  }
+  return t('errors.unexpectedResponse', { status: httpStatus });
+}
+
 export function useHevyImport(): UseHevyImport {
   const status = ref<ImportStatus>('idle');
   const file = ref<File | null>(null);
@@ -38,19 +51,6 @@ export function useHevyImport(): UseHevyImport {
   function fail(message: string, httpStatus: number | null): void {
     error.value = { message, status: httpStatus };
     status.value = 'error';
-  }
-
-  function messageForStatus(httpStatus: number, apiMessage: string | null): string {
-    if (httpStatus === 413) {
-      return apiMessage ?? t('errors.fileTooLarge');
-    }
-    if (httpStatus >= 500) {
-      return t('errors.importServer');
-    }
-    if (httpStatus >= 400) {
-      return apiMessage ?? t('errors.fileRejected');
-    }
-    return t('errors.unexpectedResponse', { status: httpStatus });
   }
 
   function selectFile(candidate: File | null | undefined): void {
@@ -178,13 +178,13 @@ export function useHevyImport(): UseHevyImport {
       preview.value = null;
       status.value = 'success';
       return confirmed;
-    } catch (caught) {
+    } catch (error_) {
       if (signal.aborted) {
         return null;
       }
       fail(
-        caught instanceof ApiError ? caught.message : t('errors.generic'),
-        caught instanceof ApiError ? caught.status : null,
+        error_ instanceof ApiError ? error_.message : t('errors.generic'),
+        error_ instanceof ApiError ? error_.status : null,
       );
       return null;
     } finally {

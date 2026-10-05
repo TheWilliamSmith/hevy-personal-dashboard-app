@@ -11,7 +11,7 @@ export function withValue(entries: readonly Measurement[], field: MeasurementFie
 export function bodyweightOn(date: string, entries: readonly Measurement[], fallback: number | null): number | null {
   const weighed = withValue(entries, 'weightKg');
   const day = date.slice(0, 10);
-  const before = weighed.filter((entry) => entry.measuredOn <= day).at(-1);
+  const before = weighed.findLast((entry) => entry.measuredOn <= day);
   return before?.weightKg ?? weighed[0]?.weightKg ?? fallback;
 }
 
@@ -35,9 +35,11 @@ export function summarize(entries: readonly Measurement[], field: MeasurementFie
     return { latest, change: null, since: null };
   }
   const target = Date.parse(latest.measuredOn) - days * DAY_MS;
-  const earlier = points.slice(0, -1);
-  const reference = earlier.reduce((best, entry) =>
-    Math.abs(Date.parse(entry.measuredOn) - target) < Math.abs(Date.parse(best.measuredOn) - target) ? entry : best,
+  const [first, ...rest] = points.slice(0, -1);
+  const reference = rest.reduce(
+    (best, entry) =>
+      Math.abs(Date.parse(entry.measuredOn) - target) < Math.abs(Date.parse(best.measuredOn) - target) ? entry : best,
+    first as Measurement,
   );
   const change = Math.round(((latest[field] ?? 0) - (reference[field] ?? 0)) * 10) / 10;
   return { latest, change, since: reference.measuredOn };

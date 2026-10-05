@@ -5,7 +5,7 @@ import { RouterLink } from 'vue-router';
 
 import EmptyState from '@/components/ui/EmptyState.vue';
 import SectionHeader from '@/components/ui/SectionHeader.vue';
-import type { ExerciseKind, ExerciseRecords } from '@/types/exercises';
+import type { ExerciseKind, ExerciseRecords, OneRepMaxRecord } from '@/types/exercises';
 import {
   EMPTY,
   formatDate,
@@ -31,99 +31,72 @@ interface Tile {
   workoutId: string;
 }
 
-const tiles = computed<Tile[]>(() => {
-  const records = props.records;
+function tile(label: string, value: string, detail: string | null, record: { date: string; workoutId: string }): Tile {
+  return { label, value, detail, date: record.date, workoutId: record.workoutId };
+}
+
+function cardioTiles(records: ExerciseRecords): Tile[] {
   const result: Tile[] = [];
-
-  if (props.kind === 'CARDIO') {
-    if (records.longestDistanceKm) {
-      result.push({
-        label: t('exercises.records.longestDistance'),
-        value: formatDistanceKm(records.longestDistanceKm.value),
-        detail: null,
-        date: records.longestDistanceKm.date,
-        workoutId: records.longestDistanceKm.workoutId,
-      });
-    }
-    if (records.longestDurationSec) {
-      result.push({
-        label: t('exercises.records.longestDuration'),
-        value: formatDuration(records.longestDurationSec.value),
-        detail: null,
-        date: records.longestDurationSec.date,
-        workoutId: records.longestDurationSec.workoutId,
-      });
-    }
-    if (records.bestPaceMinPerKm) {
-      result.push({
-        label: t('exercises.records.bestPace'),
-        value: formatPace(records.bestPaceMinPerKm.value),
-        detail: null,
-        date: records.bestPaceMinPerKm.date,
-        workoutId: records.bestPaceMinPerKm.workoutId,
-      });
-    }
-    return result;
+  if (records.longestDistanceKm) {
+    result.push(tile(t('exercises.records.longestDistance'), formatDistanceKm(records.longestDistanceKm.value), null, records.longestDistanceKm));
   }
-
-  if (records.best1RM) {
-    result.push({
-      label: t('exercises.records.oneRepMax'),
-      value: formatLoad(records.best1RM.value),
-      detail:
-        records.best1RM.weightKg === null
-          ? null
-          : t('exercises.records.fromSet', {
-              weight: formatLoad(records.best1RM.weightKg),
-              reps: records.best1RM.reps ?? EMPTY,
-            }),
-      date: records.best1RM.date,
-      workoutId: records.best1RM.workoutId,
-    });
-    const ratio = relativeStrength(records.best1RM.value, props.bodyweightKg ?? null);
-    if (ratio !== null && props.bodyweightKg) {
-      result.push({
-        label: t('exercises.records.relativeStrength'),
-        value: t('exercises.records.timesBodyweight', { ratio: formatDecimal(ratio, 2) }),
-        detail: t('exercises.records.atBodyweight', { weight: formatLoad(props.bodyweightKg) }),
-        date: records.best1RM.date,
-        workoutId: records.best1RM.workoutId,
-      });
-    }
+  if (records.longestDurationSec) {
+    result.push(tile(t('exercises.records.longestDuration'), formatDuration(records.longestDurationSec.value), null, records.longestDurationSec));
   }
+  if (records.bestPaceMinPerKm) {
+    result.push(tile(t('exercises.records.bestPace'), formatPace(records.bestPaceMinPerKm.value), null, records.bestPaceMinPerKm));
+  }
+  return result;
+}
+
+function oneRepMaxTiles(record: OneRepMaxRecord, bodyweightKg: number | null): Tile[] {
+  const detail =
+    record.weightKg === null
+      ? null
+      : t('exercises.records.fromSet', { weight: formatLoad(record.weightKg), reps: record.reps ?? EMPTY });
+  const result = [tile(t('exercises.records.oneRepMax'), formatLoad(record.value), detail, record)];
+  const ratio = relativeStrength(record.value, bodyweightKg);
+  if (ratio !== null && bodyweightKg) {
+    result.push(
+      tile(
+        t('exercises.records.relativeStrength'),
+        t('exercises.records.timesBodyweight', { ratio: formatDecimal(ratio, 2) }),
+        t('exercises.records.atBodyweight', { weight: formatLoad(bodyweightKg) }),
+        record,
+      ),
+    );
+  }
+  return result;
+}
+
+function strengthTiles(records: ExerciseRecords, bodyweightKg: number | null): Tile[] {
+  const result = records.best1RM ? oneRepMaxTiles(records.best1RM, bodyweightKg) : [];
   if (records.maxWeight) {
-    result.push({
-      label: t('exercises.records.maxWeight'),
-      value: formatLoad(records.maxWeight.weightKg),
-      detail: t('exercises.records.timesReps', { reps: records.maxWeight.reps ?? EMPTY }),
-      date: records.maxWeight.date,
-      workoutId: records.maxWeight.workoutId,
-    });
+    result.push(
+      tile(
+        t('exercises.records.maxWeight'),
+        formatLoad(records.maxWeight.weightKg),
+        t('exercises.records.timesReps', { reps: records.maxWeight.reps ?? EMPTY }),
+        records.maxWeight,
+      ),
+    );
   }
   if (records.maxVolumeSession) {
-    result.push({
-      label: t('exercises.records.bestVolume'),
-      value: formatVolume(records.maxVolumeSession.value),
-      detail: null,
-      date: records.maxVolumeSession.date,
-      workoutId: records.maxVolumeSession.workoutId,
-    });
+    result.push(tile(t('exercises.records.bestVolume'), formatVolume(records.maxVolumeSession.value), null, records.maxVolumeSession));
   }
   if (records.maxReps) {
-    result.push({
-      label: t('exercises.records.maxReps'),
-      value: t('exercises.records.reps', { count: formatInteger(records.maxReps.reps) }),
-      detail:
-        records.maxReps.weightKg === null
-          ? null
-          : t('exercises.records.atWeight', { weight: formatLoad(records.maxReps.weightKg) }),
-      date: records.maxReps.date,
-      workoutId: records.maxReps.workoutId,
-    });
+    const detail =
+      records.maxReps.weightKg === null ? null : t('exercises.records.atWeight', { weight: formatLoad(records.maxReps.weightKg) });
+    result.push(
+      tile(t('exercises.records.maxReps'), t('exercises.records.reps', { count: formatInteger(records.maxReps.reps) }), detail, records.maxReps),
+    );
   }
-
   return result;
-});
+}
+
+const tiles = computed<Tile[]>(() =>
+  props.kind === 'CARDIO' ? cardioTiles(props.records) : strengthTiles(props.records, props.bodyweightKg ?? null),
+);
 
 const hero = computed(() => tiles.value[0] ?? null);
 const others = computed(() => tiles.value.slice(1));

@@ -14,4 +14,5 @@ onSessionExpired(() => {
 
 const app = createApp(App).use(router).use(i18n);
 
-void router.isReady().then(() => app.mount('#app'));
+await router.isReady();
+app.mount('#app');

@@ -107,12 +107,12 @@ export function useExercises(): UseExercises {
         return;
       }
       catalog.value = response;
-    } catch (caught) {
+    } catch (error_) {
       if (signal.aborted) {
         return;
       }
       catalog.value = null;
-      error.value = caught instanceof ApiError ? caught.message : t('errors.generic');
+      error.value = error_ instanceof ApiError ? error_.message : t('errors.generic');
     } finally {
       if (!signal.aborted) {
         isLoading.value = false;

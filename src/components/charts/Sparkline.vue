@@ -74,9 +74,8 @@ const markerCoords = computed(() =>
     v-else
     class="inline-block shrink-0 text-xs text-zinc-600"
     :style="{ width: `${props.width}px` }"
-    role="img"
-    :aria-label="props.label"
   >
-    —
+    <span aria-hidden="true">—</span>
+    <span class="sr-only">{{ props.label }}</span>
   </span>
 </template>

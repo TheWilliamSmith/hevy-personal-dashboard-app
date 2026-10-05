@@ -92,18 +92,18 @@ onBeforeUnmount(() => lockScroll(false));
       class="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-0 sm:items-center sm:p-6"
       @mousedown.self="requestClose"
     >
-      <div
+      <dialog
         ref="panel"
-        role="dialog"
+        open
         aria-modal="true"
         :aria-labelledby="props.labelledBy"
         tabindex="-1"
-        class="flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-2xl border border-zinc-800 bg-zinc-900 text-zinc-100 shadow-xl shadow-black/60 outline-none sm:rounded-2xl"
+        class="static m-0 flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-2xl border border-zinc-800 bg-zinc-900 text-zinc-100 shadow-xl shadow-black/60 outline-none sm:rounded-2xl"
         :class="props.size === 'md' ? 'max-w-lg' : 'max-w-3xl'"
         @keydown="onKeydown"
       >
         <slot />
-      </div>
+      </dialog>
     </div>
   </Teleport>
 </template>
