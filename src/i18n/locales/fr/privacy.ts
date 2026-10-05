@@ -5,6 +5,7 @@ export const privacy = {
   private: 'Privée',
   publicHint: 'Toute personne connectée peut ouvrir ta page et voir les blocs choisis ci-dessous.',
   privateHint: 'Les personnes qui ne sont pas tes amis voient seulement ton nom, ton pseudo et ta photo, avec « Cette page est privée ». Elles peuvent quand même t’envoyer une demande d’ami.',
+  preview: 'Voir ma page comme les autres',
   blocksTitle: 'Ce que montre ta page',
   blocksSubtitle: 'Les blocs masqués ne sont jamais envoyés par le serveur',
   blocks: {

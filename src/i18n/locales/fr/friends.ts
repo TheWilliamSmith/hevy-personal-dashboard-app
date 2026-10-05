@@ -48,6 +48,17 @@ export const friends: Messages<typeof en.friends> = {
   },
   removeTitle: 'Retirer {name} de vos amis ?',
   removeBody: 'Vous ne vous verrez plus dans vos classements. Vous pourrez renvoyer une demande plus tard.',
+  preview: {
+    label: 'Voir en tant que',
+    me: 'Moi',
+    friend: 'Un ami',
+    stranger: 'Quelqu’un d’autre',
+    hint: {
+      me: 'Voici ta page telle que tu la vois. Change pour la voir comme les autres.',
+      friend: 'Aperçu : voici ce que voient tes amis.',
+      stranger: 'Aperçu : voici ce que voient les personnes qui ne sont pas tes amis.',
+    },
+  },
   page: {
     privateTitle: 'Cette page est privée',
     privateHint: 'Seuls les amis de {name} voient ses stats, trophées et séances. Envoie une demande d’ami pour en voir plus.',
@@ -69,6 +80,6 @@ export const friends: Messages<typeof en.friends> = {
     latestWorkoutsSubtitle: 'Résumé seulement',
     noWorkouts: 'Pas encore de séance.',
     workoutSummary: '{duration} · {count} exercice · {volume} | {duration} · {count} exercices · {volume}',
-    yourPage: 'Voici comment les autres voient votre page.',
+    yourPage: 'C’est ta page.',
   },
 };

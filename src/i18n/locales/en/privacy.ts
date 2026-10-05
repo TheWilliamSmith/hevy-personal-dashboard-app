@@ -5,6 +5,7 @@ export const privacy = {
   private: 'Private',
   publicHint: 'Anyone signed in can open your page and see the blocks you chose below.',
   privateHint: 'People who are not your friends see only your name, username and picture, with "This page is private". They can still send you a friend request.',
+  preview: 'Preview my page as others see it',
   blocksTitle: 'What your page shows',
   blocksSubtitle: 'Hidden blocks are never sent by the server',
   blocks: {

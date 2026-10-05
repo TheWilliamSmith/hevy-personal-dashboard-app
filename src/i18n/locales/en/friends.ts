@@ -45,6 +45,17 @@ export const friends = {
   },
   removeTitle: 'Remove {name} from your friends?',
   removeBody: 'You will no longer see each other in your leaderboards. You can send a new request later.',
+  preview: {
+    label: 'View as',
+    me: 'Me',
+    friend: 'A friend',
+    stranger: 'Someone else',
+    hint: {
+      me: 'This is your page as you see it. Switch to see it as others do.',
+      friend: 'Preview: this is what your friends see.',
+      stranger: 'Preview: this is what people who are not your friends see.',
+    },
+  },
   page: {
     privateTitle: 'This page is private',
     privateHint: 'Only the friends of {name} see their stats, trophies and workouts. Send a friend request to see more.',
@@ -66,6 +77,6 @@ export const friends = {
     latestWorkoutsSubtitle: 'Summary only',
     noWorkouts: 'No workout yet.',
     workoutSummary: '{duration} · {count} exercise · {volume} | {duration} · {count} exercises · {volume}',
-    yourPage: 'This is how others see your page.',
+    yourPage: 'This is your page.',
   },
 };

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { CalendarDays, ChevronLeft, EyeOff, Lock, MapPin } from 'lucide-vue-next';
+import { CalendarDays, ChevronLeft, Eye, EyeOff, Lock, MapPin } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
-import { RouterLink, useRoute } from 'vue-router';
+import { RouterLink, useRoute, useRouter } from 'vue-router';
 
 import AchievementIcon from '@/components/achievements/AchievementIcon.vue';
 import FriendActions from '@/components/friends/FriendActions.vue';
@@ -9,13 +9,31 @@ import ProfileAvatar from '@/components/profile/ProfileAvatar.vue';
 import EmptyState from '@/components/ui/EmptyState.vue';
 import SectionError from '@/components/ui/SectionError.vue';
 import SectionHeader from '@/components/ui/SectionHeader.vue';
+import SegmentedControl, { type SegmentedOption } from '@/components/ui/SegmentedControl.vue';
+import { useAuth } from '@/composables/useAuth';
 import { RARITY_STYLES } from '@/constants/achievements';
 import { t } from '@/i18n';
 import { ApiError, apiGet, apiUrl } from '@/lib/api';
 import type { UserCard, UserPage } from '@/types/friends';
 import { formatDate, formatDay, formatDuration, formatInteger, formatVolume } from '@/utils/format';
 
+type ViewAs = 'me' | 'friend' | 'stranger';
+
 const route = useRoute();
+const router = useRouter();
+const auth = useAuth();
+
+const viewAs = computed<ViewAs>(() => (route.query.as === 'friend' || route.query.as === 'stranger' ? route.query.as : 'me'));
+const viewOptions = computed<ReadonlyArray<SegmentedOption<ViewAs>>>(() => [
+  { value: 'me', label: t('friends.preview.me') },
+  { value: 'friend', label: t('friends.preview.friend') },
+  { value: 'stranger', label: t('friends.preview.stranger') },
+]);
+
+function setViewAs(next: ViewAs): void {
+  const { as: _as, ...query } = route.query;
+  void router.replace({ name: 'home', query: next === 'me' ? query : { ...query, as: next } });
+}
 
 const username = computed(() => (typeof route.query.user === 'string' ? route.query.user.replace(/^@/, '') : ''));
 
@@ -32,7 +50,11 @@ async function load(): Promise<void> {
   error.value = null;
   notFound.value = false;
   try {
-    page.value = await apiGet<UserPage>(`/users/${encodeURIComponent(username.value)}`);
+    const isOwn = auth.user.value?.username === username.value;
+    page.value = await apiGet<UserPage>(
+      `/users/${encodeURIComponent(username.value)}`,
+      isOwn && viewAs.value !== 'me' ? { as: viewAs.value } : undefined,
+    );
   } catch (error_) {
     page.value = null;
     notFound.value = error_ instanceof ApiError && error_.status === 404;
@@ -42,7 +64,7 @@ async function load(): Promise<void> {
   }
 }
 
-watch(username, load, { immediate: true });
+watch([username, viewAs], load, { immediate: true });
 
 function onChanged(next: UserCard): void {
   if (page.value) {
@@ -114,6 +136,15 @@ const figures = computed(() => {
             <FriendActions :user="page" @changed="onChanged" />
             <p v-if="page.friendship === 'self'" class="text-xs text-zinc-500">{{ t('friends.page.yourPage') }}</p>
           </div>
+        </section>
+
+        <section
+          v-if="page.friendship === 'self'"
+          class="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-md border border-blue-500/40 bg-blue-500/10 px-4 py-3"
+        >
+          <Eye class="h-4 w-4 shrink-0 text-blue-400" aria-hidden="true" />
+          <p class="min-w-0 flex-1 text-sm text-zinc-200">{{ t(`friends.preview.hint.${viewAs}`) }}</p>
+          <SegmentedControl :model-value="viewAs" :options="viewOptions" :label="t('friends.preview.label')" @update:model-value="setViewAs" />
         </section>
 
         <section v-if="page.isPrivate" class="flex items-start gap-3 rounded-md border border-zinc-800 bg-zinc-900 p-4">

@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { Globe, Lock } from 'lucide-vue-next';
+import { Eye, Globe, Lock } from 'lucide-vue-next';
 import { computed, type DeepReadonly } from 'vue';
+import { RouterLink } from 'vue-router';
 
 import SectionHeader from '@/components/ui/SectionHeader.vue';
 import SegmentedControl, { type SegmentedOption } from '@/components/ui/SegmentedControl.vue';
@@ -42,6 +43,13 @@ function toggle(block: Block, event: Event): void {
         <Globe v-else class="mt-0.5 h-4 w-4 shrink-0 text-zinc-400" aria-hidden="true" />
         {{ isPrivate ? t('privacy.privateHint') : t('privacy.publicHint') }}
       </p>
+      <RouterLink
+        :to="{ name: 'home', query: { tab: 'friends', user: profile.username, as: 'stranger' } }"
+        class="inline-flex w-fit items-center gap-1.5 rounded-md border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs font-medium text-zinc-100 transition-colors hover:bg-zinc-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400"
+      >
+        <Eye class="h-3.5 w-3.5" aria-hidden="true" />
+        {{ t('privacy.preview') }}
+      </RouterLink>
     </section>
 
     <section class="flex max-w-3xl flex-col gap-4 border-t border-zinc-800 pt-8" :aria-busy="isSaving">

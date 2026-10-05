@@ -121,3 +121,59 @@ describe('UserPageView privacy', () => {
     expect(wrapper.text()).toContain('keeps the details of this page to themselves');
   });
 });
+
+describe('previewing your own page', () => {
+  async function mountOwnPage(query: Record<string, string>) {
+    const fetchMock = stubFetch((url) => {
+      if (url.includes('/users/william')) {
+        const as = new URL(url, 'http://x').searchParams.get('as');
+        return as === 'stranger'
+          ? { ...userCard({ username: 'william', displayName: 'William Smith', friendship: 'self' }), isPrivate: true, bio: null, location: null, memberSince: null, stats: null, recentTrophies: null, recentWorkouts: null }
+          : { ...userPage, username: 'william', displayName: 'William Smith', friendship: 'self' };
+      }
+      return url.includes('/auth/me') ? authUser : fakeApi()(url);
+    });
+    localStorage.setItem('hevy-dashboard.session', JSON.stringify(SESSION));
+    await useAuth().restore();
+    const mounted = await mountWith(UserPageView, { route: { query: { tab: 'friends', user: 'william', ...query } } });
+    await settle();
+    return { ...mounted, fetchMock };
+  }
+
+  it('switches between your view, a friend’s and someone else’s, through the address', async () => {
+    const { wrapper, router, fetchMock } = await mountOwnPage({});
+    expect(wrapper.text()).toContain('This is your page as you see it.');
+    expect(wrapper.text()).toContain('Latest workouts');
+
+    await wrapper.findAll('button').find((button) => button.text() === 'Someone else')?.trigger('click');
+    await settle();
+
+    expect(router.currentRoute.value.query).toMatchObject({ tab: 'friends', user: 'william', as: 'stranger' });
+    expect(fetchMock.mock.calls.map(([url]) => String(url)).at(-1)).toContain('as=stranger');
+    expect(wrapper.text()).toContain('Preview: this is what people who are not your friends see.');
+    expect(wrapper.text()).toContain('This page is private');
+
+    await wrapper.findAll('button').find((button) => button.text() === 'Me')?.trigger('click');
+    await settle();
+    expect(router.currentRoute.value.query.as).toBeUndefined();
+    expect(wrapper.text()).toContain('Latest workouts');
+  });
+
+  it('opens straight on a preview from the address and never previews someone else’s page', async () => {
+    const { wrapper, fetchMock } = await mountOwnPage({ as: 'friend' });
+    expect(fetchMock.mock.calls.map(([url]) => String(url)).find((url) => url.includes('/users/william'))).toContain('as=friend');
+    expect(wrapper.text()).toContain('Preview: this is what your friends see.');
+
+    stubFetch((url) => (url.includes('/users/') ? userPage : fakeApi()(url)));
+    const other = await mountWith(UserPageView, { route: { query: { tab: 'friends', user: 'lea.martin', as: 'stranger' } } });
+    await settle();
+    expect(other.wrapper.text()).not.toContain('View as');
+  });
+
+  it('links to the preview from the privacy settings', async () => {
+    const { wrapper } = await mountWith(PrivacyPanel, { props: { profile: { ...profile }, isSaving: false } });
+    const link = wrapper.findAll('a').find((item) => item.text().includes('Preview my page'));
+    expect(link?.attributes('href')).toContain('as=stranger');
+    expect(link?.attributes('href')).toContain('user=william');
+  });
+});
