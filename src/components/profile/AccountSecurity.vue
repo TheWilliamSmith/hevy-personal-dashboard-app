@@ -16,7 +16,7 @@ const emit = defineEmits<{ signOut: [] }>();
 const auth = useAuth();
 const { push } = useToasts();
 
-type Pending = 'email' | 'password' | null;
+type Pending = 'email' | 'password' | 'resend' | 'cancel' | null;
 const pending = ref<Pending>(null);
 
 function fieldOf(error_: unknown): string | null {
@@ -85,6 +85,29 @@ const emailErrors = computed(() => ({
   current: emailServer.current ?? (emailSubmitted.value && !email.current ? t('security.currentPasswordRequired') : null),
 }));
 
+async function resendLink(): Promise<void> {
+  pending.value = 'resend';
+  try {
+    push({ tone: 'success', title: t('security.linkSent', { email: await auth.resendVerification() }) });
+  } catch (error_) {
+    push({ tone: 'error', title: t('security.actionFailed'), description: errorMessage(error_) });
+  } finally {
+    pending.value = null;
+  }
+}
+
+async function cancelChange(): Promise<void> {
+  pending.value = 'cancel';
+  try {
+    await auth.cancelEmailChange();
+    push({ tone: 'success', title: t('security.changeCancelled') });
+  } catch (error_) {
+    push({ tone: 'error', title: t('security.actionFailed'), description: errorMessage(error_) });
+  } finally {
+    pending.value = null;
+  }
+}
+
 async function changeEmail(): Promise<void> {
   emailSubmitted.value = true;
   Object.assign(emailServer, { next: null, current: null, form: null });
@@ -93,10 +116,11 @@ async function changeEmail(): Promise<void> {
   }
   pending.value = 'email';
   try {
-    await auth.changeEmail(email.next.trim(), email.current);
+    const requested = email.next.trim().toLowerCase();
+    await auth.changeEmail(requested, email.current);
     Object.assign(email, { next: '', current: '' });
     emailSubmitted.value = false;
-    push({ tone: 'success', title: t('security.emailChanged'), description: t('security.emailChangedDescription') });
+    push({ tone: 'success', title: t('security.emailChanged'), description: t('security.emailChangedDescription', { email: requested }) });
   } catch (error_) {
     const field = fieldOf(error_);
     if (field === 'email') {
@@ -113,6 +137,8 @@ async function changeEmail(): Promise<void> {
 
 const primary =
   'inline-flex items-center gap-2 self-start rounded-md bg-white px-3 py-2 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:cursor-not-allowed disabled:opacity-50';
+const secondary =
+  'rounded-md border border-zinc-800 bg-zinc-900 px-2.5 py-1.5 text-xs font-medium text-zinc-100 transition-colors hover:bg-zinc-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400 disabled:opacity-50';
 const spinner = 'h-3.5 w-3.5 animate-spin rounded-full border-2 border-zinc-900/30 border-t-zinc-900';
 </script>
 
@@ -123,7 +149,23 @@ const spinner = 'h-3.5 w-3.5 animate-spin rounded-full border-2 border-zinc-900/
       <AuthError :message="emailServer.form" />
       <div>
         <p class="text-xs text-zinc-400">{{ t('security.currentEmail') }}</p>
-        <p class="mt-1.5 truncate text-sm font-medium text-zinc-100">{{ auth.user.value?.email }}</p>
+        <p class="mt-1.5 flex items-center gap-2 text-sm font-medium text-zinc-100">
+          <span class="truncate">{{ auth.user.value?.email }}</span>
+          <span
+            v-if="auth.user.value && !auth.user.value.emailVerified"
+            class="rounded-full bg-amber-500/10 px-2 py-0.5 text-[11px] font-medium text-amber-400"
+          >
+            {{ t('security.notConfirmed') }}
+          </span>
+        </p>
+      </div>
+      <div v-if="auth.user.value?.pendingEmail" class="flex flex-wrap items-center gap-3 rounded-md border border-blue-500/40 bg-blue-500/10 p-3">
+        <div class="min-w-0 flex-1">
+          <p class="truncate text-sm font-medium text-zinc-100">{{ t('security.pendingEmail', { email: auth.user.value.pendingEmail }) }}</p>
+          <p class="mt-0.5 text-xs text-zinc-400">{{ t('security.pendingHint') }}</p>
+        </div>
+        <button type="button" :class="secondary" :disabled="pending !== null" @click="resendLink">{{ t('security.resendLink') }}</button>
+        <button type="button" :class="secondary" :disabled="pending !== null" @click="cancelChange">{{ t('security.cancelChange') }}</button>
       </div>
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <auth-field

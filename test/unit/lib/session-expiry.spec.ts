@@ -11,7 +11,7 @@ function storeSession(): void {
     accessToken: 'token-1',
     tokenType: 'Bearer',
     expiresAt: '2099-01-01T00:00:00Z',
-    user: { id: 'u1', email: 'a@example.com', username: 'a.b', displayName: 'A', createdAt: '2026-01-01T00:00:00Z' },
+    user: { id: 'u1', email: 'a@example.com', username: 'a.b', displayName: 'A', createdAt: '2026-01-01T00:00:00Z', emailVerified: true, pendingEmail: null },
   };
   sessionStorage.setItem(STORAGE_KEY, JSON.stringify(session));
 }

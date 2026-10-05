@@ -17,6 +17,8 @@ function session(expiresAt = '2026-01-02T00:00:00Z'): AuthSession {
       username: 'alex.lifts',
       displayName: 'Alex',
       createdAt: '2025-12-01T00:00:00Z',
+      emailVerified: true,
+      pendingEmail: null,
     },
   };
 }

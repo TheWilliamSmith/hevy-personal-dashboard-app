@@ -541,6 +541,8 @@ export const authUser = {
   username: 'william',
   displayName: 'William Smith',
   createdAt: '2026-07-01T10:00:00.000Z',
+  emailVerified: true,
+  pendingEmail: null,
 };
 
 export type Overrides = Record<string, unknown>;

@@ -40,6 +40,12 @@ const routes: RouteRecordRaw[] = [
     meta: { layout: 'auth' },
   },
   {
+    path: '/verify-email',
+    name: 'verify-email',
+    component: () => import('@/views/auth/VerifyEmailView.vue'),
+    meta: { layout: 'auth' },
+  },
+  {
     path: '/recap/unsubscribe',
     name: 'recap-unsubscribe',
     component: () => import('@/views/auth/RecapUnsubscribeView.vue'),

@@ -1,7 +1,7 @@
 import { t } from '@/i18n';
 import { computed, readonly, ref, type ComputedRef, type DeepReadonly, type Ref } from 'vue';
 
-import { ApiError, apiGet, apiPatch, apiPost } from '@/lib/api';
+import { ApiError, apiDelete, apiGet, apiPatch, apiPost } from '@/lib/api';
 import { clearSession, isRememberedSession, loadSession, saveSession } from '@/lib/auth-session';
 import type { AuthSession, AuthUser } from '@/types/auth';
 
@@ -84,6 +84,9 @@ export interface UseAuth {
   signOut: () => void;
   restore: () => Promise<void>;
   changeEmail: (email: string, currentPassword: string) => Promise<void>;
+  cancelEmailChange: () => Promise<void>;
+  resendVerification: () => Promise<string>;
+  verifyEmail: (token: string) => Promise<AuthUser>;
   updateUser: (changes: Partial<Pick<AuthUser, 'displayName' | 'username'>>) => void;
   changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
   requestPasswordReset: (email: string) => Promise<void>;
@@ -120,6 +123,17 @@ export function useAuth(): UseAuth {
       submitting(async () => {
         rememberUser(await apiPatch<AuthUser>('/auth/me/email', { email, currentPassword }));
       }),
+    cancelEmailChange: async () => {
+      rememberUser(await apiDelete<AuthUser>('/auth/me/email/pending'));
+    },
+    resendVerification: async () => (await apiPost<{ sentTo: string }>('/auth/me/verification', {})).sentTo,
+    verifyEmail: async (token) => {
+      const verified = await apiPost<AuthUser>('/auth/verify-email', { token });
+      if (user.value?.id === verified.id) {
+        rememberUser(verified);
+      }
+      return verified;
+    },
     updateUser: (changes) => {
       if (user.value) {
         rememberUser({ ...user.value, ...changes });

@@ -4,6 +4,8 @@ export interface AuthUser {
   username: string;
   displayName: string;
   createdAt: string;
+  emailVerified: boolean;
+  pendingEmail: string | null;
 }
 
 export interface AuthSession {

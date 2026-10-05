@@ -4,6 +4,7 @@ import { RouterView, useRoute, useRouter } from 'vue-router';
 
 import AppSidebar from '@/components/layout/AppSidebar.vue';
 import AppTopBar from '@/components/layout/AppTopBar.vue';
+import EmailVerificationBanner from '@/components/layout/EmailVerificationBanner.vue';
 import ToastStack from '@/components/ui/ToastStack.vue';
 import { useActiveTab } from '@/composables/useActiveTab';
 import { useAuth } from '@/composables/useAuth';
@@ -59,6 +60,7 @@ onMounted(() => void checkSession());
 
     <div class="flex min-h-0 min-w-0 flex-1 flex-col">
       <AppTopBar />
+      <EmailVerificationBanner />
 
       <main
         :id="`panel-${tab}`"

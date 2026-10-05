@@ -197,7 +197,9 @@ describe('SettingsView', () => {
 
   it('changes email and password from the account section', async () => {
     const fetchMock = stubFetch((url) => {
-      if (url.endsWith('/auth/me/email')) return { ...authUser, email: 'new@example.com' };
+      if (url.endsWith('/auth/me/email')) return { ...authUser, pendingEmail: 'new@example.com' };
+      if (url.endsWith('/auth/me/email/pending')) return authUser;
+      if (url.endsWith('/auth/me/verification')) return { sentTo: 'new@example.com' };
       if (url.endsWith('/auth/me/password')) return SESSION;
       return fakeApi()(url);
     });
@@ -214,7 +216,22 @@ describe('SettingsView', () => {
     await button(wrapper, 'Change email').trigger('click');
     await settle();
     expect(requestsTo(fetchMock, '/auth/me/email')[0]?.body).toEqual({ email: 'new@example.com', currentPassword: 'current-pass' });
-    expect(useToasts().toasts.value.at(-1)?.title).toBe('Email changed');
+    expect(useToasts().toasts.value.at(-1)).toMatchObject({
+      title: 'Confirm your new email',
+      description: 'We sent a link to new@example.com. Your current email keeps working until then.',
+    });
+    expect(wrapper.text()).toContain('Waiting for confirmation: new@example.com');
+    expect(wrapper.text()).toContain('william@example.com');
+
+    await button(wrapper, 'Resend link').trigger('click');
+    await settle();
+    expect(requestsTo(fetchMock, '/auth/me/verification').map((call) => call.method)).toEqual(['POST']);
+    expect(useToasts().toasts.value.at(-1)?.title).toBe('Link sent to new@example.com');
+
+    await button(wrapper, 'Cancel change').trigger('click');
+    await settle();
+    expect(requestsTo(fetchMock, '/auth/me/email/pending').map((call) => call.method)).toEqual(['DELETE']);
+    expect(wrapper.text()).not.toContain('Waiting for confirmation');
 
     await button(wrapper, 'Change password').trigger('click');
     await settle();

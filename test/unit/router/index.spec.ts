@@ -43,7 +43,7 @@ describe('authRedirect', () => {
     expect(authRedirect(at('/'), false)).toEqual({ name: 'sign-in', query: {} });
   });
 
-  it.each(['/sign-in', '/sign-up', '/forgot-password', '/reset-password', '/recap/unsubscribe?token=x'])(
+  it.each(['/sign-in', '/sign-up', '/forgot-password', '/reset-password', '/recap/unsubscribe?token=x', '/verify-email?token=x'])(
     'lets a signed-out visitor open %s',
     (path) => {
       expect(authRedirect(at(path), false)).toBeNull();
@@ -54,7 +54,7 @@ describe('authRedirect', () => {
     expect(authRedirect(at(path), true)).toEqual({ name: 'home' });
   });
 
-  it.each(['/?tab=settings', '/forgot-password', '/recap/unsubscribe?token=x'])('lets a signed-in user open %s', (path) => {
+  it.each(['/?tab=settings', '/forgot-password', '/recap/unsubscribe?token=x', '/verify-email?token=x'])('lets a signed-in user open %s', (path) => {
     expect(authRedirect(at(path), true)).toBeNull();
   });
 });
