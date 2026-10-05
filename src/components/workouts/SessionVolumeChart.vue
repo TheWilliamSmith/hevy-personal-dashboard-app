@@ -6,7 +6,7 @@ import { computed } from 'vue';
 import BaseChart from '@/components/dashboard/BaseChart.vue';
 import EmptyState from '@/components/ui/EmptyState.vue';
 import SectionHeader from '@/components/ui/SectionHeader.vue';
-import { baseOption, categoryAxis, formatAxisValue, resolveTheme, valueAxis } from '@/charts/theme';
+import { baseOption, categoryAxis, formatAxisValue, valueAxis, chartPalette } from '@/charts/theme';
 import type { WorkoutSummary } from '@/types/workouts';
 import { formatBucket, formatDuration, formatVolume, toDisplayWeight } from '@/utils/format';
 
@@ -19,7 +19,7 @@ const emit = defineEmits<{ open: [id: string] }>();
 
 const BAR_COLOR = '#3b82f6';
 
-const palette = { ...resolveTheme(true), splitLine: '#27272a', tooltipBackground: '#18181b', tooltipBorder: '#3f3f46' };
+const palette = computed(chartPalette);
 
 const sessions = computed(() => [...props.workouts].reverse());
 
@@ -30,10 +30,10 @@ const average = computed(() =>
 );
 
 const option = computed<EChartsOption>(() => ({
-  ...baseOption(palette),
+  ...baseOption(palette.value),
   grid: { left: 4, right: 8, top: 12, bottom: 4, containLabel: true },
   tooltip: {
-    ...baseOption(palette).tooltip,
+    ...baseOption(palette.value).tooltip,
     trigger: 'axis',
     axisPointer: { type: 'shadow', shadowStyle: { color: 'rgba(255,255,255,0.04)' } },
     formatter: (params: unknown) => {
@@ -51,14 +51,14 @@ const option = computed<EChartsOption>(() => ({
     },
   },
   xAxis: {
-    ...categoryAxis(palette),
+    ...categoryAxis(palette.value),
     axisLine: { show: false },
     data: sessions.value.map((workout) => formatBucket(workout.startedAt, 'day')),
   },
   yAxis: {
-    ...valueAxis(palette),
-    splitLine: { lineStyle: { color: palette.splitLine } },
-    axisLabel: { color: palette.axisLabel, formatter: (value: number) => formatAxisValue('volume', value) },
+    ...valueAxis(palette.value),
+    splitLine: { lineStyle: { color: palette.value.splitLine } },
+    axisLabel: { color: palette.value.axisLabel, formatter: (value: number) => formatAxisValue('volume', value) },
   },
   series: [
     {

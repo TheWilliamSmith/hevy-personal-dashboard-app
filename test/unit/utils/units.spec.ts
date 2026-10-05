@@ -72,7 +72,7 @@ describe('weight unit', () => {
   it('remembers the preferences in the browser', () => {
     applyPreferences({ weightUnit: 'lb', weekStart: 'sunday' });
 
-    expect(JSON.parse(localStorage.getItem('hevy-dashboard.preferences') ?? '{}')).toEqual({ weightUnit: 'lb', weekStart: 'sunday' });
+    expect(JSON.parse(localStorage.getItem('hevy-dashboard.preferences') ?? '{}')).toEqual({ weightUnit: 'lb', weekStart: 'sunday', theme: 'system' });
     expect(weightUnit.value).toBe('lb');
     expect(weekStart.value).toBe('sunday');
   });

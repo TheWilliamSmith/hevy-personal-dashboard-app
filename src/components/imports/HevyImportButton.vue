@@ -105,7 +105,7 @@ defineExpose({ focus: () => openPickerButton.value?.focus() });
       <p class="text-sm text-red-200">{{ error }}</p>
       <button
         type="button"
-        class="shrink-0 rounded-md border border-red-800 px-2 py-1 text-xs font-medium text-red-100 hover:bg-red-900/50"
+        class="shrink-0 rounded-md border border-red-800 px-2 py-1 text-xs font-medium text-red-200 hover:bg-red-900/50"
         @click="emit('dismissError')"
       >
         {{ t('imports.button.tryAgain') }}

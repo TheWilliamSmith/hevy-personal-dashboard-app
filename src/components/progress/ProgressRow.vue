@@ -99,9 +99,9 @@ const cell = 'px-3 py-1.5 text-xs';
       <Sparkline
         class="hidden lg:block"
         :points="values"
-        :color="style.hex"
+        :color="style.color"
         :markers="prIndices"
-        marker-stroke="#09090b"
+        marker-stroke="var(--color-zinc-950)"
         :width="104"
         :height="26"
         :label="

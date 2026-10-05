@@ -56,7 +56,7 @@ function cellClass(day: CalendarCell): string {
   if (props.isLoading && props.days === null) {
     return 'animate-pulse bg-zinc-800';
   }
-  return day.workouts > 0 ? 'bg-blue-800' : 'bg-slate-700';
+  return day.workouts > 0 ? 'bg-blue-800 light:bg-blue-500' : 'bg-slate-700';
 }
 
 function cellTitle(day: CalendarCell): string | undefined {
@@ -120,7 +120,7 @@ function cellTitle(day: CalendarCell): string | undefined {
           {{ t('dashboard.calendar.rest') }}
         </span>
         <span class="flex items-center gap-1.5">
-          <span class="h-2.5 w-2.5 rounded-[3px] bg-blue-800" aria-hidden="true" />
+          <span class="h-2.5 w-2.5 rounded-[3px] bg-blue-800 light:bg-blue-500" aria-hidden="true" />
           {{ t('dashboard.calendar.workout') }}
         </span>
       </div>

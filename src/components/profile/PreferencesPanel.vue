@@ -6,12 +6,24 @@ import SegmentedControl, { type SegmentedOption } from '@/components/ui/Segmente
 import { useToasts } from '@/composables/useToasts';
 import { LOCALES, locale, setLocale, t } from '@/i18n';
 import { ApiError, apiPost } from '@/lib/api';
-import type { ProfileChanges, RecapFrequency, UserProfile, WeekStart, WeightUnit } from '@/types/profile';
+import type { ProfileChanges, RecapFrequency, ThemePreference, UserProfile, WeekStart, WeightUnit } from '@/types/profile';
 import { dateFormat } from '@/utils/format';
+import { applyTheme } from '@/utils/preferences';
 
 const props = defineProps<{ profile: DeepReadonly<UserProfile>; isSaving: boolean }>();
 
 const emit = defineEmits<{ change: [changes: ProfileChanges] }>();
+
+const themes = computed<ReadonlyArray<SegmentedOption<ThemePreference>>>(() => [
+  { value: 'system', label: t('preferences.themeSystem') },
+  { value: 'light', label: t('preferences.themeLight') },
+  { value: 'dark', label: t('preferences.themeDark') },
+]);
+
+function chooseTheme(next: ThemePreference): void {
+  applyTheme(next);
+  emit('change', { theme: next });
+}
 
 const units = computed<ReadonlyArray<SegmentedOption<WeightUnit>>>(() => [
   { value: 'kg', label: t('preferences.kilograms') },
@@ -95,6 +107,21 @@ const field =
           @update:model-value="setLocale"
         />
         <p class="text-xs text-zinc-500">{{ t('preferences.languageHint') }}</p>
+      </div>
+    </section>
+
+    <section class="flex max-w-3xl flex-col gap-5 border-t border-zinc-800 pt-8" :aria-busy="isSaving">
+      <SectionHeader :title="t('preferences.appearanceTitle')" :subtitle="t('preferences.appearanceSubtitle')" />
+      <div class="flex flex-col gap-2">
+        <span :class="label">{{ t('preferences.theme') }}</span>
+        <SegmentedControl
+          :model-value="profile.theme"
+          :options="themes"
+          :label="t('preferences.theme')"
+          class="self-start"
+          @update:model-value="chooseTheme"
+        />
+        <p class="text-xs text-zinc-500">{{ t('preferences.themeHint') }}</p>
       </div>
     </section>
 

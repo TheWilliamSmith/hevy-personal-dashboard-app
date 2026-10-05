@@ -120,7 +120,7 @@ const selected = computed(() => options.value.find((option) => option.id === sel
       </button>
       <button
         type="button"
-        class="inline-flex items-center gap-2 rounded-md bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-400 disabled:cursor-not-allowed disabled:opacity-50"
+        class="inline-flex items-center gap-2 rounded-md bg-red-600 px-3 py-2 text-sm font-medium text-on-accent hover:bg-red-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-400 disabled:cursor-not-allowed disabled:opacity-50"
         :disabled="props.isSaving || !selected"
         :aria-busy="props.isSaving"
         @click="selected && emit('merge', selected.id)"

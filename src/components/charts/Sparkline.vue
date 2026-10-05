@@ -11,7 +11,7 @@ const props = withDefaults(
     markerStroke?: string;
     label: string;
   }>(),
-  { markers: () => [], width: 96, height: 24, markerStroke: '#fff' },
+  { markers: () => [], width: 96, height: 24, markerStroke: 'var(--color-zinc-950)' },
 );
 
 const PADDING = 3;
@@ -55,7 +55,7 @@ const markerCoords = computed(() =>
     <path
       :d="path"
       fill="none"
-      :stroke="props.color"
+      :style="{ stroke: props.color }"
       stroke-width="1.5"
       stroke-linejoin="round"
       stroke-linecap="round"
@@ -66,8 +66,7 @@ const markerCoords = computed(() =>
       :cx="point.x"
       :cy="point.y"
       r="2.5"
-      :fill="props.color"
-      :stroke="props.markerStroke"
+      :style="{ fill: props.color, stroke: props.markerStroke }"
       stroke-width="1"
     />
   </svg>

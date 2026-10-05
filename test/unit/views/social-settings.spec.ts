@@ -254,7 +254,9 @@ describe('SettingsView', () => {
   });
 
   it('switches the language and saves units from preferences', async () => {
-    const fetchMock = stubFetch((url, init) => (url.includes('/me/profile') && init?.method === 'PATCH' ? { ...profile, weightUnit: 'lb' } : fakeApi()(url)));
+    const fetchMock = stubFetch((url, init) =>
+      url.includes('/me/profile') && init?.method === 'PATCH' ? { ...profile, ...JSON.parse(String(init.body)) } : fakeApi()(url),
+    );
     await signedIn();
     const { wrapper } = await mountWith(SettingsView, { route: { query: { tab: 'settings', section: 'preferences' } } });
     await settle();
@@ -267,6 +269,11 @@ describe('SettingsView', () => {
 
     await button(wrapper, 'Sunday').trigger('click');
     await settle();
+
+    await button(wrapper, 'Light').trigger('click');
+    await settle();
+    expect(requestsTo(fetchMock, '/me/profile').filter((call) => call.method === 'PATCH').at(-1)?.body).toEqual({ theme: 'light' });
+    expect(document.documentElement.dataset.theme).toBe('light');
 
     await button(wrapper, 'Français').trigger('click');
     expect(locale.value).toBe('fr');

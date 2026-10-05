@@ -9,7 +9,7 @@ const emit = defineEmits<{ retry: [] }>();
     <p class="text-xs text-red-200">{{ message }}</p>
     <button
       type="button"
-      class="rounded-md border border-red-800 px-2 py-1 text-xs font-medium text-red-100 hover:bg-red-900/50"
+      class="rounded-md border border-red-800 px-2 py-1 text-xs font-medium text-red-200 hover:bg-red-900/50"
       @click="emit('retry')"
     >
       {{ t('common.retry') }}

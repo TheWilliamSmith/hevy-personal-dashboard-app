@@ -2,6 +2,7 @@ import type { EChartsOption } from 'echarts';
 
 import { t, translated } from '@/i18n';
 import { formatDuration, formatInteger, formatVolume } from '@/utils/format';
+import { resolvedTheme } from '@/utils/preferences';
 import type { TimeseriesMetric } from '@/types/stats';
 
 export interface ChartPalette {
@@ -42,6 +43,27 @@ export const DARK_PALETTE: ChartPalette = {
   heatmap: ['#1e1b4b', '#312e81', '#4338ca', '#6366f1', '#a5b4fc'],
   categorical: ['#818cf8', '#38bdf8', '#2dd4bf', '#fbbf24', '#f472b6', '#a78bfa'],
 };
+
+const APP_DARK: ChartPalette = {
+  ...DARK_PALETTE,
+  splitLine: '#27272a',
+  tooltipBackground: '#18181b',
+  tooltipBorder: '#3f3f46',
+};
+
+const APP_LIGHT: ChartPalette = {
+  ...LIGHT_PALETTE,
+  axisLabel: '#52525b',
+  splitLine: '#e4e4e7',
+  text: '#18181b',
+  tooltipBackground: '#ffffff',
+  tooltipBorder: '#d4d4d8',
+  tooltipText: '#18181b',
+};
+
+export function chartPalette(): ChartPalette {
+  return resolvedTheme.value === 'light' ? APP_LIGHT : APP_DARK;
+}
 
 export const METRIC_COLORS: Readonly<Record<TimeseriesMetric, string>> = {
   volume: '#4f46e5',

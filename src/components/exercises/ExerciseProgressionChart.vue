@@ -7,7 +7,7 @@ import BaseChart from '@/components/dashboard/BaseChart.vue';
 import EmptyState from '@/components/ui/EmptyState.vue';
 import SectionHeader from '@/components/ui/SectionHeader.vue';
 import SegmentedControl, { type SegmentedOption } from '@/components/ui/SegmentedControl.vue';
-import { baseOption, categoryAxis, resolveTheme, valueAxis } from '@/charts/theme';
+import { baseOption, categoryAxis, valueAxis, chartPalette } from '@/charts/theme';
 import { linearTrend } from '@/charts/trendline';
 import type { ExerciseKind, ProgressionPoint } from '@/types/exercises';
 import {
@@ -52,7 +52,7 @@ const RANGE_DAYS: Readonly<Record<Range, number | null>> = { '3m': 90, '6m': 180
 const LINE_COLOR = '#3b82f6';
 const PR_COLOR = '#34d399';
 
-const palette = { ...resolveTheme(true), splitLine: '#27272a', tooltipBackground: '#18181b', tooltipBorder: '#3f3f46' };
+const palette = computed(chartPalette);
 
 const metrics = computed(() => (props.kind === 'CARDIO' ? cardioMetrics.value : strengthMetrics.value));
 
@@ -126,10 +126,10 @@ const trend = computed(() => (showTrend.value ? linearTrend(values.value) : null
 const hasData = computed(() => values.value.some((value) => value !== null));
 
 const option = computed<EChartsOption>(() => ({
-  ...baseOption(palette),
+  ...baseOption(palette.value),
   grid: { left: 4, right: 8, top: 12, bottom: 4, containLabel: true },
   tooltip: {
-    ...baseOption(palette).tooltip,
+    ...baseOption(palette.value).tooltip,
     trigger: 'axis',
     formatter: (params: unknown) => {
       const index = (params as Array<{ dataIndex: number }>)[0]?.dataIndex ?? 0;
@@ -144,8 +144,8 @@ const option = computed<EChartsOption>(() => ({
       return lines.join('<br/>');
     },
   },
-  xAxis: { ...categoryAxis(palette), axisLine: { show: false }, data: labels.value },
-  yAxis: { ...valueAxis(palette), scale: true, splitLine: { lineStyle: { color: palette.splitLine } } },
+  xAxis: { ...categoryAxis(palette.value), axisLine: { show: false }, data: labels.value },
+  yAxis: { ...valueAxis(palette.value), scale: true, splitLine: { lineStyle: { color: palette.value.splitLine } } },
   series: [
     {
       name: metricLabel.value,

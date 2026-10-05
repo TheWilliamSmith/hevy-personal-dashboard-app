@@ -7,7 +7,7 @@ import BaseChart from '@/components/dashboard/BaseChart.vue';
 import EmptyState from '@/components/ui/EmptyState.vue';
 import SectionError from '@/components/ui/SectionError.vue';
 import SectionHeader from '@/components/ui/SectionHeader.vue';
-import { baseOption, categoryAxis, formatAxisValue, resolveTheme, valueAxis } from '@/charts/theme';
+import { baseOption, categoryAxis, formatAxisValue, valueAxis, chartPalette } from '@/charts/theme';
 import type { Granularity, TimeseriesPoint } from '@/types/stats';
 import { formatBucket, formatInteger, formatVolume, toDisplayWeight } from '@/utils/format';
 
@@ -24,17 +24,17 @@ const emit = defineEmits<{ retry: [] }>();
 
 const LINE_COLOR = '#3b82f6';
 
-const palette = { ...resolveTheme(true), splitLine: '#27272a', tooltipBackground: '#18181b', tooltipBorder: '#3f3f46' };
+const palette = computed(chartPalette);
 
 const rows = computed(() => props.points ?? []);
 const labels = computed(() => rows.value.map((point) => formatBucket(point.bucket, props.granularity)));
 const hasData = computed(() => rows.value.some((point) => point.value > 0));
 
 const option = computed<EChartsOption>(() => ({
-  ...baseOption(palette),
+  ...baseOption(palette.value),
   grid: { left: 4, right: 8, top: 12, bottom: 4, containLabel: true },
   tooltip: {
-    ...baseOption(palette).tooltip,
+    ...baseOption(palette.value).tooltip,
     trigger: 'axis',
     formatter: (params: unknown) => {
       const index = (params as Array<{ dataIndex: number }>)[0]?.dataIndex ?? 0;
@@ -50,15 +50,15 @@ const option = computed<EChartsOption>(() => ({
     },
   },
   xAxis: {
-    ...categoryAxis(palette),
+    ...categoryAxis(palette.value),
     boundaryGap: false,
     axisLine: { show: false },
     data: labels.value,
   },
   yAxis: {
-    ...valueAxis(palette),
-    splitLine: { lineStyle: { color: palette.splitLine } },
-    axisLabel: { color: palette.axisLabel, formatter: (value: number) => formatAxisValue('volume', value) },
+    ...valueAxis(palette.value),
+    splitLine: { lineStyle: { color: palette.value.splitLine } },
+    axisLabel: { color: palette.value.axisLabel, formatter: (value: number) => formatAxisValue('volume', value) },
   },
   series: [
     {

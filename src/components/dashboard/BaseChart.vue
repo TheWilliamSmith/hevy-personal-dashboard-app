@@ -3,7 +3,7 @@ import VChart from 'vue-echarts';
 import type { EChartsOption } from 'echarts';
 
 import '@/charts/echarts';
-import { weightUnit } from '@/utils/preferences';
+import { resolvedTheme, weightUnit } from '@/utils/preferences';
 
 defineProps<{ option: EChartsOption }>();
 
@@ -18,5 +18,5 @@ function onClick(params: unknown): void {
 </script>
 
 <template>
-  <VChart :key="weightUnit" :option="option" autoresize class="absolute inset-0" @click="onClick" />
+  <VChart :key="`${weightUnit}-${resolvedTheme}`" :option="option" autoresize class="absolute inset-0" @click="onClick" />
 </template>

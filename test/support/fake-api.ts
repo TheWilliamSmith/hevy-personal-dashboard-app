@@ -429,6 +429,7 @@ export const profile: ProfileResponse = {
   memberSince: '2026-07-01T10:00:00.000Z',
   weightUnit: 'kg',
   weekStart: 'monday',
+  theme: 'system',
   bodyweightKg: 80,
   heightCm: 180,
   recapFrequency: 'weekly',

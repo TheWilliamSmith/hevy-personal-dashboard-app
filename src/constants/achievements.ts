@@ -18,7 +18,7 @@ export const RARITY_STYLES: Readonly<Record<Rarity, RarityStyle>> = {
       return t('rarities.COMMON');
     },
     hex: '#10b981',
-    badge: 'bg-emerald-500 text-white',
+    badge: 'bg-emerald-500 text-on-accent',
     card: 'border-emerald-500/30 bg-zinc-900',
     text: 'text-emerald-400',
     dot: 'bg-emerald-400',
@@ -28,7 +28,7 @@ export const RARITY_STYLES: Readonly<Record<Rarity, RarityStyle>> = {
       return t('rarities.RARE');
     },
     hex: '#3b82f6',
-    badge: 'bg-blue-500 text-white',
+    badge: 'bg-blue-500 text-on-accent',
     card: 'border-blue-500/30 bg-zinc-900',
     text: 'text-blue-400',
     dot: 'bg-blue-400',
@@ -38,7 +38,7 @@ export const RARITY_STYLES: Readonly<Record<Rarity, RarityStyle>> = {
       return t('rarities.EPIC');
     },
     hex: '#a855f7',
-    badge: 'bg-purple-500 text-white',
+    badge: 'bg-purple-500 text-on-accent',
     card: 'border-purple-500/30 bg-zinc-900',
     text: 'text-purple-400',
     dot: 'bg-purple-400',
@@ -48,7 +48,7 @@ export const RARITY_STYLES: Readonly<Record<Rarity, RarityStyle>> = {
       return t('rarities.LEGENDARY');
     },
     hex: '#f59e0b',
-    badge: 'bg-gradient-to-br from-yellow-400 to-orange-500 text-white',
+    badge: 'bg-gradient-to-br from-yellow-400 to-orange-500 text-on-accent',
     card: 'border-amber-500/50 bg-gradient-to-br from-amber-500/10 to-zinc-900',
     text: 'text-amber-400',
     dot: 'bg-amber-400',

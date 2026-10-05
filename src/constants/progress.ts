@@ -3,7 +3,7 @@ import type { MetricUsed, ProgressParams, ProgressStatus } from '@/types/progres
 
 export interface StatusStyle {
   label: string;
-  hex: string;
+  color: string;
   dot: string;
   text: string;
   empty: string;
@@ -22,7 +22,7 @@ export const STATUS_STYLES: Readonly<Record<ProgressStatus, StatusStyle>> = {
     get label() {
       return t('statuses.REGRESSING');
     },
-    hex: '#f87171',
+    color: 'var(--color-red-400)',
     dot: 'bg-red-400',
     text: 'text-red-400',
     get empty() {
@@ -33,7 +33,7 @@ export const STATUS_STYLES: Readonly<Record<ProgressStatus, StatusStyle>> = {
     get label() {
       return t('statuses.PLATEAU');
     },
-    hex: '#fbbf24',
+    color: 'var(--color-amber-400)',
     dot: 'bg-amber-400',
     text: 'text-amber-400',
     get empty() {
@@ -44,7 +44,7 @@ export const STATUS_STYLES: Readonly<Record<ProgressStatus, StatusStyle>> = {
     get label() {
       return t('statuses.STALE');
     },
-    hex: '#a1a1aa',
+    color: 'var(--color-zinc-400)',
     dot: 'bg-zinc-400',
     text: 'text-zinc-400',
     get empty() {
@@ -55,7 +55,7 @@ export const STATUS_STYLES: Readonly<Record<ProgressStatus, StatusStyle>> = {
     get label() {
       return t('statuses.PROGRESSING');
     },
-    hex: '#34d399',
+    color: 'var(--color-emerald-400)',
     dot: 'bg-emerald-400',
     text: 'text-emerald-400',
     get empty() {
@@ -66,7 +66,7 @@ export const STATUS_STYLES: Readonly<Record<ProgressStatus, StatusStyle>> = {
     get label() {
       return t('statuses.NOT_ENOUGH_DATA');
     },
-    hex: '#52525b',
+    color: 'var(--color-zinc-600)',
     dot: 'bg-zinc-600',
     text: 'text-zinc-500',
     get empty() {

@@ -45,7 +45,7 @@ const emit = defineEmits<{ cancel: []; confirm: [] }>();
       <button
         type="button"
         class="inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400"
-        :class="props.tone === 'danger' ? 'bg-red-600 text-white hover:bg-red-500' : 'bg-white text-zinc-900 hover:bg-zinc-200'"
+        :class="props.tone === 'danger' ? 'bg-red-600 text-on-accent hover:bg-red-500' : 'bg-white text-zinc-900 hover:bg-zinc-200'"
         :disabled="props.isBusy"
         :aria-busy="props.isBusy"
         @click="emit('confirm')"

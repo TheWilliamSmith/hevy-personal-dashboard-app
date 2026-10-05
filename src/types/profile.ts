@@ -1,5 +1,6 @@
 export type WeightUnit = 'kg' | 'lb';
 export type WeekStart = 'monday' | 'sunday';
+export type ThemePreference = 'system' | 'light' | 'dark';
 export type RecapFrequency = 'off' | 'weekly' | 'monthly';
 
 export interface UserProfile {
@@ -12,6 +13,7 @@ export interface UserProfile {
   memberSince: string;
   weightUnit: WeightUnit;
   weekStart: WeekStart;
+  theme: ThemePreference;
   bodyweightKg: number | null;
   heightCm: number | null;
   recapFrequency: RecapFrequency;
@@ -31,5 +33,5 @@ export interface ProfileResponse extends UserProfile {
 }
 
 export type ProfileChanges = Partial<
-  Pick<UserProfile, 'displayName' | 'username' | 'bio' | 'location' | 'weightUnit' | 'weekStart' | 'bodyweightKg' | 'heightCm' | 'recapFrequency' | 'recapWeekday' | 'recapMonthDay'>
+  Pick<UserProfile, 'displayName' | 'username' | 'bio' | 'location' | 'weightUnit' | 'weekStart' | 'theme' | 'bodyweightKg' | 'heightCm' | 'recapFrequency' | 'recapWeekday' | 'recapMonthDay'>
 >;

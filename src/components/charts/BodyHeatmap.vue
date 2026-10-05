@@ -244,9 +244,9 @@ function describe(group: MuscleGroup): string {
 
 <style scoped>
 .body-heatmap {
-  --bh-base: #18181b;
-  --bh-outline: #52525b;
-  --bh-line: #3f3f46;
+  --bh-base: var(--color-zinc-900);
+  --bh-outline: var(--color-zinc-600);
+  --bh-line: var(--color-zinc-700);
   --bh-l0: #334155;
   --bh-l1: #1e3a8a;
   --bh-l2: #1e40af;
@@ -254,11 +254,11 @@ function describe(group: MuscleGroup): string {
   --bh-l4: #2563eb;
   --bh-l5: #3b82f6;
   --bh-l6: #60a5fa;
-  --bh-text: #a1a1aa;
-  --bh-border: #3f3f46;
-  --bh-active: #ffffff;
-  --bh-tooltip-bg: #18181b;
-  --bh-tooltip-fg: #f4f4f5;
+  --bh-text: var(--color-zinc-400);
+  --bh-border: var(--color-zinc-700);
+  --bh-active: var(--color-white);
+  --bh-tooltip-bg: var(--color-zinc-900);
+  --bh-tooltip-fg: var(--color-zinc-100);
   position: relative;
   display: flex;
   flex-direction: column;
@@ -372,10 +372,10 @@ function describe(group: MuscleGroup): string {
   align-items: center;
   gap: 6px;
   padding: 4px 10px;
-  border: 1px solid #27272a;
+  border: 1px solid var(--color-zinc-800);
   border-radius: 6px;
-  background: #18181b;
-  color: #f4f4f5;
+  background: var(--color-zinc-900);
+  color: var(--color-zinc-100);
   font: inherit;
   font-size: 12px;
   font-weight: 500;
@@ -387,5 +387,17 @@ function describe(group: MuscleGroup): string {
   text-align: center;
   color: var(--bh-text);
   font-size: 13px;
+}
+</style>
+
+<style>
+:root[data-theme='light'] .body-heatmap {
+  --bh-l0: #e2e8f0;
+  --bh-l1: #dbeafe;
+  --bh-l2: #bfdbfe;
+  --bh-l3: #93c5fd;
+  --bh-l4: #60a5fa;
+  --bh-l5: #3b82f6;
+  --bh-l6: #1d4ed8;
 }
 </style>

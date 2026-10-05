@@ -17,6 +17,7 @@ function profileResponse(overrides: Partial<ProfileResponse> = {}): ProfileRespo
     memberSince: '2026-01-01T00:00:00Z',
     weightUnit: 'kg',
     weekStart: 'monday',
+    theme: 'dark',
     bodyweightKg: 78,
     heightCm: 180,
     recapFrequency: 'weekly',

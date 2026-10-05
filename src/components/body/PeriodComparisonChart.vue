@@ -4,7 +4,7 @@ import type { EChartsOption } from 'echarts';
 import { computed } from 'vue';
 
 import BaseChart from '@/components/dashboard/BaseChart.vue';
-import { baseOption, resolveTheme } from '@/charts/theme';
+import { baseOption, chartPalette } from '@/charts/theme';
 import { MUSCLE_LABELS } from '@/constants/muscles';
 import type { MuscleGroup, MuscleHeatmap } from '@/types/stats';
 
@@ -17,15 +17,15 @@ const props = defineProps<{
 const CURRENT_COLOR = '#3b82f6';
 const PREVIOUS_COLOR = '#52525b';
 
-const palette = { ...resolveTheme(true), splitLine: '#27272a', tooltipBackground: '#18181b', tooltipBorder: '#3f3f46' };
+const palette = computed(chartPalette);
 
 const rows = computed(() => [...props.muscles].reverse());
 
 const option = computed<EChartsOption>(() => ({
-  ...baseOption(palette),
+  ...baseOption(palette.value),
   grid: { left: 4, right: 12, top: 8, bottom: 4, containLabel: true },
   tooltip: {
-    ...baseOption(palette).tooltip,
+    ...baseOption(palette.value).tooltip,
     trigger: 'axis',
     axisPointer: { type: 'shadow', shadowStyle: { color: 'rgba(255,255,255,0.04)' } },
     formatter: (params: unknown) => {
@@ -45,14 +45,14 @@ const option = computed<EChartsOption>(() => ({
     type: 'value',
     axisLine: { show: false },
     axisTick: { show: false },
-    axisLabel: { color: palette.axisLabel, formatter: (value: number) => props.format(value) },
-    splitLine: { lineStyle: { color: palette.splitLine } },
+    axisLabel: { color: palette.value.axisLabel, formatter: (value: number) => props.format(value) },
+    splitLine: { lineStyle: { color: palette.value.splitLine } },
   },
   yAxis: {
     type: 'category',
     axisLine: { show: false },
     axisTick: { show: false },
-    axisLabel: { color: palette.axisLabel },
+    axisLabel: { color: palette.value.axisLabel },
     data: rows.value.map((muscle) => MUSCLE_LABELS[muscle]),
   },
   series: [
