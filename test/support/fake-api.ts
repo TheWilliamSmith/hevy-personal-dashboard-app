@@ -571,6 +571,7 @@ export function fakeApi(overrides: Overrides = {}) {
     if (path === '/imports') return { data: [importBatch()], meta: { page: 1, limit: 10, total: 1, totalPages: 1 } };
     if (path === '/friends') return friendsOverview;
     if (path === '/friends/leaderboard') return leaderboard;
+    if (path === '/friends/requests/count') return { incoming: 0 };
     if (path === '/users/search') return [userCard()];
     if (path.startsWith('/users/')) return userPage;
     if (path === '/auth/me') return authUser;

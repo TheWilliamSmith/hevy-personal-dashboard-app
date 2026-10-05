@@ -21,6 +21,7 @@ import { RouterLink } from 'vue-router';
 import HevySyncCard from '@/components/layout/HevySyncCard.vue';
 import ProfileAvatar from '@/components/profile/ProfileAvatar.vue';
 import { TABS, useActiveTab, type TabName } from '@/composables/useActiveTab';
+import { useFriendRequests } from '@/composables/useFriendRequests';
 import { useProfile } from '@/composables/useProfile';
 import { useSidebar } from '@/composables/useSidebar';
 
@@ -39,6 +40,11 @@ const ICONS: Readonly<Record<TabName, Component>> = {
 const { tab } = useActiveTab();
 const { collapsed, mobileOpen, toggleCollapsed, closeMobile } = useSidebar();
 const { profile } = useProfile();
+const { incoming } = useFriendRequests();
+
+function badgeFor(name: TabName): number {
+  return name === 'friends' ? incoming.value : 0;
+}
 
 const mainItems = computed(() => TABS.filter((item) => item.name !== 'settings'));
 
@@ -117,8 +123,26 @@ const iconButton =
             :aria-current="tab === item.name ? 'page' : undefined"
             :title="collapsed ? item.label : undefined"
           >
-            <component :is="ICONS[item.name]" class="h-4 w-4 shrink-0" aria-hidden="true" />
-            <span :class="{ 'lg:sr-only': collapsed }">{{ item.label }}</span>
+            <span class="relative shrink-0">
+              <component :is="ICONS[item.name]" class="h-4 w-4" aria-hidden="true" />
+              <span
+                v-if="badgeFor(item.name) > 0 && collapsed"
+                class="absolute -top-1 -right-1 hidden h-2 w-2 rounded-full bg-blue-500 lg:block"
+                aria-hidden="true"
+              />
+            </span>
+            <span class="min-w-0 flex-1 truncate" :class="{ 'lg:sr-only': collapsed }">{{ item.label }}</span>
+            <span
+              v-if="badgeFor(item.name) > 0"
+              class="rounded-full bg-blue-500 px-1.5 text-[11px] leading-[18px] font-semibold text-on-accent tabular-nums"
+              :class="{ 'lg:hidden': collapsed }"
+              aria-hidden="true"
+            >
+              {{ badgeFor(item.name) > 9 ? '9+' : badgeFor(item.name) }}
+            </span>
+            <span v-if="badgeFor(item.name) > 0" class="sr-only">
+              {{ t('nav.friendRequests', { count: badgeFor(item.name) }, badgeFor(item.name)) }}
+            </span>
           </RouterLink>
         </li>
       </ul>

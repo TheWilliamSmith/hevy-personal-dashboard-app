@@ -1,6 +1,7 @@
 import { ref, type Ref } from 'vue';
 
 import { t } from '@/i18n';
+import { setFriendRequests } from '@/composables/useFriendRequests';
 import { ApiError, apiDelete, apiGet, apiPost } from '@/lib/api';
 import type { FriendsOverview, LeaderboardEntry, UserCard } from '@/types/friends';
 
@@ -62,6 +63,7 @@ export function useFriends(): UseFriends {
         apiGet<LeaderboardEntry[]>('/friends/leaderboard'),
       ]);
       overview.value = nextOverview;
+      setFriendRequests(nextOverview.incoming.length);
       leaderboard.value = nextLeaderboard;
     } catch (error_) {
       error.value = error_ instanceof ApiError ? error_.message : t('errors.generic');

@@ -35,6 +35,7 @@ export const nav: Messages<typeof en.nav> = {
   closeMenu: 'Fermer le menu',
   openMenu: 'Ouvrir le menu',
   profileAndSettings: 'Profil et paramètres',
+  friendRequests: '{count} demande d’ami en attente | {count} demandes d’ami en attente',
 };
 
 export const ranges: Messages<typeof en.ranges> = {

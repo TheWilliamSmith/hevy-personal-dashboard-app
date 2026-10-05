@@ -32,6 +32,7 @@ export const nav = {
   closeMenu: 'Close menu',
   openMenu: 'Open menu',
   profileAndSettings: 'Profile and settings',
+  friendRequests: '{count} friend request waiting | {count} friend requests waiting',
 };
 
 export const ranges = {

@@ -3,6 +3,7 @@ import { Check, Clock, UserPlus, X } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 import ConfirmDialog from '@/components/ui/ConfirmDialog.vue';
+import { refreshFriendRequests } from '@/composables/useFriendRequests';
 import { availableActions, runFriendAction, type FriendAction } from '@/composables/useFriends';
 import { useToasts } from '@/composables/useToasts';
 import { t } from '@/i18n';
@@ -34,6 +35,7 @@ async function run(action: FriendAction): Promise<void> {
     push({ tone: 'success', title: t(key, { name: props.user.displayName }) });
     confirmingRemove.value = false;
     emit('changed', next);
+    void refreshFriendRequests();
   } catch (error_) {
     push({
       tone: 'error',
