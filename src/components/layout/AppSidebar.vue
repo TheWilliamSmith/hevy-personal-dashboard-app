@@ -2,6 +2,7 @@
 import { t } from '@/i18n';
 import {
   Activity,
+  Calculator,
   Dumbbell,
   LayoutDashboard,
   ListChecks,
@@ -35,6 +36,7 @@ const ICONS: Readonly<Record<TabName, Component>> = {
   trophies: Trophy,
   workouts: Dumbbell,
   exercises: ListChecks,
+  calculators: Calculator,
   friends: Users,
   settings: Settings,
 };

@@ -15,6 +15,7 @@ const ProgressPanel = defineAsyncComponent(() => import('@/views/ProgressView.vu
 const GoalsPanel = defineAsyncComponent(() => import('@/views/GoalsView.vue'));
 const TrophiesPanel = defineAsyncComponent(() => import('@/views/TrophyRoomView.vue'));
 const ExercisesPanel = defineAsyncComponent(() => import('@/views/ExercisesView.vue'));
+const CalculatorsPanel = defineAsyncComponent(() => import('@/views/CalculatorsView.vue'));
 const ExerciseDetailPanel = defineAsyncComponent(() => import('@/views/ExerciseDetailView.vue'));
 const FriendsPanel = defineAsyncComponent(() => import('@/views/FriendsView.vue'));
 const UserPagePanel = defineAsyncComponent(() => import('@/views/UserPageView.vue'));
@@ -40,6 +41,7 @@ const PANELS: Partial<Record<TabName, Component>> = {
   settings: SettingsPanel,
   body: BodyPanel,
   measurements: MeasurementsPanel,
+  calculators: CalculatorsPanel,
   progress: ProgressPanel,
   goals: GoalsPanel,
   trophies: TrophiesPanel,

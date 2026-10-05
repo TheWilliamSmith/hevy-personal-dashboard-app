@@ -24,6 +24,7 @@ export const exercises: Messages<typeof en.exercises> = {
   notFound: 'Cet exercice n’existe pas.',
   custom: 'Personnalisé',
   editClassification: 'Modifier la classification',
+  planLoads: 'Calculer mes charges',
   mergeIntoThis: 'Fusionner ici',
   catalog: 'Catalogue',
   catalogSubtitle: 'Exercices faits au moins une fois',

@@ -2,6 +2,7 @@ import type { MessageSchema } from '../en';
 import type { Messages } from '../../types';
 import * as auth from './auth';
 import * as body from './body';
+import * as calculators from './calculators';
 import * as catalog from './catalog';
 import * as common from './common';
 import * as dashboard from './dashboard';
@@ -20,6 +21,7 @@ import * as workouts from './workouts';
 export const fr: Messages<MessageSchema> = {
   ...auth,
   ...body,
+  ...calculators,
   ...catalog,
   ...common,
   ...dashboard,

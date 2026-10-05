@@ -11,6 +11,7 @@ const TAB_NAMES = [
   'trophies',
   'workouts',
   'exercises',
+  'calculators',
   'friends',
   'settings',
 ] as const;

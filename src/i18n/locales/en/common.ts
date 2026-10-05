@@ -25,6 +25,7 @@ export const nav = {
   trophies: 'Trophies',
   workouts: 'Workouts',
   exercises: 'Exercises',
+  calculators: 'Calculators',
   friends: 'Friends',
   settings: 'Settings',
   mainNavigation: 'Main navigation',

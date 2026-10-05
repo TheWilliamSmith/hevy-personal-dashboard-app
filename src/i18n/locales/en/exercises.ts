@@ -21,6 +21,7 @@ export const exercises = {
   notFound: 'This exercise does not exist.',
   custom: 'Custom',
   editClassification: 'Edit classification',
+  planLoads: 'Plan my loads',
   mergeIntoThis: 'Merge into this',
   catalog: 'Catalog',
   catalogSubtitle: 'Exercises you have performed at least once',

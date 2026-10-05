@@ -149,6 +149,14 @@ const focus = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visi
           </div>
 
           <div class="flex flex-wrap gap-2">
+            <RouterLink
+              v-if="info.kind === 'STRENGTH' && detail.records.best1RM"
+              :to="{ name: 'home', query: { tab: 'calculators', exercise: info.slug } }"
+              class="rounded-md border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs font-medium text-zinc-100 transition-colors hover:bg-zinc-800"
+              :class="focus"
+            >
+              {{ t('exercises.planLoads') }}
+            </RouterLink>
             <button
               type="button"
               class="rounded-md border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs font-medium text-zinc-100 transition-colors hover:bg-zinc-800"
