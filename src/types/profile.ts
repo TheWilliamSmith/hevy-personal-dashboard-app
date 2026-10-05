@@ -1,3 +1,5 @@
+import type { Locale } from '@/i18n';
+
 export type WeightUnit = 'kg' | 'lb';
 export type WeekStart = 'monday' | 'sunday';
 export type ThemePreference = 'system' | 'light' | 'dark';
@@ -24,6 +26,7 @@ export interface UserProfile {
   weightUnit: WeightUnit;
   weekStart: WeekStart;
   theme: ThemePreference;
+  locale: Locale;
   profileVisibility: ProfileVisibility;
   showBio: boolean;
   showStats: boolean;
@@ -49,5 +52,5 @@ export interface ProfileResponse extends UserProfile {
 }
 
 export type ProfileChanges = Partial<
-  Pick<UserProfile, 'displayName' | 'username' | 'bio' | 'location' | 'weightUnit' | 'weekStart' | 'theme' | keyof PrivacySettings | 'bodyweightKg' | 'heightCm' | 'recapFrequency' | 'recapWeekday' | 'recapMonthDay'>
+  Pick<UserProfile, 'displayName' | 'username' | 'bio' | 'location' | 'weightUnit' | 'weekStart' | 'theme' | 'locale' | keyof PrivacySettings | 'bodyweightKg' | 'heightCm' | 'recapFrequency' | 'recapWeekday' | 'recapMonthDay'>
 >;

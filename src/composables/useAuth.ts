@@ -1,4 +1,4 @@
-import { t } from '@/i18n';
+import { locale, t } from '@/i18n';
 import { computed, readonly, ref, type ComputedRef, type DeepReadonly, type Ref } from 'vue';
 
 import { ApiError, apiDelete, apiDeleteWithBody, apiGet, apiPatch, apiPost } from '@/lib/api';
@@ -107,7 +107,7 @@ export function useAuth(): UseAuth {
       }),
     signUp: (account) =>
       submitting(async () => {
-        start(await apiPost<AuthSession>('/auth/sign-up', account), false);
+        start(await apiPost<AuthSession>('/auth/sign-up', { ...account, locale: locale.value }), false);
       }),
     signInWith: async (provider) => {
       pendingProvider.value = provider;

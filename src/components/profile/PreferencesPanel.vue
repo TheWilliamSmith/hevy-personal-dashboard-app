@@ -4,7 +4,7 @@ import { computed, ref, type DeepReadonly } from 'vue';
 import SectionHeader from '@/components/ui/SectionHeader.vue';
 import SegmentedControl, { type SegmentedOption } from '@/components/ui/SegmentedControl.vue';
 import { useToasts } from '@/composables/useToasts';
-import { LOCALES, locale, setLocale, t } from '@/i18n';
+import { LOCALES, locale, setLocale, t, type Locale } from '@/i18n';
 import { ApiError, apiPost } from '@/lib/api';
 import type { ProfileChanges, RecapFrequency, ThemePreference, UserProfile, WeekStart, WeightUnit } from '@/types/profile';
 import { dateFormat } from '@/utils/format';
@@ -19,6 +19,11 @@ const themes = computed<ReadonlyArray<SegmentedOption<ThemePreference>>>(() => [
   { value: 'light', label: t('preferences.themeLight') },
   { value: 'dark', label: t('preferences.themeDark') },
 ]);
+
+function chooseLocale(next: Locale): void {
+  setLocale(next);
+  emit('change', { locale: next });
+}
 
 function chooseTheme(next: ThemePreference): void {
   applyTheme(next);
@@ -104,7 +109,7 @@ const field =
           :options="LOCALES"
           :label="t('preferences.language')"
           class="self-start"
-          @update:model-value="setLocale"
+          @update:model-value="chooseLocale"
         />
         <p class="text-xs text-zinc-500">{{ t('preferences.languageHint') }}</p>
       </div>

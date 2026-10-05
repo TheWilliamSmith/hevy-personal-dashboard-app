@@ -118,7 +118,7 @@ export const preferences: Messages<typeof en.preferences> = {
   monday: 'Lundi',
   sunday: 'Dimanche',
   language: 'Langue',
-  languageHint: 'S’applique tout de suite sur cet appareil.',
+  languageHint: 'Enregistrée sur ton compte : les e-mails, les trophées et les messages la suivent.',
 };
 
 export const recapUnsubscribe: Messages<typeof en.recapUnsubscribe> = {

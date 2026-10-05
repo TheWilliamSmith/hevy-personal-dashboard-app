@@ -1,4 +1,4 @@
-import { t } from '@/i18n';
+import { locale, setLocale, t } from '@/i18n';
 import { computed, ref, watch, type ComputedRef, type Ref } from 'vue';
 
 import { useAuth } from '@/composables/useAuth';
@@ -18,14 +18,42 @@ function accept(response: ProfileResponse): void {
   loaded.value = response;
   applyPreferences({ weightUnit: response.weightUnit, weekStart: response.weekStart });
   applyTheme(response.theme);
+  if (response.locale !== locale.value) {
+    setLocale(response.locale);
+  }
   auth.updateUser({ displayName: response.displayName, username: response.username });
+}
+
+const LOCALE_SYNCED_KEY = 'hevy-dashboard.locale-synced';
+
+function localeSynced(): boolean {
+  try {
+    return localStorage.getItem(LOCALE_SYNCED_KEY) === 'true';
+  } catch {
+    return true;
+  }
+}
+
+function markLocaleSynced(): void {
+  try {
+    localStorage.setItem(LOCALE_SYNCED_KEY, 'true');
+  } catch {
+    return;
+  }
 }
 
 async function load(): Promise<void> {
   isLoading.value = true;
   error.value = null;
   try {
-    accept(await apiGet<ProfileResponse>('/me/profile'));
+    let response = await apiGet<ProfileResponse>('/me/profile');
+    if (!localeSynced()) {
+      if (response.locale !== locale.value) {
+        response = await apiPatch<ProfileResponse>('/me/profile', { locale: locale.value });
+      }
+      markLocaleSynced();
+    }
+    accept(response);
   } catch (error_) {
     error.value = error_ instanceof ApiError ? error_.message : t('errors.loadProfile');
   } finally {
@@ -77,6 +105,7 @@ const profile = computed<UserProfile | null>(() => {
         weightUnit: 'kg',
         weekStart: 'monday',
         theme: theme.value,
+        locale: locale.value,
         profileVisibility: 'private',
         showBio: true,
         showStats: true,

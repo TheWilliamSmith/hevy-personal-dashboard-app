@@ -77,7 +77,7 @@ describe('useAuth', () => {
     await auth.signUp(account);
 
     expect(String(fetchMock.mock.calls[0]?.[0])).toBe('/api/auth/sign-up');
-    expect(JSON.parse(String((fetchMock.mock.calls[0]?.[1] as RequestInit).body))).toEqual(account);
+    expect(JSON.parse(String((fetchMock.mock.calls[0]?.[1] as RequestInit).body))).toEqual({ ...account, locale: 'en' });
     expect(auth.user.value).toEqual(USER);
   });
 

@@ -437,6 +437,7 @@ export const profile: ProfileResponse = {
   weightUnit: 'kg',
   weekStart: 'monday',
   theme: 'system',
+  locale: 'en',
   profileVisibility: 'private',
   showBio: true,
   showStats: true,

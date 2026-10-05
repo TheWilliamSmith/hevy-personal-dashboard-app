@@ -115,7 +115,7 @@ export const preferences = {
   monday: 'Monday',
   sunday: 'Sunday',
   language: 'Language',
-  languageHint: 'Applies right away on this device.',
+  languageHint: 'Saved to your account: emails, trophies and messages follow it.',
 };
 
 export const recapUnsubscribe = {

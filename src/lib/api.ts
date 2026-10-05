@@ -1,4 +1,4 @@
-import { t } from '@/i18n';
+import { locale, t } from '@/i18n';
 import { accessToken } from './auth-session';
 import { shouldBypassHttpCache } from './data-version';
 import { reportUnauthorized } from './session-expiry';
@@ -110,7 +110,7 @@ function requestBody(body: unknown, isForm: boolean): BodyInit | undefined {
 
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const auth = authHeaders();
-  const headers: Record<string, string> = { ...auth };
+  const headers: Record<string, string> = { ...auth, 'Accept-Language': locale.value };
   const isForm = options.body instanceof FormData;
   if (options.body !== undefined && !isForm) {
     headers['Content-Type'] = 'application/json';

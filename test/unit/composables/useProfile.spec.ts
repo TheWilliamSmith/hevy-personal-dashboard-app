@@ -18,6 +18,7 @@ function profileResponse(overrides: Partial<ProfileResponse> = {}): ProfileRespo
     weightUnit: 'kg',
     weekStart: 'monday',
     theme: 'dark',
+    locale: 'en',
     profileVisibility: 'private',
     showBio: true,
     showStats: true,

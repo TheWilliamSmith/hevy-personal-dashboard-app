@@ -151,6 +151,7 @@ describe('SignUpView', () => {
       username: 'william.smith',
       email: 'william@example.com',
       password: 'Str0ng-pass!',
+      locale: 'en',
     });
     expect(useToasts().toasts.value.at(-1)?.title).toBe('Account created');
     expect(router.currentRoute.value.query.tab).toBe('settings');
