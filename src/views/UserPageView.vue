@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CalendarDays, ChevronLeft, MapPin } from 'lucide-vue-next';
+import { CalendarDays, ChevronLeft, EyeOff, Lock, MapPin } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
 
@@ -52,6 +52,10 @@ function onChanged(next: UserCard): void {
 
 const avatar = computed(() => (page.value?.avatarUrl ? apiUrl(page.value.avatarUrl) : null));
 
+const nothingShown = computed(
+  () => page.value !== null && !page.value.isPrivate && page.value.friendship !== 'self' && !page.value.stats && !page.value.recentWorkouts && !page.value.recentTrophies,
+);
+
 const figures = computed(() => {
   const stats = page.value?.stats;
   if (!stats) {
@@ -99,7 +103,7 @@ const figures = computed(() => {
                   <MapPin class="h-3.5 w-3.5" aria-hidden="true" />
                   {{ page.location }}
                 </span>
-                <span class="flex items-center gap-1.5">
+                <span v-if="page.memberSince" class="flex items-center gap-1.5">
                   <CalendarDays class="h-3.5 w-3.5" aria-hidden="true" />
                   {{ t('friends.page.memberSince', { date: formatDay(page.memberSince) }) }}
                 </span>
@@ -112,7 +116,20 @@ const figures = computed(() => {
           </div>
         </section>
 
-        <section class="flex flex-col gap-5">
+        <section v-if="page.isPrivate" class="flex items-start gap-3 rounded-md border border-zinc-800 bg-zinc-900 p-4">
+          <Lock class="mt-0.5 h-5 w-5 shrink-0 text-zinc-400" aria-hidden="true" />
+          <div>
+            <p class="text-sm font-medium text-zinc-100">{{ t('friends.page.privateTitle') }}</p>
+            <p class="mt-0.5 text-sm text-zinc-400">{{ t('friends.page.privateHint', { name: page.displayName }) }}</p>
+          </div>
+        </section>
+
+        <p v-else-if="nothingShown" class="flex items-center gap-2 text-sm text-zinc-400">
+          <EyeOff class="h-4 w-4 shrink-0" aria-hidden="true" />
+          {{ t('friends.page.nothingShown', { name: page.displayName }) }}
+        </p>
+
+        <section v-if="page.stats" class="flex flex-col gap-5">
           <SectionHeader :title="t('friends.page.stats')" :subtitle="t('friends.page.statsSubtitle')" />
           <dl class="grid grid-cols-2 gap-y-6 sm:grid-cols-4">
             <div
@@ -127,8 +144,12 @@ const figures = computed(() => {
           </dl>
         </section>
 
-        <div class="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)] lg:gap-0">
-          <section class="flex flex-col gap-4 lg:pr-8">
+        <div
+          v-if="page.recentWorkouts || page.recentTrophies"
+          class="grid grid-cols-[minmax(0,1fr)] gap-8 lg:gap-0"
+          :class="page.recentWorkouts && page.recentTrophies ? 'lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]' : ''"
+        >
+          <section v-if="page.recentWorkouts" class="flex flex-col gap-4" :class="{ 'lg:pr-8': page.recentTrophies }">
             <SectionHeader :title="t('friends.page.latestWorkouts')" :subtitle="t('friends.page.latestWorkoutsSubtitle')" />
             <EmptyState v-if="page.recentWorkouts.length === 0" :message="t('friends.page.noWorkouts')" />
             <ul v-else class="flex flex-col divide-y divide-zinc-800">
@@ -154,7 +175,7 @@ const figures = computed(() => {
             </ul>
           </section>
 
-          <section class="flex flex-col gap-4 border-zinc-800 lg:border-l lg:pl-8">
+          <section v-if="page.recentTrophies" class="flex flex-col gap-4 border-zinc-800" :class="{ 'lg:border-l lg:pl-8': page.recentWorkouts }">
             <SectionHeader :title="t('friends.page.latestTrophies')" :subtitle="t('friends.page.latestTrophiesSubtitle')" />
             <EmptyState v-if="page.recentTrophies.length === 0" :message="t('friends.page.noTrophies')" />
             <ul v-else class="flex flex-col gap-1">

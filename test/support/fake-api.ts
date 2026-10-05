@@ -437,6 +437,12 @@ export const profile: ProfileResponse = {
   weightUnit: 'kg',
   weekStart: 'monday',
   theme: 'system',
+  profileVisibility: 'private',
+  showBio: true,
+  showStats: true,
+  showTrophies: true,
+  showWorkouts: true,
+  showInLeaderboard: true,
   bodyweightKg: 80,
   heightCm: 180,
   recapFrequency: 'weekly',
@@ -527,6 +533,7 @@ export const leaderboard: LeaderboardEntry[] = [
 
 export const userPage: UserPage = {
   ...userCard({ friendship: 'friends', avatarUrl: '/users/u2/avatar?v=1' }),
+  isPrivate: false,
   bio: 'Push, pull, legs.',
   location: 'Lyon',
   memberSince: '2026-07-15T10:00:00.000Z',

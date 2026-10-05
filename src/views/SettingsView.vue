@@ -5,6 +5,7 @@ import { useRoute, useRouter } from 'vue-router';
 
 import AccountSecurity from '@/components/profile/AccountSecurity.vue';
 import PreferencesPanel from '@/components/profile/PreferencesPanel.vue';
+import PrivacyPanel from '@/components/profile/PrivacyPanel.vue';
 import ProfileForm from '@/components/profile/ProfileForm.vue';
 import ProfileHeader from '@/components/profile/ProfileHeader.vue';
 import SectionError from '@/components/ui/SectionError.vue';
@@ -17,14 +18,15 @@ import type { ProfileChanges, UserProfile } from '@/types/profile';
 
 const DataPanel = defineAsyncComponent(() => import('@/views/DataView.vue'));
 
-type Section = 'profile' | 'account' | 'preferences' | 'data';
+type Section = 'profile' | 'account' | 'preferences' | 'privacy' | 'data';
 
-const SECTION_VALUES: readonly Section[] = ['profile', 'account', 'preferences', 'data'];
+const SECTION_VALUES: readonly Section[] = ['profile', 'account', 'preferences', 'privacy', 'data'];
 
 const sections = computed<ReadonlyArray<SegmentedOption<Section>>>(() => [
   { value: 'profile', label: t('settings.profile') },
   { value: 'account', label: t('settings.account') },
   { value: 'preferences', label: t('settings.preferences'), shortLabel: t('settings.preferencesShort') },
+  { value: 'privacy', label: t('settings.privacy') },
   { value: 'data', label: t('settings.data') },
 ]);
 
@@ -135,6 +137,10 @@ async function onRemoveAvatar(): Promise<void> {
 
     <div v-else-if="section === 'preferences'" class="px-4 pt-6 pb-10 sm:px-6">
       <PreferencesPanel v-if="profile" :profile="profile" :is-saving="isSaving" @change="onPreferences" />
+    </div>
+
+    <div v-else-if="section === 'privacy'" class="px-4 pt-6 pb-10 sm:px-6">
+      <PrivacyPanel v-if="profile" :profile="profile" :is-saving="isSaving" @change="onPreferences" />
     </div>
 
     <DataPanel v-else />

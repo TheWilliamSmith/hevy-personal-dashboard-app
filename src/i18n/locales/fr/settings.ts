@@ -7,6 +7,7 @@ export const settings: Messages<typeof en.settings> = {
   account: 'Compte',
   preferences: 'Préférences',
   preferencesShort: 'Préf.',
+  privacy: 'Confidentialité',
   data: 'Données',
   profileSaved: 'Profil enregistré',
   saveFailed: 'Impossible d’enregistrer votre profil',

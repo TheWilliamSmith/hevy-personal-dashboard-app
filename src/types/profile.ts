@@ -1,6 +1,16 @@
 export type WeightUnit = 'kg' | 'lb';
 export type WeekStart = 'monday' | 'sunday';
 export type ThemePreference = 'system' | 'light' | 'dark';
+export type ProfileVisibility = 'public' | 'private';
+
+export interface PrivacySettings {
+  profileVisibility: ProfileVisibility;
+  showBio: boolean;
+  showStats: boolean;
+  showTrophies: boolean;
+  showWorkouts: boolean;
+  showInLeaderboard: boolean;
+}
 export type RecapFrequency = 'off' | 'weekly' | 'monthly';
 
 export interface UserProfile {
@@ -14,6 +24,12 @@ export interface UserProfile {
   weightUnit: WeightUnit;
   weekStart: WeekStart;
   theme: ThemePreference;
+  profileVisibility: ProfileVisibility;
+  showBio: boolean;
+  showStats: boolean;
+  showTrophies: boolean;
+  showWorkouts: boolean;
+  showInLeaderboard: boolean;
   bodyweightKg: number | null;
   heightCm: number | null;
   recapFrequency: RecapFrequency;
@@ -33,5 +49,5 @@ export interface ProfileResponse extends UserProfile {
 }
 
 export type ProfileChanges = Partial<
-  Pick<UserProfile, 'displayName' | 'username' | 'bio' | 'location' | 'weightUnit' | 'weekStart' | 'theme' | 'bodyweightKg' | 'heightCm' | 'recapFrequency' | 'recapWeekday' | 'recapMonthDay'>
+  Pick<UserProfile, 'displayName' | 'username' | 'bio' | 'location' | 'weightUnit' | 'weekStart' | 'theme' | keyof PrivacySettings | 'bodyweightKg' | 'heightCm' | 'recapFrequency' | 'recapWeekday' | 'recapMonthDay'>
 >;

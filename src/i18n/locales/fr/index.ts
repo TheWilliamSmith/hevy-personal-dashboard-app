@@ -11,6 +11,7 @@ import * as friends from './friends';
 import * as goals from './goals';
 import * as imports from './imports';
 import * as messages from './messages';
+import * as privacy from './privacy';
 import * as progress from './progress';
 import * as settings from './settings';
 import * as trophies from './trophies';
@@ -28,6 +29,7 @@ export const fr: Messages<MessageSchema> = {
   ...goals,
   ...imports,
   ...messages,
+  ...privacy,
   ...progress,
   ...settings,
   ...trophies,

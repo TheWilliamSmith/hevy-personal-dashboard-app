@@ -4,6 +4,7 @@ export const settings = {
   account: 'Account',
   preferences: 'Preferences',
   preferencesShort: 'Prefs',
+  privacy: 'Privacy',
   data: 'Data',
   profileSaved: 'Profile saved',
   saveFailed: 'Could not save your profile',

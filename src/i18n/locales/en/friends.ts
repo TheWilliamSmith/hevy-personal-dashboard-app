@@ -46,6 +46,9 @@ export const friends = {
   removeTitle: 'Remove {name} from your friends?',
   removeBody: 'You will no longer see each other in your leaderboards. You can send a new request later.',
   page: {
+    privateTitle: 'This page is private',
+    privateHint: 'Only the friends of {name} see their stats, trophies and workouts. Send a friend request to see more.',
+    nothingShown: '{name} keeps the details of this page to themselves.',
     back: 'Friends',
     notFound: 'This user does not exist.',
     memberSince: 'Member since {date}',

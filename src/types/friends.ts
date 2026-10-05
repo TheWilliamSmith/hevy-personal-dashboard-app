@@ -29,12 +29,13 @@ export interface UserWorkout {
 }
 
 export interface UserPage extends UserCard {
-  bio: string;
-  location: string;
-  memberSince: string;
-  stats: ProfileStats;
-  recentTrophies: UserTrophy[];
-  recentWorkouts: UserWorkout[];
+  isPrivate: boolean;
+  bio: string | null;
+  location: string | null;
+  memberSince: string | null;
+  stats: ProfileStats | null;
+  recentTrophies: UserTrophy[] | null;
+  recentWorkouts: UserWorkout[] | null;
 }
 
 export interface Friend {

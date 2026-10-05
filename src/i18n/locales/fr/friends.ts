@@ -49,6 +49,9 @@ export const friends: Messages<typeof en.friends> = {
   removeTitle: 'Retirer {name} de vos amis ?',
   removeBody: 'Vous ne vous verrez plus dans vos classements. Vous pourrez renvoyer une demande plus tard.',
   page: {
+    privateTitle: 'Cette page est privée',
+    privateHint: 'Seuls les amis de {name} voient ses stats, trophées et séances. Envoie une demande d’ami pour en voir plus.',
+    nothingShown: '{name} garde les détails de cette page pour soi.',
     back: 'Amis',
     notFound: 'Cet utilisateur n’existe pas.',
     memberSince: 'Membre depuis le {date}',
